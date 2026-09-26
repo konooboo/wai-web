@@ -1,6 +1,19 @@
+import { lazy, Suspense, useRef } from 'react'
+import { useReducedMotion, useScroll } from 'motion/react'
+
+const SensorScene = lazy(() => import('../scene/SensorScene'))
+
 export function Hero() {
+  const ref = useRef<HTMLElement>(null)
+  const reducedMotion = useReducedMotion() ?? false
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  })
+
   return (
     <section
+      ref={ref}
       id="top"
       className="relative overflow-hidden bg-[linear-gradient(rgb(0_0_0/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(0_0_0/0.035)_1px,transparent_1px)] bg-size-[48px_48px]"
     >
@@ -20,9 +33,23 @@ export function Hero() {
             Book a demo
           </a>
         </div>
-        {/* Placeholder: Three.js hardware model */}
-        <div className="border-muted/40 text-muted flex aspect-square items-center justify-center rounded-3xl border border-dashed font-mono text-sm">
-          3D hardware model
+        <div
+          className="relative aspect-square w-full"
+          role="img"
+          aria-label="Wai sensor unit with a soil probe and cable"
+        >
+          <Suspense
+            fallback={
+              <div className="text-muted absolute inset-0 flex items-center justify-center font-mono text-xs tracking-wider uppercase">
+                Loading model
+              </div>
+            }
+          >
+            <SensorScene
+              scrollProgress={scrollYProgress}
+              reducedMotion={reducedMotion}
+            />
+          </Suspense>
         </div>
       </div>
       <div className="border-line text-muted mx-auto flex max-w-6xl items-center gap-3 border-t px-6 py-4 font-mono text-xs tracking-wider uppercase">
