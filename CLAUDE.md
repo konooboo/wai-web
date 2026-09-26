@@ -25,7 +25,7 @@ You may create new files inside a folder that your task names, for example `src/
 - Primary button: `rounded-full bg-ink px-6 py-3 text-paper hover:bg-ink/85`. Secondary: `rounded-full border border-line px-6 py-3 hover:bg-white`.
 - Mono labels: `font-mono text-xs tracking-wider text-muted uppercase`.
 - Style reference: hilstart.io (clean, technical, lots of space, fine lines). Calm, precise, no gradients except the footer.
-- The primary CTA text is "Book a demo". It links to `#contact`.
+- The primary CTA text is "Book a demo". It links to `BOOK_DEMO_HREF` from `src/content.ts` (a mailto link). The page has no contact form.
 - Mobile first. Check 375 px and 1280 px widths. No horizontal scroll.
 
 ## Motion
@@ -36,7 +36,7 @@ You may create new files inside a folder that your task names, for example `src/
 - R3F: read MotionValues with `.get()` inside `useFrame`, mutate refs. Lazy-load any `<Canvas>` with `React.lazy`.
 
 ## Content
-- Shared facts are in `src/content.ts` (sensor list, alert example, contact email). Import them. Do not copy them.
+- Shared facts are in `src/content.ts` (sensor list, alert example, reading interval, contact email, demo link). Import them. Do not copy them.
 - Put section copy in constants at the top of the section file.
 - Units: metric (ha, mm, °C, mg/L, NTU). Dates: dd/mm/yyyy. Currency: NZD.
 - Missing team data: use a visible bracket placeholder, e.g. `[X] hours/week`, `$[price]/ha/month`, and add a `// TODO(data)` comment.
@@ -48,6 +48,5 @@ You may create new files inside a folder that your task names, for example `src/
 2. `bun run lint` passes with no new warnings.
 3. `bunx prettier --write` on the files you changed.
 4. You checked the section in a browser at desktop and mobile width, and the console has no errors.
-5. You committed on your branch with a clear message. End each commit message with:
-   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
+5. You committed on your branch with a clear message. Do not add attribution or co-author lines.
 Commit after each working step, not only at the end. Do not push. Do not merge. The orchestrator merges and pushes.
