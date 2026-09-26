@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="border-line bg-ink relative -mt-16 overflow-hidden border-b md:-mt-[76px]"
+      className="border-line bg-ink relative -mt-[65px] overflow-hidden border-b md:-mt-[77px]"
     >
       <video
         key={String(reducedMotion)}
