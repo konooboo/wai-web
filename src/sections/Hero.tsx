@@ -39,7 +39,7 @@ export function Hero() {
         </div>
         <div
           ref={modelRef}
-          className="relative aspect-[15/22] max-h-[calc(100svh-10rem)] w-full"
+          className="relative aspect-[15/22] max-h-[max(calc(100svh-10rem),24rem)] w-full"
           role="img"
           aria-label="Wai sensor unit with a whip antenna and two probe rods"
         >
