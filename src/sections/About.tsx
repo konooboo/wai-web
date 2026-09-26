@@ -1,6 +1,7 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
+import avatarPlaceholder from '../assets/avatar-placeholder.svg'
 
 // Draft copy. TODO(data): confirm this reasoning with the team before launch.
 const ABOUT_TEXT =
@@ -24,9 +25,15 @@ export function About() {
         {TEAM.map((member, index) => (
           <Reveal key={member.name + index} delay={index * 0.05}>
             <div className="border-line rounded-2xl border bg-white p-6 text-center">
-              <div className="bg-line text-muted mx-auto flex size-16 items-center justify-center rounded-full font-mono text-sm">
-                ??
-              </div>
+              <img
+                src={avatarPlaceholder}
+                width={64}
+                height={64}
+                loading="lazy"
+                decoding="async"
+                alt=""
+                className="mx-auto size-16 rounded-full"
+              />
               <p className="mt-4 font-medium">{member.name}</p>
               <p className="text-muted text-sm">{member.role}</p>
             </div>

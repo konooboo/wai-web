@@ -1,54 +1,7 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { BOOK_DEMO_HREF } from '../content'
-
-function QrPlaceholderIcon() {
-  return (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 48 48"
-      fill="none"
-      aria-hidden="true"
-      className="text-muted"
-    >
-      <rect
-        x="4"
-        y="4"
-        width="14"
-        height="14"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect
-        x="30"
-        y="4"
-        width="14"
-        height="14"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect
-        x="4"
-        y="30"
-        width="14"
-        height="14"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect x="8" y="8" width="6" height="6" fill="currentColor" />
-      <rect x="34" y="8" width="6" height="6" fill="currentColor" />
-      <rect x="8" y="34" width="6" height="6" fill="currentColor" />
-      <rect x="30" y="30" width="4" height="4" fill="currentColor" />
-      <rect x="38" y="30" width="4" height="4" fill="currentColor" />
-      <rect x="30" y="38" width="4" height="4" fill="currentColor" />
-      <rect x="38" y="38" width="4" height="4" fill="currentColor" />
-    </svg>
-  )
-}
+import qrPlaceholder from '../assets/qr-placeholder.svg'
 
 export function Close() {
   return (
@@ -69,11 +22,16 @@ export function Close() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="flex flex-col items-center gap-3">
-            <div className="border-muted/40 text-muted flex size-40 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed">
-              <QrPlaceholderIcon />
-              <span className="font-mono text-xs tracking-wider uppercase">
-                QR code
-              </span>
+            <div className="border-line rounded-2xl border bg-white p-4">
+              <img
+                src={qrPlaceholder}
+                width={128}
+                height={128}
+                loading="lazy"
+                decoding="async"
+                alt="QR code placeholder"
+                className="size-32"
+              />
             </div>
             {/* TODO(data): confirm what the QR code should link to. */}
             <p className="text-muted font-mono text-xs">[QR target TBC]</p>
