@@ -6,7 +6,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import type { MotionValue } from 'motion/react'
 import { buildSensorModel, disposeSensorModel } from './sensorModel'
 
-const BASE_YAW = -0.15
+const BASE_YAW = 0.55
 
 type Props = {
   scrollProgress: MotionValue<number>
