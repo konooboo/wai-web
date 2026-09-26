@@ -46,7 +46,7 @@ const STEPS: Step[] = [
   },
   {
     eyebrow: '04 · Alert',
-    title: 'You wake up to clear solutions, without having to lift a finger.',
+    title: 'You wake up to clear solutions, to focus on the real work.',
     body: 'Wai evaluates the root cause, next steps and downstream effects internally.',
     visual: 'alert',
   },
