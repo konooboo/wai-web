@@ -8,7 +8,6 @@ import { Hero } from './sections/Hero'
 import { Nav } from './sections/Nav'
 import { Pricing } from './sections/Pricing'
 import { Problem } from './sections/Problem'
-import { ProofStrip } from './sections/ProofStrip'
 
 export default function App() {
   return (
@@ -16,7 +15,6 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <ProofStrip />
         <Problem />
         <FarmMap />
         <Hardware />
