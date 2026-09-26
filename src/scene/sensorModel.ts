@@ -217,10 +217,10 @@ export function buildSensorModel() {
   // Probe head moulded into the enclosure base, partly buried
   const PX = 0.3
   const PZ = 0.02
-  const ROD = 3.0
+  const ROD = 2.0
   put('plastic', RB(0.95, 0.22, 0.34, 0.05, 2), 0, -0.09, 0)
   yOff = 0
-  // Two stainless rods, 300 mm, with ferrules and pointed tips
+  // Two stainless rods, 200 mm, with ferrules and pointed tips
   for (const sx of [-1, 1]) {
     put('metal', CYL(0.06, 0.06, 0.05, 20), sx * PX, -0.225 + BOX_DROP, PZ)
     put(
