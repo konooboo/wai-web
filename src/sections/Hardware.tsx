@@ -1,3 +1,4 @@
+import productPhoto from '../assets/product-photo.jpeg'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
@@ -33,9 +34,11 @@ export function Hardware() {
       </SectionHeading>
       <div className="mt-12 grid gap-12 md:grid-cols-2 md:items-start">
         <Reveal>
-          <div className="border-muted/40 text-muted flex aspect-square items-center justify-center rounded-3xl border border-dashed font-mono text-sm">
-            Product photo
-          </div>
+          <img
+            src={productPhoto}
+            alt="Blue sensor unit with a soil moisture probe and two ultrasonic sensors"
+            className="aspect-square w-full rounded-3xl object-cover"
+          />
         </Reveal>
         <div className="divide-line border-line divide-y border-t">
           {SPECS.map((spec, i) => (
