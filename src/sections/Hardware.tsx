@@ -31,31 +31,32 @@ const AI_TITLE = 'Wai AI watches every reading.'
 const AI_COPY =
   'When something needs attention, it tells you what is wrong, the likely cause, what to do now and the risk over the next 24–\u206048\u00a0h.'
 
+// Each alert with what Wai AI adds: the prediction, how it is worked out and the next step.
+// Example values, worded as the app shows them. TODO(data): confirm with the team.
 const ALERTS = [
-  { name: 'Water low', detail: 'Tank or trough' },
-  { name: 'Soil too dry or too wet', detail: 'Soil moisture' },
-  { name: 'Unit moved', detail: 'Left its GPS boundary' },
-  { name: 'Unit offline', detail: 'Stopped reporting' },
-]
-
-// Example outputs, worded as the app shows them. TODO(data): confirm with the team.
-const PREDICTIONS: { label: string; value: string; detail: string }[] = [
   {
-    label: 'Time to empty',
+    name: 'Water low',
     value: 'Runs dry in 6 h',
-    detail: 'Level trend over the last 6 h · low-level alert at 25 % full',
+    detail: 'Level trend over the last 6 h · alert below 25 % full',
+    action: 'Check the ball valve and inlet',
   },
   {
-    label: 'Fertiliser timing',
+    name: 'Soil too dry or too wet',
     value: 'Wait for rain',
-    detail:
-      'Soil moisture plus the 48 h rain forecast · Apply now, Wait for rain, or Too wet',
+    detail: 'Soil moisture plus the 48 h rain forecast',
+    action: 'Hold fertiliser until rain is due',
   },
   {
-    label: 'Trough visits',
-    value: '14 visits today',
-    detail:
-      'Counted from the level sensor: an animal at the trough reads closer than the water',
+    name: 'Unit moved',
+    value: '62 m from home',
+    detail: 'Three GPS fixes outside its 50 m boundary',
+    action: 'Open the map, then go and check it',
+  },
+  {
+    name: 'Unit offline',
+    value: 'Last heard 40 min ago',
+    detail: 'Usually reports every 5 min',
+    action: 'Check the bridge and the unit has power',
   },
 ]
 
@@ -131,31 +132,20 @@ export function Hardware() {
                 key={alert.name}
                 className="border-paper/10 border-t border-l p-6 md:p-8"
               >
-                <p className="text-lg">{alert.name}</p>
-                <p className="text-paper/50 mt-2 font-mono text-xs tracking-wider uppercase">
-                  {alert.detail}
+                <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
+                  {alert.name}
+                </p>
+                <p className="mt-4 text-2xl font-medium tracking-tight">
+                  {alert.value}
+                </p>
+                <p className="text-paper/60 mt-2 text-sm">{alert.detail}</p>
+                <p className="mt-4 text-sm">
+                  <span className="text-mint font-mono text-xs tracking-wider uppercase">
+                    Next
+                  </span>{' '}
+                  {alert.action}
                 </p>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-healthy/[0.06]">
-          <p className="text-mint border-paper/10 border-t border-l px-6 pt-6 font-mono text-xs tracking-wider uppercase md:px-8">
-            Predictions
-          </p>
-          <div className="grid sm:grid-cols-3">
-            {PREDICTIONS.map((p, i) => (
-              <Reveal key={p.label} delay={i * 0.05} className={cell}>
-                <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
-                <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
-                  {p.label}
-                </p>
-                <p className="mt-6 text-3xl font-medium tracking-tight">
-                  {p.value}
-                </p>
-                <p className="text-paper/60 mt-4">{p.detail}</p>
-              </Reveal>
             ))}
           </div>
         </div>
