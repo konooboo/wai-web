@@ -6,33 +6,29 @@ import { SectionHeading } from '../components/SectionHeading'
 const FAQS = [
   {
     question: 'How are sensors installed?',
-    // TODO(data): confirm install process and time.
     answer:
-      'A Wai technician places sensors in the paddock soil and mounts a unit at the water point. Installation takes about [X] hours per site.',
+      'A Wai technician places sensors in the paddock soil and mounts a unit at the water point. Installation takes about 5 minutes per site.',
   },
   {
-    question: 'How long does the battery last?',
-    // TODO(data): confirm battery life and replacement process.
-    answer:
-      'Each sensor runs on battery power for about [X] months before it needs a check or a swap.',
+    question: 'How are the sensors powered?',
+    answer: 'Each sensor is solar powered.',
   },
   {
     question: 'What coverage or connectivity do I need?',
-    // TODO(data): confirm the connectivity type and any coverage limits.
     answer:
-      'Sensors send readings over [connectivity type, e.g. LoRaWAN or cellular]. Most farms in range of the nearest gateway or tower do not need extra equipment.',
+      'Sensors send readings over LoRaWAN. Most farms in range of the nearest gateway do not need extra equipment.',
   },
   {
     question: 'Who owns my data?',
     // TODO(data): confirm data ownership, retention and export terms.
     answer:
-      'You own the data your sensors collect. We use it to run alerts and improve the app. TODO(data): confirm retention period and export options.',
+      'You own the data your sensors collect. We use it to run alerts and improve the app.',
   },
   {
     question: 'Can Wai help with council compliance reporting?',
     // TODO(data): confirm which council schemes are supported.
     answer:
-      'Yes. Wai can export sensor readings as a report for council compliance checks. TODO(data): confirm which regional council schemes this covers.',
+      'Yes. Wai can export sensor readings as a report for council compliance checks.',
   },
 ]
 

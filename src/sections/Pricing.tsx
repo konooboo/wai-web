@@ -19,7 +19,7 @@ const COLUMNS = [
   {
     label: 'Hardware',
     price: '$0',
-    unit: 'no hardware to buy',
+    unit: 'zero upfront costs',
     items: ['Water and soil sensor stations', 'Installation on your farm'],
   },
 ]

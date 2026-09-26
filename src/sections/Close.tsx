@@ -9,10 +9,9 @@ export function Close() {
       <div className="grid items-center gap-12 md:grid-cols-[1fr_auto]">
         <Reveal>
           <h2 className="text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-            Save [X] hours a week. Catch problems early. Keep proof for
+            Save 7+ hours a week. Catch problems early. Keep proof for
             compliance.
           </h2>
-          {/* TODO(data): confirm the hours-saved figure with the team. */}
           <a
             href={BOOK_DEMO_HREF}
             className="bg-ink text-paper hover:bg-ink/85 mt-8 inline-block rounded-full px-6 py-3"
