@@ -32,8 +32,8 @@ const AI_SPECS: Spec[] = [
       'Checks every sensor and picks the one job to do today, or tells you all is well',
   },
   {
-    label: 'For soil sensors',
-    value: 'Fertiliser timing',
+    label: 'Fertiliser timing',
+    value: 'Informed insights',
     detail:
       'Soil moisture plus the 48\u00a0h rain forecast: Apply now, Wait for rain or Too wet',
   },
