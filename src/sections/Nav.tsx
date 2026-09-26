@@ -14,6 +14,7 @@ export function Nav() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string | null>(null)
   const [overHero, setOverHero] = useState(true)
+  const [scrolled, setScrolled] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const clear = overHero && !open
 
@@ -47,6 +48,19 @@ export function Nav() {
   }, [])
 
   useEffect(() => {
+    let last = false
+    const onScroll = () => {
+      const next = window.scrollY > 0
+      if (next === last) return
+      last = next
+      setScrolled(next)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
     if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false)
@@ -58,9 +72,9 @@ export function Nav() {
   return (
     <header
       ref={headerRef}
-      className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+      className={`sticky top-0 z-50 border-b transition-[background-color,border-color,color,backdrop-filter] duration-300 ${
         clear
-          ? 'text-paper border-transparent bg-transparent'
+          ? `text-paper border-transparent ${scrolled ? 'bg-ink/40 backdrop-blur-2xl' : 'bg-transparent'}`
           : 'border-line bg-paper/95 text-ink'
       }`}
     >
