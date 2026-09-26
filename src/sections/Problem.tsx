@@ -1,116 +1,81 @@
-import { motion } from 'motion/react'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { READING_INTERVAL_MIN } from '../content'
 
-const TITLE = 'A problem can start the day after you check.'
+const TITLE = 'Farming now means proving it, by hand.'
 const INTRO =
-  'Most farms check troughs, streams and paddocks on foot or by bike. A leak or run-off that starts after one check runs until the next.'
+  'Farms must follow strict water and nutrient rules. Most still check water and soil on foot or by bike. That costs time, water and fertiliser.'
 
-// Position of "Leak starts" on the timeline, as a percentage of its width.
-const LEAK_AT = 25
-
-const EFFECTS = [
+const PROBLEMS = [
   {
-    label: 'Water',
-    // TODO(data): typical number of days a leak runs before someone finds it, from interviews
-    figure: '[X] days',
-    body: 'Slow leaks are often not found for a long time. A trough or pipe loses water every hour until the next check.',
-    source: {
-      label: 'DairyNZ',
-      href: 'https://www.dairynz.co.nz/environment/water-use/water-use-overview/',
-    },
+    label: 'Compliance',
+    icon: (
+      <>
+        <path d="M6 3h9l4 4v14H6z" />
+        <path d="M15 3v4h4" />
+        <path d="m9 14 2 2 4-4" />
+      </>
+    ),
+    figure: '88%',
+    caption: 'of farmers say resource consent is getting harder to get',
+    panel: 'bg-alert/10 text-alert',
+    title: 'The rules are strict, and a mistake is expensive.',
+    body: 'Farms can apply at most 190 kg of synthetic nitrogen per hectare each year, and must report fertiliser use to the council. A breach can cost a person $1M or 18 months in prison, and a company $10M.',
+    sources: [
+      {
+        label: 'Farmers Weekly poll, 09/10/2025',
+        href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
+      },
+      {
+        label: 'RMA s339',
+        href: 'https://www.legislation.govt.nz/act/public/1991/0069/latest/DLM239042.html',
+      },
+    ],
   },
   {
-    label: 'Fertiliser cost',
+    label: 'Time',
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+    figure: '1 h/day',
+    caption: 'on office work and data entry, for the average dairy farmer',
+    panel: 'bg-ink/5 text-ink',
+    title: 'Checks and records take hours every day.',
+    body: 'Before the office work starts, someone drives to each trough, probe and effluent pond to read the numbers. Each check shows one moment. A problem that starts after it runs until the next check.',
+    sources: [
+      {
+        label: 'DairyNZ, 21/10/2025',
+        href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
+      },
+    ],
+  },
+  {
+    label: 'Water and fertiliser',
+    icon: (
+      <>
+        <path d="M12 3s-6 6.5-6 11a6 6 0 0 0 12 0c0-4.5-6-11-6-11z" />
+        <path d="M12 19v-5m0 0c0-2 1.5-3 3-3 0 2-1.5 3-3 3z" />
+      </>
+    ),
     figure: '+43%',
-    body: 'Nitrogen fertiliser costs an average dairy farm 43% more this spring. Fertiliser that washes off in rain is money lost.',
-    source: {
-      label: 'Ravensdown via NZ Herald, 20/07/2026',
-      href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
-    },
-  },
-  {
-    label: 'Nitrogen rules',
-    // TODO(data): confirm the 190 kg cap is still in force before launch
-    figure: '190 kg N/ha',
-    body: 'Pastoral farms can apply at most 190 kg of synthetic nitrogen per hectare each year. After the cap, Canterbury farms used 30% less and Southland farms 41% less.',
-    source: {
-      label: 'Our Land and Water, 19/06/2024',
-      href: 'https://ourlandandwater.nz/news/new-rules-reduce-nitrogen-on-dairy-farms/',
-    },
+    caption: 'nitrogen fertiliser cost for an average dairy farm this spring',
+    panel: 'bg-mint text-healthy',
+    title: 'Water and fertiliser go to waste.',
+    body: 'Without soil data, farms irrigate soil that is already wet and spread fertiliser before rain. The water is lost, and the nitrogen washes into streams.',
+    sources: [
+      {
+        label: 'Ravensdown via NZ Herald, 20/07/2026',
+        href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
+      },
+    ],
   },
 ]
 
 const monoLabel = 'font-mono text-xs tracking-wider uppercase'
-
-function GapTimeline() {
-  return (
-    <div className="border-line space-y-10 rounded-2xl border bg-white p-6 md:p-8">
-      <div>
-        <p className={`${monoLabel} text-muted`}>Manual checks</p>
-        <div className="relative mt-4 h-4">
-          <div className="bg-line absolute inset-x-0 top-1/2 h-px" />
-          <div className="bg-ink absolute top-0 left-0 h-4 w-px" />
-          <div className="bg-ink absolute top-0 right-0 h-4 w-px" />
-          <motion.div
-            className="bg-alert absolute top-1/2 right-0 h-1 origin-left -translate-y-1/2 rounded-full"
-            style={{ left: `${LEAK_AT}%` }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: '-10% 0px' }}
-            transition={{ duration: 1.4, delay: 0.3, ease: 'linear' }}
-          />
-        </div>
-        <div className="relative mt-3 h-4">
-          <span className={`${monoLabel} text-muted absolute left-0`}>
-            Check
-          </span>
-          <span
-            className={`${monoLabel} text-alert absolute`}
-            style={{ left: `${LEAK_AT}%` }}
-          >
-            Leak starts
-          </span>
-          {/* TODO(data): usual days between checks, from interviews */}
-          <span className={`${monoLabel} text-muted absolute right-0`}>
-            Found day [X]
-          </span>
-        </div>
-      </div>
-
-      <div>
-        <p className={`${monoLabel} text-muted`}>
-          Wai · every {READING_INTERVAL_MIN} min
-        </p>
-        <div className="relative mt-4 h-4">
-          <div className="absolute inset-0 flex justify-between">
-            {Array.from({ length: 49 }, (_, i) => (
-              <div key={i} className="bg-healthy/60 h-4 w-px" />
-            ))}
-          </div>
-          <motion.div
-            className="bg-alert absolute top-1/2 h-1 w-[3%] origin-left -translate-y-1/2 rounded-full"
-            style={{ left: `${LEAK_AT}%` }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: '-10% 0px' }}
-            transition={{ duration: 0.2, delay: 0.3 }}
-          />
-        </div>
-        <div className="relative mt-3 h-4">
-          <span
-            className={`${monoLabel} text-alert absolute`}
-            style={{ left: `${LEAK_AT}%` }}
-          >
-            Alert in {READING_INTERVAL_MIN} min
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export function Problem() {
   return (
@@ -119,41 +84,64 @@ export function Problem() {
         {INTRO}
       </SectionHeading>
 
-      <Reveal className="mt-12">
-        <GapTimeline />
-      </Reveal>
-
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
-        {EFFECTS.map((effect, i) => (
-          <Reveal key={effect.label} delay={i * 0.1} className="h-full">
-            <div className="border-line flex h-full flex-col rounded-2xl border bg-white p-6">
-              <p className={`${monoLabel} text-muted`}>{effect.label}</p>
-              <p className="mt-4 text-3xl font-medium tracking-tight tabular-nums">
-                {effect.figure}
-              </p>
-              <p className="text-muted mt-3 text-sm">{effect.body}</p>
-              <a
-                href={effect.source.href}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted hover:text-ink mt-auto pt-6 font-mono text-xs underline underline-offset-2"
+      <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
+        {PROBLEMS.map((problem, i) => (
+          <Reveal key={problem.label} delay={i * 0.1} className="h-full">
+            <article className="flex h-full flex-col">
+              <div
+                className={`flex aspect-[4/3] flex-col justify-between rounded-2xl p-6 ${problem.panel}`}
               >
-                {effect.source.label}
-              </a>
-            </div>
+                <div className="flex items-start justify-between">
+                  <p className={monoLabel}>{problem.label}</p>
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    {problem.icon}
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-5xl font-medium tracking-tight tabular-nums lg:text-6xl">
+                    {problem.figure}
+                  </p>
+                  <p className="text-ink/70 mt-3 max-w-[16rem] text-sm">
+                    {problem.caption}
+                  </p>
+                </div>
+              </div>
+              <h3 className="mt-6 text-xl font-medium tracking-tight">
+                {problem.title}
+              </h3>
+              <p className="text-muted mt-3 text-sm leading-relaxed">
+                {problem.body}
+              </p>
+              <p className="text-muted mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-5 font-mono text-xs">
+                {problem.sources.map((source) => (
+                  <a
+                    key={source.label}
+                    href={source.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-ink underline underline-offset-2"
+                  >
+                    {source.label}
+                  </a>
+                ))}
+              </p>
+            </article>
           </Reveal>
         ))}
       </div>
 
-      {/* TODO(data): measured average from interviews. Add a real farmer quote here when one exists. */}
-      <p className="text-muted mt-10 text-lg">
-        <span className="text-ink font-mono">[X] h</span> a week go on manual
-        water and soil checks.
-      </p>
-
       <a
         href="#farm-map"
-        className={`${monoLabel} text-healthy hover:text-ink mt-6 inline-block`}
+        className={`${monoLabel} text-healthy hover:text-ink mt-14 inline-block`}
       >
         Wai checks every {READING_INTERVAL_MIN} min. See it on one farm ↓
       </a>
