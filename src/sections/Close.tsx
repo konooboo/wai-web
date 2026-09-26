@@ -1,7 +1,7 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
-import { BOOK_DEMO_HREF } from '../content'
-import qrPlaceholder from '../assets/qr-placeholder.svg'
+import { APP_URL, BOOK_DEMO_HREF } from '../content'
+import qrApp from '../assets/qr-app.svg'
 
 export function Close() {
   return (
@@ -21,19 +21,21 @@ export function Close() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="flex flex-col items-center gap-3">
-            <div className="border-line rounded-2xl border bg-white p-4">
+            <a
+              href={APP_URL}
+              className="border-line rounded-2xl border bg-white p-4"
+            >
               <img
-                src={qrPlaceholder}
+                src={qrApp}
                 width={128}
                 height={128}
                 loading="lazy"
                 decoding="async"
-                alt="QR code placeholder"
+                alt="QR code: open the Wai app"
                 className="size-32"
               />
-            </div>
-            {/* TODO(data): confirm what the QR code should link to. */}
-            <p className="text-muted font-mono text-xs">[QR target TBC]</p>
+            </a>
+            <p className="text-muted font-mono text-xs">Scan to open the app</p>
           </div>
         </Reveal>
       </div>

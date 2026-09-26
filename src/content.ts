@@ -25,4 +25,6 @@ export const READING_INTERVAL_MIN = 15 // TODO(data): confirm interval
 
 export const CONTACT_EMAIL = 'hello@wai.nz' // TODO(data): confirm address
 
+export const APP_URL = 'https://wai-olive.vercel.app/login?next=%2Fapp'
+
 export const BOOK_DEMO_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Book a Wai demo')}`

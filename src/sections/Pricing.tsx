@@ -13,7 +13,7 @@ const COLUMNS = [
       'Mobile app for every user',
       'AI alerts and suggestions',
       'Compliance reports',
-      'Support',
+      '24/7 support',
     ],
   },
   {
