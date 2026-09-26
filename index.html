@@ -40,14 +40,6 @@
         if (sessionStorage.getItem('wai:loaded'))
           document.documentElement.classList.add('no-loader')
       } catch {}
-      // Show the loader mark 200 ms after the first paint. main.tsx reads
-      // data-shown to let the current ping finish.
-      setTimeout(() => {
-        const loader = document.getElementById('loader')
-        if (!loader || loader.classList.contains('done')) return
-        loader.dataset.shown = performance.now()
-        loader.classList.add('show')
-      }, 200)
     </script>
     <style>
       .no-loader #loader {
@@ -80,25 +72,10 @@
       #loader.done .loader-mark {
         opacity: 0;
       }
-      .loader-mark svg {
+      .loader-mark canvas {
         display: block;
         width: 160px;
         height: 160px;
-        overflow: visible;
-      }
-      .loader-mark circle {
-        vector-effect: non-scaling-stroke;
-      }
-      .loader-ping {
-        opacity: 0;
-        transform-box: fill-box;
-        transform-origin: center;
-      }
-      #loader.show .loader-ping {
-        animation: loader-ping 1400ms cubic-bezier(0.05, 0.7, 0.1, 1) infinite;
-      }
-      #loader.done .loader-ping {
-        animation: none;
       }
       .loader-label {
         height: 16px;
@@ -118,23 +95,7 @@
         clip-path: inset(50%);
         white-space: nowrap;
       }
-      @keyframes loader-ping {
-        from {
-          transform: scale(0.06);
-          opacity: 0;
-        }
-        8% {
-          opacity: 0.9;
-        }
-        to {
-          transform: scale(1);
-          opacity: 0;
-        }
-      }
       @media (prefers-reduced-motion: reduce) {
-        .loader-ping {
-          display: none;
-        }
         #loader {
           transition: opacity 150ms ease;
         }
@@ -149,32 +110,160 @@
     <div id="loader">
       <div class="loader-sr" role="status" aria-live="polite">Loading Wai</div>
       <div class="loader-mark">
-        <svg viewBox="0 0 160 160" aria-hidden="true">
-          <g
-            fill="none"
-            stroke="#141412"
-            stroke-opacity="0.18"
-            stroke-width="1"
-            stroke-dasharray="1 4"
-            stroke-linecap="round"
-          >
-            <circle cx="80" cy="80" r="36" />
-            <circle cx="80" cy="80" r="64" />
-          </g>
-          <circle
-            class="loader-ping"
-            cx="80"
-            cy="80"
-            r="72"
-            fill="none"
-            stroke="#3a9d5d"
-            stroke-width="1"
-          />
-          <circle cx="80" cy="80" r="4" fill="#3a9d5d" />
-        </svg>
+        <canvas width="160" height="160" aria-hidden="true"></canvas>
         <div class="loader-label">Connecting sensors</div>
       </div>
     </div>
+    <script>
+      // Loading screen. A dotted spiral draws outward as the page loads:
+      // 30 % when the JS has run, 60 % with fonts, 100 % with the hero model.
+      // The mark shows 200 ms after the first frame. Maximum 4 s.
+      ;(() => {
+        const loader = document.getElementById('loader')
+        if (document.documentElement.classList.contains('no-loader'))
+          return loader.remove()
+
+        // Turbo colours of the hero scan, newest scan-head dot first.
+        const HEAD = [
+          '#d2350e',
+          '#f86318',
+          '#ff9420',
+          '#fac029',
+          '#d5e336',
+          '#a2f84a',
+          '#6cfd69',
+          '#41f391',
+          '#28dbbe',
+          '#27b6e6',
+          '#3889f9',
+          '#4958dd',
+        ]
+        const LEVELS = [0, 0.3, 0.6, 1]
+        const MAX_MS = 4000
+        const FINISH_MS = 350
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+        const canvas = loader.querySelector('canvas')
+        const ctx = canvas.getContext('2d')
+        const dpr = Math.min(devicePixelRatio, 2)
+        canvas.width = canvas.height = 160 * dpr
+        ctx.scale(dpr, dpr)
+
+        // Archimedean spiral r = 8 + bθ out to r = 72 in 5.5 turns. Dots are
+        // 5 px apart along the path, with 10 % dropout like the hero rings.
+        const dots = []
+        const turns = 11 * Math.PI
+        let seed = 7
+        for (let a = 0; a < turns;) {
+          const r = 8 + (64 * a) / turns
+          seed = (seed * 16807) % 2147483647
+          if (seed / 2147483647 > 0.1)
+            dots.push([80 + Math.cos(a) * r, 80 + Math.sin(a) * r])
+          a += 5 / r
+        }
+
+        const dot = (x, y, r) => {
+          ctx.moveTo(x + r, y)
+          ctx.arc(x, y, r, 0, Math.PI * 2)
+        }
+        const draw = (progress) => {
+          const n = Math.round(progress * dots.length)
+          const head = still ? 0 : Math.min(n, HEAD.length)
+          ctx.clearRect(0, 0, 160, 160)
+          ctx.fillStyle = 'rgb(20 20 18 / 0.2)'
+          ctx.beginPath()
+          for (let i = 0; i < n - head; i++) dot(...dots[i], 0.75)
+          ctx.fill()
+          for (let age = 0; age < head; age++) {
+            ctx.globalAlpha = 0.9 - (age / HEAD.length) * 0.6
+            ctx.fillStyle = HEAD[age]
+            ctx.beginPath()
+            dot(...dots[n - 1 - age], 0.75)
+            ctx.fill()
+          }
+          ctx.globalAlpha = 1
+          ctx.fillStyle = '#3a9d5d'
+          ctx.beginPath()
+          dot(80, 80, 4)
+          ctx.fill()
+        }
+
+        let stages = 0
+        let fonts = false
+        let scene = false
+        let shown = false
+        addEventListener('DOMContentLoaded', () => stages++, { once: true })
+        // fonts.ready resolves early if no text has asked for a font yet, so
+        // load the 2 page fonts explicitly.
+        Promise.all([
+          document.fonts.load('16px Geist'),
+          document.fonts.load('11px "JetBrains Mono"'),
+        ]).then(() => {
+          fonts = true
+          stages++
+        })
+        addEventListener(
+          'wai:scene-ready',
+          () => {
+            scene = true
+            stages++
+          },
+          { once: true },
+        )
+        const finish = () => {
+          if (!loader.isConnected) return
+          loader.remove()
+          try {
+            sessionStorage.setItem('wai:loaded', '1')
+          } catch {}
+          dispatchEvent(new Event('wai:loader-done'))
+        }
+        const hide = () => {
+          loader.classList.add('done')
+          loader.addEventListener('transitionend', (e) => {
+            if (e.target === loader) finish()
+          })
+          setTimeout(finish, 700)
+        }
+
+        // Ease toward 80 % of the next stage so the spiral does not stall.
+        // When ready, draw the rest in FINISH_MS, then hand off.
+        let progress = 0
+        let first = -1
+        let last = 0
+        let finishFrom = -1
+        let finishStart = 0
+        const frame = (now) => {
+          if (first < 0) first = last = now
+          const ready = (fonts && scene) || now >= MAX_MS
+          if (ready && (!shown || still)) return hide()
+          if (!shown && now - first >= 200) {
+            shown = true
+            loader.classList.add('show')
+          }
+          if (ready) {
+            if (finishFrom < 0) {
+              finishFrom = progress
+              finishStart = now
+            }
+            const k = Math.min(1, (now - finishStart) / FINISH_MS)
+            progress = finishFrom + (1 - finishFrom) * (1 - (1 - k) ** 2)
+            if (k === 1) {
+              draw(1)
+              return hide()
+            }
+          } else {
+            const low = LEVELS[stages]
+            const cap = low + (LEVELS[stages + 1] - low) * 0.8
+            progress += (cap - progress) * Math.min(1, (now - last) / 1000)
+          }
+          last = now
+          draw(still ? 1 : progress)
+          requestAnimationFrame(frame)
+        }
+        requestAnimationFrame(frame)
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
