@@ -5,7 +5,7 @@ export const STORY = {
   sensors: [0.18, 0.26],
   scan: [0.2, 0.38],
   alert: [0.42, 0.55],
-  phone: [0.6, 0.68],
+  phone: [0.39, 0.47],
   alertCard: [0.66, 0.74],
   suggestion: [0.8, 0.88],
   paddock: [0.82, 0.9],
