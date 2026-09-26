@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'motion/react'
 import productPhoto from '../assets/product-photo.jpeg'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
@@ -28,7 +29,7 @@ const SPECS: { label: string; value: string; detail: string }[] = [
     label: 'Radio',
     value: 'LoRa',
     detail:
-      'Long range, no cell coverage needed · signal strength (RSSI) and SNR on each packet',
+      'Covers several hectares, no cell coverage needed · signal strength (RSSI) and SNR on each packet',
   },
   {
     label: 'Unit health',
@@ -43,17 +44,33 @@ const SPECS: { label: string; value: string; detail: string }[] = [
   },
 ]
 
+const AI_TITLE = 'Wai AI checks every reading.'
+const AI_COPY =
+  'For each alert, it writes what is wrong, the likely cause, what to do now and the risk over the next 24–\u206048\u00a0h.'
+
 const ALERTS = [
-  'Tank low',
-  'Soil dry',
-  'Trough empty',
-  'Unit moved',
-  'Unit offline',
+  { name: 'Water low', detail: 'Tank or trough level' },
+  { name: 'Soil too dry or too wet', detail: 'Soil moisture' },
+  { name: 'Unit moved', detail: 'Outside its GPS boundary' },
+  { name: 'Unit offline', detail: 'No packet received' },
 ]
+
+function Sparkle({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 0C12.6 6.4 17.6 11.4 24 12C17.6 12.6 12.6 17.6 12 24C11.4 17.6 6.4 12.6 0 12C6.4 11.4 11.4 6.4 12 0Z"
+      />
+    </svg>
+  )
+}
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
 export function Hardware() {
+  const reduceMotion = useReducedMotion()
+
   return (
     <Section
       id="hardware"
@@ -95,21 +112,42 @@ export function Hardware() {
           ))}
         </div>
 
-        <div className="bg-paper/[0.03] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8">
-          <div className={`${cell} col-span-2 sm:col-span-3`}>
-            <p className="text-healthy font-mono text-xs tracking-wider uppercase">
-              Alerts
-            </p>
-            <p className="text-paper/60 mt-2">The app tells you when:</p>
-          </div>
-          {ALERTS.map((alert) => (
-            <div
-              key={alert}
-              className="border-paper/10 border-t border-l px-5 py-6"
-            >
-              {alert}
+        <div className="bg-healthy/[0.06] grid lg:grid-cols-12">
+          <div className={`${cell} overflow-hidden lg:col-span-5`}>
+            <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
+            <motion.span
+              aria-hidden="true"
+              className="bg-healthy/30 absolute top-2 left-2 size-32 rounded-full blur-3xl"
+              animate={reduceMotion ? undefined : { opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <div className="relative flex items-center gap-3">
+              <span className="relative size-7">
+                <Sparkle className="text-mint absolute inset-0 drop-shadow-[0_0_10px_var(--color-healthy)]" />
+                <Sparkle className="text-mint absolute -top-1.5 -right-2 size-2.5 drop-shadow-[0_0_6px_var(--color-healthy)]" />
+              </span>
+              <p className="text-mint font-mono text-xs tracking-wider uppercase">
+                Wai AI
+              </p>
             </div>
-          ))}
+            <p className="relative mt-6 text-3xl font-medium tracking-tight md:text-4xl">
+              {AI_TITLE}
+            </p>
+            <p className="text-paper/70 relative mt-4">{AI_COPY}</p>
+          </div>
+          <div className="grid grid-cols-2 lg:col-span-7">
+            {ALERTS.map((alert) => (
+              <div
+                key={alert.name}
+                className="border-paper/10 border-t border-l p-6 md:p-8"
+              >
+                <p className="text-lg">{alert.name}</p>
+                <p className="text-paper/50 mt-2 font-mono text-xs tracking-wider uppercase">
+                  {alert.detail}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Section>
