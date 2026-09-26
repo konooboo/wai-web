@@ -8,7 +8,6 @@ import {
   useTransform,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
-import { SectionHeading } from '../components/SectionHeading'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
 import { Phone } from '../farm/Phone'
 import { SensorMarker } from '../farm/SensorMarker'
@@ -22,8 +21,7 @@ const FarmScene = lazy(() => import('../farm/FarmScene'))
 type Step = {
   eyebrow: string
   title: string
-  body: string
-  ai?: { label: string; items: string[] }
+  body?: string
   problem?: 'time' | 'fertiliser' | 'compliance'
 }
 
@@ -31,17 +29,11 @@ const STEPS: Step[] = [
   {
     eyebrow: '01 · Sensors',
     title: 'Sensors in your water and soil.',
-    body: 'Wai sensors go in streams, ponds and paddocks. Water sensors measure pH, turbidity, nitrate and temperature. Soil sensors measure moisture and temperature.',
     problem: 'time',
   },
   {
     eyebrow: '02 · Always on',
     title: `Readings every ${READING_INTERVAL_MIN} minutes, day and night.`,
-    body: 'Each sensor sends its readings to the app. Wai AI compares soil moisture with the 48 h rain forecast and tells you when to fertilise.',
-    ai: {
-      label: 'Fertiliser timing',
-      items: ['Apply now', 'Wait for rain', 'Too wet — leaching risk'],
-    },
     problem: 'fertiliser',
   },
   {
@@ -52,21 +44,11 @@ const STEPS: Step[] = [
   {
     eyebrow: '04 · Alert',
     title: 'You get an alert on your phone.',
-    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem. On days with no alert, Wai AI writes one tip for the farm.',
+    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem.',
   },
   {
     eyebrow: '05 · Next step',
-    title: 'Wai AI tells you why, and what to do.',
-    body: 'For each alert, Wai AI reads the current and usual values of the sensor. Then it writes four short answers.',
-    ai: {
-      label: 'Alert diagnosis',
-      items: [
-        "What's wrong",
-        'Likely cause',
-        'Next step',
-        'Risk in the next 24–48 h',
-      ],
-    },
+    title: 'Wai tells you why, and what to do.',
     problem: 'compliance',
   },
 ]
@@ -175,51 +157,33 @@ export function FarmMap() {
 
         <div>
           <div ref={stepsRef}>
-            {STEPS.map((step, i) => (
-              <div
-                key={step.eyebrow}
-                className="flex min-h-svh flex-col items-start pt-6 pb-16 md:justify-center md:py-16"
-              >
-                {i === 0 ? (
-                  <div>
-                    <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
-                      How it works: Sense → Diagnose → Act
-                    </p>
-                    <SectionHeading eyebrow={step.eyebrow} title={step.title}>
-                      {step.body}
-                    </SectionHeading>
-                  </div>
-                ) : (
+            {STEPS.map((step, i) => {
+              const Title = i === 0 ? 'h2' : 'h3'
+              return (
+                <div
+                  key={step.eyebrow}
+                  className="flex min-h-svh flex-col items-start pt-6 pb-16 md:min-h-[80svh] md:justify-center md:py-0"
+                >
                   <div className="max-w-md">
+                    {i === 0 && (
+                      <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
+                        How it works: Sense → Diagnose → Act
+                      </p>
+                    )}
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">
                       {step.eyebrow}
                     </p>
-                    <h3 className="mt-4 text-3xl leading-tight font-medium tracking-tight">
+                    <Title className="mt-4 text-3xl leading-tight font-medium tracking-tight">
                       {step.title}
-                    </h3>
-                    <p className="text-muted mt-4 text-lg">{step.body}</p>
+                    </Title>
+                    {step.body && (
+                      <p className="text-muted mt-4 text-lg">{step.body}</p>
+                    )}
                   </div>
-                )}
-                {step.ai && (
-                  <div className="mt-6">
-                    <p className="text-healthy font-mono text-xs tracking-wider uppercase">
-                      Wai AI · {step.ai.label}
-                    </p>
-                    <ul className="mt-3 flex max-w-md flex-wrap gap-2">
-                      {step.ai.items.map((item) => (
-                        <li
-                          key={item}
-                          className="border-line rounded-full border bg-white px-3 py-1 font-mono text-xs"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {step.problem && <ProblemCard id={step.problem} />}
-              </div>
-            ))}
+                  {step.problem && <ProblemCard id={step.problem} />}
+                </div>
+              )
+            })}
           </div>
           <div className="md:h-[25svh]" />
         </div>
