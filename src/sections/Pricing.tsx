@@ -19,10 +19,6 @@ const MIN_HA = 10
 const MAX_HA = BANDS[BANDS.length - 1].upToHa
 const DEFAULT_HA = 160
 
-// TODO(data): confirm reply time.
-const CTA_NOTE =
-  'We reply within [X] working days to set a time to visit your farm.'
-
 const INCLUDED = [
   'Water and soil sensors',
   'Installation on your farm',
@@ -116,14 +112,9 @@ export function Pricing() {
             </div>
 
             <div className="border-line mt-8 border-t pt-8">
-              <div className="flex items-center gap-2">
-                <p className="text-muted font-mono text-xs tracking-wider uppercase">
-                  Total per month
-                </p>
-                <span className="border-line text-muted rounded-full border px-2 py-0.5 font-mono text-xs tracking-wider uppercase">
-                  Draft pricing
-                </span>
-              </div>
+              <p className="text-muted font-mono text-xs tracking-wider uppercase">
+                Total per month
+              </p>
               <p className="mt-2 text-4xl font-medium tracking-tight tabular-nums">
                 <TotalPerMonth value={monthly} />
               </p>
@@ -153,7 +144,6 @@ export function Pricing() {
             >
               Book a demo
             </a>
-            <p className="text-muted mt-3 text-sm">{CTA_NOTE}</p>
           </div>
         </div>
       </Reveal>
