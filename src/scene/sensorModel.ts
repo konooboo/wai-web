@@ -74,10 +74,10 @@ export function buildSensorModel() {
     // Smooth moulded plastic, with only a faint grain.
     plastic: new MeshStandardMaterial({
       color: 0x0a1020,
-      roughness: 0.62,
+      roughness: 0.8,
       bumpMap: grain,
       bumpScale: 0.003,
-      envMapIntensity: 0.9,
+      envMapIntensity: 0.6,
     }),
     dark: new MeshStandardMaterial({ color: 0x05070c, roughness: 0.9 }),
     metal: new MeshStandardMaterial({
