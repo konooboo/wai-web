@@ -40,7 +40,7 @@ const SPECS: { label: string; value: string; detail: string }[] = [
   {
     label: 'Battery',
     value: 'Up to [X] months',
-    detail: 'Low-power ESP32 board · rechargeable battery',
+    detail: 'Low-power design · rechargeable battery',
   }, // TODO(data): measure battery life in the field
 ]
 
