@@ -99,7 +99,7 @@ export function buildPointCloud(
 }
 
 // Turbo colour map (Google, 2019), polynomial fit. t = 0 blue, 1 red.
-function turbo(t: number) {
+export function turbo(t: number) {
   const r =
     0.13572138 +
     t *

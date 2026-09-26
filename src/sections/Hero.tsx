@@ -1,10 +1,12 @@
 import { lazy, Suspense, useRef } from 'react'
 import { useReducedMotion, useScroll } from 'motion/react'
+import { LidarRings } from '../components/LidarRings'
 
 const SensorScene = lazy(() => import('../scene/SensorScene'))
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null)
+  const modelRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion() ?? false
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -12,12 +14,9 @@ export function Hero() {
   })
 
   return (
-    <section
-      ref={ref}
-      id="top"
-      className="relative overflow-hidden bg-[linear-gradient(rgb(0_0_0/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(0_0_0/0.035)_1px,transparent_1px)] bg-size-[48px_48px]"
-    >
-      <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+    <section ref={ref} id="top" className="relative overflow-hidden">
+      <LidarRings centre={modelRef} />
+      <div className="relative mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
         <div>
           <h1 className="text-5xl leading-[1.05] font-medium tracking-tight md:text-6xl">
             Know your soil and water without the walk.
@@ -34,6 +33,7 @@ export function Hero() {
           </a>
         </div>
         <div
+          ref={modelRef}
           className="relative aspect-square w-full"
           role="img"
           aria-label="Wai sensor unit with a soil probe and cable"
@@ -52,7 +52,7 @@ export function Hero() {
           </Suspense>
         </div>
       </div>
-      <div className="border-line text-muted mx-auto flex max-w-6xl items-center gap-3 border-t px-6 py-4 font-mono text-xs tracking-wider uppercase">
+      <div className="border-line text-muted relative mx-auto flex max-w-6xl items-center gap-3 border-t px-6 py-4 font-mono text-xs tracking-wider uppercase">
         <span className="bg-healthy size-2 animate-pulse rounded-full" />
         WAI_01 · Online
       </div>
