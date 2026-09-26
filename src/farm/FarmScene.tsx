@@ -168,12 +168,14 @@ const landShader = /* glsl */ `
     float fade = 1.0 - smoothstep(20.0, 45.0, data.x);
     float x = (ld - fract(uTime * 0.12) * 1.3) / 0.035;
     float pulse = exp(-x * x) * uPulse * mix(1.0, fade, fine) * (1.0 - local);
-    vColour = mix(vec3(0.62), turbo(0.93 - ld * 0.8), pulse);
+    float strength = min(1.0, pulse * 3.0);
+    vec3 bright = min(vec3(1.0), turbo(0.93 - ld * 0.8) * 1.25);
+    vColour = mix(vec3(0.62), bright, strength);
     float alpha = mix(mix(0.26, 0.6, coast), 0.32 * uFine * fade, fine) * (1.0 - local);
     alpha += local * 0.3 * uLocal * (1.0 - smoothstep(1.5, 5.0, data.x));
-    vAlpha = (alpha + 0.6 * pulse) * uLand;
+    vAlpha = min(1.0, (alpha + 0.9 * strength) * uLand);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = (1.4 + 0.4 * coast) * uDpr;
+    gl_PointSize = (1.4 + 0.4 * coast + 0.8 * strength) * uDpr;
   }
 `
 
