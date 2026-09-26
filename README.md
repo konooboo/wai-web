@@ -1,32 +1,33 @@
-# React + TypeScript + Vite
+# Wai
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Wai is a landing page for a farm sensor product. Sensors sit in paddocks and
+waterways on NZ farms. They monitor water and soil. A mobile app uses AI to
+tell the farmer when something changes, why, and what to do next.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This project uses Bun. Do not use npm or yarn.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+bun install
+bun run dev
+bun run build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`bun run dev` starts a local dev server. `bun run build` type-checks the
+project and builds it for production.
+
+## Stack
+
+- Bun, Vite, TypeScript
+- React 19.3, Tailwind v4
+- Motion (`motion/react`) for animation
+- React Three Fiber 9.8 + drei + three, for the 3D hardware model
+
+React is pinned to `~19.3.0`. React Three Fiber 9.8.1 needs `react <19.4`, so
+do not bump React past that until R3F supports it.
+
+## Rules for agents
+
+See `CLAUDE.md`. It sets the design tokens, layout rules, file ownership and
+the definition of done for anyone (human or agent) working on this page.
