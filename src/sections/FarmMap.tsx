@@ -162,7 +162,7 @@ export function FarmMap() {
               return (
                 <div
                   key={step.eyebrow}
-                  className="flex min-h-svh flex-col items-start pt-6 pb-16 md:min-h-[80svh] md:justify-center md:py-0"
+                  className="flex min-h-svh flex-col items-start pt-6 pb-16 md:pt-[22svh]"
                 >
                   <div className="max-w-md">
                     {i === 0 && (
