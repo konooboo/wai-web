@@ -37,7 +37,7 @@ const ALERTS = [
   {
     name: 'Water low',
     value: 'Runs dry in 6 h',
-    detail: 'Level trend over the last 6 h · alert below 25 % full',
+    detail: 'Level trend over the last 6 h · alert below 25\u00a0% full',
     action: 'Check the ball valve and inlet',
   },
   {
@@ -139,8 +139,8 @@ export function Hardware() {
                   {alert.value}
                 </p>
                 <p className="text-paper/60 mt-2 text-sm">{alert.detail}</p>
-                <p className="mt-4 text-sm">
-                  <span className="text-mint font-mono text-xs tracking-wider uppercase">
+                <p className="text-mint mt-4 text-sm drop-shadow-[0_0_8px_var(--color-healthy)]">
+                  <span className="font-mono text-xs tracking-wider uppercase">
                     Next
                   </span>{' '}
                   {alert.action}
