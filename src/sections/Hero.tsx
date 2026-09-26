@@ -41,7 +41,7 @@ export function Hero() {
           ref={modelRef}
           className="relative aspect-square w-full"
           role="img"
-          aria-label="Wai sensor unit with a soil probe and cable"
+          aria-label="Wai sensor unit on a pond bank, with one probe rod in the soil and one in the water"
         >
           <Suspense
             fallback={
