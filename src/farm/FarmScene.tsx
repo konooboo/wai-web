@@ -108,12 +108,12 @@ const vertexShader = /* glsl */ `
     float pulse = 0.0;
     for (int i = 0; i < ${FARM_SENSORS.length}; i++) {
       float di = distance(map, uSensors[i]);
-      float w = fract(uTime * 0.14 + float(i) * 0.37) * 0.45;
-      pulse = max(pulse, band(di, w, 0.01) * (1.0 - smoothstep(0.25, 0.4, di)));
+      float w = fract(uTime * 0.14 + float(i) * 0.37) * 0.32;
+      pulse = max(pulse, band(di, w, 0.01) * (1.0 - smoothstep(0.12, 0.25, di)));
     }
     pulse *= uScan * uPulse;
-    alpha += 0.5 * pulse;
-    colour = mix(colour, vec3(1.0), 0.45 * pulse);
+    alpha += 0.3 * pulse;
+    colour = mix(colour, vec3(1.0), 0.3 * pulse);
 
     // Alert: red to orange spreads out from the alert sensor over every
     // point in reach, whichever sensor owns it, and fades at the edge so
