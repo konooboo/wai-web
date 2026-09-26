@@ -31,8 +31,9 @@ export function Hero() {
             <br className="hidden sm:block" /> without the walk.
           </h1>
           <p className="text-paper/80 mt-6 max-w-md text-lg">
-            Wai sensors sit in your paddocks and waterways. The app tells you
-            when something changes, why, and what to do next.
+            Wai sensors sit in your paddocks and waterways. Our app tells you
+            when something changes, analyses the data with AI and provides
+            actionable insights.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a
