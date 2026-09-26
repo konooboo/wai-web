@@ -33,7 +33,7 @@ export function Footer() {
       </div>
       <div
         aria-hidden
-        className="pointer-events-none -mt-[3vw] -mb-[0.22em] flex justify-center text-[34vw] leading-none font-semibold tracking-tighter select-none"
+        className="font-logo pointer-events-none -mt-[1.5vw] -mb-[0.22em] flex justify-center text-[29vw] leading-none font-semibold tracking-tight [font-stretch:125%] select-none"
       >
         <span className="from-mint bg-linear-to-b to-white bg-clip-text text-transparent">
           Wai
