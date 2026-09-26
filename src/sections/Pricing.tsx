@@ -4,32 +4,25 @@ import { SectionHeading } from '../components/SectionHeading'
 import { BOOK_DEMO_HREF } from '../content'
 
 // Software fee only. The farmer does not buy hardware. NZD per station per month, excl. GST.
-const BASE_PRICE = 99
-
-const SOFTWARE = [
-  'Mobile app for every user',
-  'AI alerts and suggestions',
-  'Compliance reports',
-  'Support',
+const COLUMNS = [
+  {
+    label: 'Wai software',
+    price: '$99',
+    unit: 'per station per month · excl. GST',
+    items: [
+      'Mobile app for every user',
+      'AI alerts and suggestions',
+      'Compliance reports',
+      'Support',
+    ],
+  },
+  {
+    label: 'Hardware',
+    price: '$0',
+    unit: 'no hardware to buy',
+    items: ['Water and soil sensor stations', 'Installation on your farm'],
+  },
 ]
-
-const HARDWARE = ['Water and soil sensor stations', 'Installation on your farm']
-
-function List({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div>
-      <p className="text-sm font-medium">{title}</p>
-      <ul className="mt-4 space-y-3">
-        {items.map((item) => (
-          <li key={item} className="text-muted flex gap-3 text-sm">
-            <span className="bg-healthy mt-2 size-1.5 shrink-0 rounded-full" />
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 export function Pricing() {
   return (
@@ -41,28 +34,35 @@ export function Pricing() {
         You pay for the software. We supply and install the hardware.
       </SectionHeading>
       <Reveal className="mt-12">
-        <div className="border-line grid gap-10 rounded-2xl border bg-white p-6 md:grid-cols-2 md:p-10">
-          <div>
-            <p className="text-muted font-mono text-xs tracking-wider uppercase">
-              Wai software
-            </p>
-            <p className="mt-2 text-5xl font-medium tracking-tight tabular-nums">
-              ${BASE_PRICE}
-            </p>
-            <p className="text-muted mt-2 font-mono text-sm">
-              per station per month · excl. GST
-            </p>
-            <p className="text-muted border-line mt-8 border-t pt-8 font-mono text-sm">
+        <div className="border-line rounded-2xl border bg-white">
+          <div className="divide-line grid divide-y md:grid-cols-2 md:divide-x md:divide-y-0">
+            {COLUMNS.map((col) => (
+              <div key={col.label} className="p-6 md:p-10">
+                <p className="text-muted font-mono text-xs tracking-wider uppercase">
+                  {col.label}
+                </p>
+                <p className="mt-2 text-5xl font-medium tracking-tight tabular-nums">
+                  {col.price}
+                </p>
+                <p className="text-muted mt-2 font-mono text-sm">{col.unit}</p>
+                <ul className="border-line mt-8 space-y-3 border-t pt-8">
+                  {col.items.map((item) => (
+                    <li key={item} className="text-muted flex gap-3 text-sm">
+                      <span className="bg-healthy mt-2 size-1.5 shrink-0 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="border-line flex flex-col gap-4 border-t p-6 sm:flex-row sm:items-center sm:justify-between md:px-10">
+            <p className="text-muted font-mono text-sm">
               Larger farms pay less per station. We quote.
             </p>
-          </div>
-
-          <div className="flex flex-col gap-8">
-            <List title="Included in the software fee" items={SOFTWARE} />
-            <List title="Hardware at no cost" items={HARDWARE} />
             <a
               href={BOOK_DEMO_HREF}
-              className="bg-ink text-paper hover:bg-ink/85 inline-block self-start rounded-full px-6 py-3"
+              className="bg-ink text-paper hover:bg-ink/85 self-start rounded-full px-6 py-3 sm:self-auto"
             >
               Book a demo
             </a>
