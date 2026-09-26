@@ -46,8 +46,7 @@ export function Pricing() {
         eyebrow="Pricing"
         title="Pay for the software, not the hardware"
       >
-        You pay a monthly software fee for each sensor station. You do not buy
-        the stations. We supply and install them.
+        You pay for the software. We supply and install the hardware.
       </SectionHeading>
       <Reveal className="mt-12">
         <div className="border-line grid gap-10 rounded-2xl border bg-white p-6 md:grid-cols-2 md:p-10">
