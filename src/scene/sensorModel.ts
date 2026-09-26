@@ -69,7 +69,7 @@ export function buildSensorModel() {
   // One material per bucket, one draw call per bucket
   const mats = {
     plastic: new MeshStandardMaterial({
-      color: 0x17191b,
+      color: 0x0c1628,
       roughness: 0.62,
       roughnessMap: grain,
       bumpMap: grain,
@@ -83,7 +83,7 @@ export function buildSensorModel() {
       bumpMap: grain,
       bumpScale: 0.006,
     }),
-    dark: new MeshStandardMaterial({ color: 0x0f1011, roughness: 0.7 }),
+    dark: new MeshStandardMaterial({ color: 0x060b14, roughness: 0.7 }),
     metal: new MeshStandardMaterial({
       color: 0xd4d6d9,
       metalness: 1,
