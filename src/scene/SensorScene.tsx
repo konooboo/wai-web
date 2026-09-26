@@ -11,8 +11,10 @@ const BASE_YAW = 0.55
 type Props = {
   scrollProgress: MotionValue<number>
   reducedMotion: boolean
-  // False while the scene is off-screen, so it stops rendering.
+  // False while the scene is off-screen. It then renders once on mount, so
+  // the shaders compile before it scrolls into view, and stops.
   active: boolean
+  onReady?: () => void
   // Roll in radians. Tilt in the scene, not with CSS: R3F sizes the canvas
   // from the bounding box, so a CSS rotation makes the canvas too big.
   tilt?: number
@@ -86,9 +88,7 @@ export default function SensorScene(props: Props) {
   return (
     <Canvas
       dpr={[1, 2]}
-      frameloop={
-        props.reducedMotion ? 'demand' : props.active ? 'always' : 'never'
-      }
+      frameloop={props.active && !props.reducedMotion ? 'always' : 'demand'}
       camera={{ position: [0, 3.4, 13.8], fov: 30 }}
       gl={{ antialias: true, alpha: true }}
       onCreated={({ gl, camera, scene }) => {
@@ -96,6 +96,7 @@ export default function SensorScene(props: Props) {
         // Turn the reflections with the tilt, so the model looks lit as when upright.
         scene.environmentRotation.z = props.tilt ?? 0
         camera.lookAt(0, 0, 0)
+        props.onReady?.()
       }}
     >
       <Room />
