@@ -1,7 +1,5 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
-import { SectionHeading } from '../components/SectionHeading'
-import { READING_INTERVAL_MIN } from '../content'
 
 const TITLE = 'Farming now means proving it, by hand.'
 const INTRO =
@@ -22,16 +20,10 @@ const PROBLEMS = [
     panel: 'bg-alert/10 text-alert',
     title: 'The rules are strict, and a mistake is expensive.',
     body: 'Farms can apply at most 190 kg of synthetic nitrogen per hectare each year, and must report fertiliser use to the council. A breach can cost a person $1M or 18 months in prison, and a company $10M.',
-    sources: [
-      {
-        label: 'Farmers Weekly poll, 09/10/2025',
-        href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
-      },
-      {
-        label: 'RMA s339',
-        href: 'https://www.legislation.govt.nz/act/public/1991/0069/latest/DLM239042.html',
-      },
-    ],
+    source: {
+      label: 'Farmers Weekly poll, 09/10/2025',
+      href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
+    },
   },
   {
     label: 'Time',
@@ -46,12 +38,10 @@ const PROBLEMS = [
     panel: 'bg-ink/5 text-ink',
     title: 'Checks and records take hours every day.',
     body: 'Before the office work starts, someone drives to each trough, probe and effluent pond to read the numbers. Each check shows one moment. A problem that starts after it runs until the next check.',
-    sources: [
-      {
-        label: 'DairyNZ, 21/10/2025',
-        href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
-      },
-    ],
+    source: {
+      label: 'DairyNZ, 21/10/2025',
+      href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
+    },
   },
   {
     label: 'Water and fertiliser',
@@ -66,12 +56,10 @@ const PROBLEMS = [
     panel: 'bg-mint text-healthy',
     title: 'Water and fertiliser go to waste.',
     body: 'Without soil data, farms irrigate soil that is already wet and spread fertiliser before rain. The water is lost, and the nitrogen washes into streams.',
-    sources: [
-      {
-        label: 'Ravensdown via NZ Herald, 20/07/2026',
-        href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
-      },
-    ],
+    source: {
+      label: 'Ravensdown via NZ Herald, 20/07/2026',
+      href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
+    },
   },
 ]
 
@@ -80,9 +68,12 @@ const monoLabel = 'font-mono text-xs tracking-wider uppercase'
 export function Problem() {
   return (
     <Section id="problem" className="border-line border-b">
-      <SectionHeading eyebrow="The problem" title={TITLE}>
-        {INTRO}
-      </SectionHeading>
+      <div className="max-w-2xl">
+        <h2 className="text-4xl leading-tight font-medium tracking-tight md:text-5xl">
+          {TITLE}
+        </h2>
+        <p className="text-muted mt-5 text-lg">{INTRO}</p>
+      </div>
 
       <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
         {PROBLEMS.map((problem, i) => (
@@ -93,18 +84,27 @@ export function Problem() {
               >
                 <div className="flex items-start justify-between">
                   <p className={monoLabel}>{problem.label}</p>
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="size-7"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
+                  <a
+                    href={problem.source.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Source: ${problem.source.label}`}
+                    title={`Source: ${problem.source.label}`}
+                    className="-m-2 rounded-full p-2 transition-opacity hover:opacity-60"
                   >
-                    {problem.icon}
-                  </svg>
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      {problem.icon}
+                    </svg>
+                  </a>
                 </div>
                 <div>
                   <p className="text-5xl font-medium tracking-tight tabular-nums lg:text-6xl">
@@ -121,30 +121,10 @@ export function Problem() {
               <p className="text-muted mt-3 text-sm leading-relaxed">
                 {problem.body}
               </p>
-              <p className="text-muted mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-5 font-mono text-xs">
-                {problem.sources.map((source) => (
-                  <a
-                    key={source.label}
-                    href={source.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ink underline underline-offset-2"
-                  >
-                    {source.label}
-                  </a>
-                ))}
-              </p>
             </article>
           </Reveal>
         ))}
       </div>
-
-      <a
-        href="#farm-map"
-        className={`${monoLabel} text-healthy hover:text-ink mt-14 inline-block`}
-      >
-        Wai checks every {READING_INTERVAL_MIN} min. See it on one farm ↓
-      </a>
     </Section>
   )
 }
