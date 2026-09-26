@@ -1,3 +1,4 @@
+import { Koru } from '../components/Koru'
 import { BOOK_DEMO_HREF } from '../content'
 
 export function Footer() {
@@ -30,12 +31,32 @@ export function Footer() {
           </a>
         </div>
       </div>
-      <p
+      <div
         aria-hidden
-        className="from-mint pointer-events-none -mt-[6vw] -mb-[0.22em] origin-[50%_calc(100%-0.22em)] scale-x-110 scale-y-80 bg-linear-to-b to-white bg-clip-text text-center text-[38vw] leading-none font-semibold tracking-tighter text-transparent select-none"
+        className="pointer-events-none -mt-[3vw] -mb-[0.22em] flex justify-center text-[34vw] leading-none font-semibold tracking-tighter select-none"
       >
-        Wai
-      </p>
+        <span className="from-mint bg-linear-to-b to-white bg-clip-text text-transparent">
+          Wai
+        </span>
+        {/* 1000 units = the 1em line box, so the gradient matches the text. */}
+        <Koru
+          viewBox="0 0 1000 1000"
+          paint="url(#footer-fade)"
+          className="h-[1em]"
+        >
+          <defs>
+            <linearGradient
+              id="footer-fade"
+              gradientUnits="userSpaceOnUse"
+              x2="0"
+              y2="1000"
+            >
+              <stop offset="0" stopColor="var(--color-mint)" />
+              <stop offset="1" stopColor="#fff" />
+            </linearGradient>
+          </defs>
+        </Koru>
+      </div>
     </footer>
   )
 }

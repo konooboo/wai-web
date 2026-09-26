@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { Koru } from '../components/Koru'
 import { BOOK_DEMO_HREF } from '../content'
 
 const links = [
@@ -47,18 +48,7 @@ export function Nav() {
           aria-label="Wai home"
           className="flex items-center gap-2 text-[28px] leading-none font-bold tracking-tight"
         >
-          <svg
-            viewBox="0 0 30 20"
-            aria-hidden="true"
-            className="h-5 w-[30px]"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3.4"
-            strokeLinecap="square"
-            strokeLinejoin="miter"
-          >
-            <path d="M1 10h4M4 2l5.5 16L15 6l5.5 12L26 2" />
-          </svg>
+          <Koru className="size-6" />
           wai
         </a>
         <ul className="ml-auto hidden items-center gap-1 text-[15px] md:flex">
