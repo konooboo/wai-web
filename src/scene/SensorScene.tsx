@@ -67,7 +67,7 @@ export default function SensorScene(props: Props) {
     <Canvas
       dpr={[1, 2]}
       frameloop={props.reducedMotion ? 'demand' : 'always'}
-      camera={{ position: [0, 4.2, 17.1], fov: 30 }}
+      camera={{ position: [0, 3.4, 13.8], fov: 30 }}
       gl={{ antialias: true, alpha: true }}
       onCreated={({ gl, camera }) => {
         gl.toneMappingExposure = 1.1

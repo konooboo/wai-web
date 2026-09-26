@@ -2,22 +2,15 @@ import {
   BoxGeometry,
   BufferGeometry,
   CanvasTexture,
-  CircleGeometry,
-  ClampToEdgeWrapping,
-  Color,
   ConeGeometry,
   CylinderGeometry,
-  DoubleSide,
-  Float32BufferAttribute,
   Group,
-  InstancedMesh,
   Mesh,
   MeshStandardMaterial,
   Object3D,
   PlaneGeometry,
   RepeatWrapping,
   SphereGeometry,
-  SRGBColorSpace,
   TorusGeometry,
 } from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
@@ -32,7 +25,6 @@ const TAU = Math.PI * 2
 function canvasTex(
   size: number,
   draw: (g: CanvasRenderingContext2D, s: number) => void,
-  srgb = false,
 ) {
   const c = document.createElement('canvas')
   c.width = c.height = size
@@ -40,11 +32,10 @@ function canvasTex(
   const t = new CanvasTexture(c)
   t.wrapS = t.wrapT = RepeatWrapping
   t.anisotropy = 4
-  if (srgb) t.colorSpace = SRGBColorSpace
   return t
 }
 
-// Fine grain plus soft blotches: matte textured plastic and turf
+// Fine grain plus soft blotches: matte textured plastic
 function grainTexture() {
   const t = canvasTex(256, (g, s) => {
     const img = g.createImageData(s, s)
@@ -71,187 +62,9 @@ function grainTexture() {
   return t
 }
 
-// NZ Brown Soil under pasture. Canvas top = ground surface; 1024 px = 380 mm.
-// Root mat 0-40 mm, A horizon (dark silt loam) to ~200 mm with a wavy, worm-mixed
-// boundary, yellowish-brown B horizon below with blocky peds and angular greywacke.
-function soilTexture() {
-  const t = canvasTex(
-    1024,
-    (g, s) => {
-      const mm = s / 380
-      const rnd = Math.random
-      // A/B boundary: integer periods so the texture tiles around the wall
-      const boundary = (x: number) =>
-        205 * mm +
-        Math.sin((x / s) * TAU * 3 + 1.3) * 9 * mm +
-        Math.sin((x / s) * TAU * 7) * 5 * mm
-
-      const bw = g.createLinearGradient(0, 180 * mm, 0, s)
-      bw.addColorStop(0, '#523d2a')
-      bw.addColorStop(0.35, '#634a31')
-      bw.addColorStop(1, '#6a5035')
-      g.fillStyle = bw
-      g.fillRect(0, 0, s, s)
-
-      // B horizon: subangular blocky peds, shown as a net of fine darker cracks
-      g.strokeStyle = 'rgba(52,36,20,0.55)'
-      for (let i = 0; i < 520; i++) {
-        let x = rnd() * s
-        let y = 220 * mm + rnd() * (s - 220 * mm)
-        g.lineWidth = 0.6 + rnd() * 1.2
-        g.beginPath()
-        g.moveTo(x, y)
-        for (let k = 0; k < 3; k++) {
-          x += (rnd() - 0.5) * 36
-          y += (rnd() - 0.5) * 36
-          g.lineTo(x, y)
-        }
-        g.stroke()
-      }
-      // ped faces: patchy lighter and darker blocks
-      for (let i = 0; i < 260; i++) {
-        const x = rnd() * s
-        const y = 220 * mm + rnd() * (s - 220 * mm)
-        g.fillStyle =
-          rnd() < 0.5 ? 'rgba(130,100,62,0.14)' : 'rgba(60,42,24,0.16)'
-        g.fillRect(x, y, 10 + rnd() * 26, 8 + rnd() * 22)
-      }
-
-      // A horizon, drawn over the B horizon down to the wavy boundary, with tongues
-      const aPath = new Path2D()
-      aPath.moveTo(0, 0)
-      for (let x = 0; x <= s; x += 4) aPath.lineTo(x, boundary(x))
-      aPath.lineTo(s, 0)
-      aPath.closePath()
-      for (let i = 0; i < 9; i++) {
-        const x = rnd() * s
-        const w = 6 + rnd() * 14
-        const d = boundary(x) + (15 + rnd() * 40) * mm
-        aPath.moveTo(x - w, boundary(x) - 4)
-        aPath.quadraticCurveTo(
-          x + (rnd() - 0.5) * 20,
-          d,
-          x + w,
-          boundary(x) - 4,
-        )
-      }
-      const ap = g.createLinearGradient(0, 0, 0, 220 * mm)
-      ap.addColorStop(0, '#2c241c')
-      ap.addColorStop(0.7, '#3a2f24')
-      ap.addColorStop(1, '#4a3a28')
-      g.fillStyle = ap
-      g.fill(aPath)
-
-      // crumb structure in the A horizon: small granules and worm casts
-      g.save()
-      g.clip(aPath)
-      for (let i = 0; i < 5200; i++) {
-        const x = rnd() * s
-        const y = rnd() * 215 * mm
-        const r = 1 + rnd() * 3.5
-        g.fillStyle =
-          rnd() < 0.5
-            ? `rgba(20,15,10,${0.3 + rnd() * 0.4})`
-            : `rgba(95,78,58,${0.2 + rnd() * 0.3})`
-        g.beginPath()
-        g.ellipse(x, y, r, r * (0.6 + rnd() * 0.5), rnd() * 3, 0, TAU)
-        g.fill()
-      }
-      g.restore()
-
-      // earthworm channels: dark-lined burrows running down from the topsoil
-      g.lineCap = 'round'
-      for (let i = 0; i < 6; i++) {
-        let x = rnd() * s
-        let y = (20 + rnd() * 80) * mm
-        const len = (80 + rnd() * 180) * mm
-        const w = 2 + rnd() * 1.5
-        const pts: [number, number][] = [[x, y]]
-        for (let d = 0; d < len; d += 10) {
-          x += (rnd() - 0.5) * 12
-          y += 10
-          pts.push([x, y])
-        }
-        for (const [col, lw] of [
-          ['rgba(28,20,12,0.5)', w + 2.5],
-          ['rgba(14,10,6,0.85)', w],
-        ] as const) {
-          g.strokeStyle = col
-          g.lineWidth = lw
-          g.beginPath()
-          pts.forEach(([px, py], k) =>
-            k ? g.lineTo(px, py) : g.moveTo(px, py),
-          )
-          g.stroke()
-        }
-      }
-
-      // angular greywacke fragments, few, mostly in the B horizon
-      for (let i = 0; i < 34; i++) {
-        const y = s * (0.35 + rnd() * 0.65)
-        const x = rnd() * s
-        const r = 2 + rnd() * 7
-        const v = (88 + rnd() * 40) | 0
-        g.fillStyle = `rgb(${v - 8},${v},${v + 8})`
-        g.beginPath()
-        const n = 4 + ((rnd() * 3) | 0)
-        const a0 = rnd() * TAU
-        for (let k = 0; k < n; k++) {
-          const a = a0 + (k / n) * TAU
-          const rr = r * (0.6 + rnd() * 0.6)
-          const px = x + Math.cos(a) * rr * 1.4
-          const py = y + Math.sin(a) * rr
-          if (k) g.lineTo(px, py)
-          else g.moveTo(px, py)
-        }
-        g.closePath()
-        g.fill()
-      }
-
-      // roots: dense fine mat near the surface, fewer and deeper below
-      for (let i = 0; i < 800; i++) {
-        let x = rnd() * s
-        let y = rnd() * 6 * mm
-        const len = (10 + Math.pow(rnd(), 6) * 260) * mm
-        g.strokeStyle = `rgba(196,176,132,${0.12 + rnd() * 0.25})`
-        g.lineWidth = 0.5 + rnd() * (len > 150 * mm ? 1.6 : 0.8)
-        g.beginPath()
-        g.moveTo(x, y)
-        for (let d = 0; d < len; d += 5) {
-          x += (rnd() - 0.5) * 4
-          y += 5
-          g.lineTo(x, y)
-        }
-        g.stroke()
-      }
-
-      // thatch at the surface
-      const th = g.createLinearGradient(0, 0, 0, 10 * mm)
-      th.addColorStop(0, 'rgba(62,72,34,0.95)')
-      th.addColorStop(1, 'rgba(62,72,34,0)')
-      g.fillStyle = th
-      g.fillRect(0, 0, s, 10 * mm)
-
-      // fine speckle
-      const img = g.getImageData(0, 0, s, s)
-      for (let i = 0; i < img.data.length; i += 4) {
-        const n = (rnd() - 0.5) * 26
-        img.data[i] += n
-        img.data[i + 1] += n
-        img.data[i + 2] += n
-      }
-      g.putImageData(img, 0, 0)
-    },
-    true,
-  )
-  t.wrapT = ClampToEdgeWrapping
-  return t
-}
-
 export function buildSensorModel() {
   const root = new Group()
   const grain = grainTexture()
-  const soil = soilTexture()
 
   // One material per bucket, one draw call per bucket
   const mats = {
@@ -280,37 +93,6 @@ export function buildSensorModel() {
       color: 0x121314,
       roughness: 0.82,
       envMapIntensity: 0.7,
-    }),
-    soil: new MeshStandardMaterial({
-      map: soil,
-      bumpMap: soil,
-      bumpScale: 0.03,
-      roughness: 0.96,
-      envMapIntensity: 0.4,
-    }),
-    turf: new MeshStandardMaterial({
-      color: 0x33461f,
-      roughness: 0.95,
-      roughnessMap: grain,
-      bumpMap: grain,
-      bumpScale: 0.03,
-      envMapIntensity: 0.5,
-    }),
-    mud: new MeshStandardMaterial({
-      color: 0x3d3c33,
-      roughness: 0.8,
-      roughnessMap: grain,
-      bumpMap: grain,
-      bumpScale: 0.02,
-      envMapIntensity: 0.6,
-    }),
-    water: new MeshStandardMaterial({
-      color: 0x2f5a52,
-      roughness: 0.05,
-      transparent: true,
-      opacity: 0.42,
-      depthWrite: false,
-      envMapIntensity: 1.3,
     }),
   }
   type Bucket = keyof typeof mats
@@ -429,58 +211,6 @@ export function buildSensorModel() {
     )
   }
 
-  // Cut-away bank section: back half of a cylinder, open cut face at z = 0.
-  // x < 0 is the bank (soil), x > 0 is the pond. The bank face is at x = 0, between the rods.
-  const SR = 2.1
-  const SD = 3.8
-  const WATER_Y = -0.35
-  const BED_Y = -3.3
-  const MUD = SD + BED_Y
-  const wall = new CylinderGeometry(SR, SR, SD, 32, 1, true, Math.PI, HALF_PI)
-  const wuv = wall.attributes.uv
-  for (let i = 0; i < wuv.count; i++) wuv.setX(i, wuv.getX(i) * 0.8)
-  put('soil', wall, 0, -SD / 2, 0)
-  put('soil', new PlaneGeometry(SR, SD), -SR / 2, -SD / 2, 0)
-  put('soil', new PlaneGeometry(SR, SD), 0, -SD / 2, -SR / 2, 0, HALF_PI)
-  put('soil', new CircleGeometry(SR, 24, Math.PI, HALF_PI), 0, -SD, 0, HALF_PI)
-  put(
-    'turf',
-    new CircleGeometry(SR, 24, HALF_PI, HALF_PI),
-    0,
-    -0.002,
-    0,
-    -HALF_PI,
-  )
-  // pond bed: soft grey sediment
-  put(
-    'mud',
-    new CylinderGeometry(SR, SR, MUD, 32, 1, true, HALF_PI, HALF_PI),
-    0,
-    BED_Y - MUD / 2,
-    0,
-  )
-  put('mud', new PlaneGeometry(SR, MUD), SR / 2, BED_Y - MUD / 2, 0)
-  put('mud', new CircleGeometry(SR, 24, 0, HALF_PI), 0, BED_Y, 0, -HALF_PI)
-  put(
-    'mud',
-    new CircleGeometry(SR, 24, Math.PI * 1.5, HALF_PI),
-    0,
-    -SD,
-    0,
-    HALF_PI,
-  )
-  // pond water column
-  const WH = WATER_Y - BED_Y
-  put(
-    'water',
-    new CylinderGeometry(SR, SR, WH, 32, 1, true, HALF_PI, HALF_PI),
-    0,
-    BED_Y + WH / 2,
-    0,
-  )
-  put('water', new PlaneGeometry(SR, WH), SR / 2, BED_Y + WH / 2, 0)
-  put('water', new CircleGeometry(SR, 24, 0, HALF_PI), 0, WATER_Y, 0, -HALF_PI)
-
   // Merge each bucket into one mesh
   for (const k of Object.keys(buckets) as Bucket[]) {
     const merged = mergeGeometries(buckets[k], false)
@@ -570,108 +300,6 @@ export function buildSensorModel() {
     face.position.set(0, 1.0 + BOX_DROP, FACE_Z + 0.0006)
     root.add(face)
   }
-
-  // Pasture: ryegrass blades and white clover, one instanced draw call each,
-  // kept clear of the enclosure footprint
-  const pastureSpot = () => {
-    for (;;) {
-      const r = Math.sqrt(Math.random()) * (SR - 0.05)
-      const a = Math.PI + Math.random() * HALF_PI
-      const x = Math.cos(a) * r
-      const z = Math.sin(a) * r
-      if (!(Math.abs(x) < 1.0 && z > -0.62)) return [x, z]
-    }
-  }
-  const bladeGeo = new BufferGeometry()
-  {
-    const pos: number[] = []
-    const idx: number[] = []
-    const SEG = 4
-    for (let i = 0; i <= SEG; i++) {
-      const y = i / SEG
-      const w = 0.026 * (1 - y * 0.92)
-      const z = 0.22 * y * y
-      pos.push(-w, y, z, w, y, z)
-      if (i < SEG) {
-        const k = i * 2
-        idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2)
-      }
-    }
-    bladeGeo.setAttribute('position', new Float32BufferAttribute(pos, 3))
-    bladeGeo.setIndex(idx)
-    bladeGeo.computeVertexNormals()
-  }
-  const BLADES = 1600
-  const grass = new InstancedMesh(
-    bladeGeo,
-    new MeshStandardMaterial({ roughness: 0.75, side: DoubleSide }),
-    BLADES,
-  )
-  const col = new Color()
-  for (let n = 0; n < BLADES; n++) {
-    const [x, z] = pastureSpot()
-    o.position.set(x, 0, z)
-    o.rotation.set(
-      (Math.random() - 0.5) * 0.3,
-      Math.random() * TAU,
-      (Math.random() - 0.5) * 0.3,
-    )
-    o.scale.set(0.8 + Math.random() * 0.5, 0.3 + Math.random() * 0.45, 1)
-    o.updateMatrix()
-    grass.setMatrixAt(n, o.matrix)
-    grass.setColorAt(
-      n,
-      col.setHSL(
-        0.25 + Math.random() * 0.04,
-        0.55 + Math.random() * 0.2,
-        0.06 + Math.random() * 0.07,
-      ),
-    )
-  }
-  root.add(grass)
-
-  const cloverParts: BufferGeometry[] = [
-    new CylinderGeometry(0.004, 0.004, 1, 4).translate(0, 0.5, 0),
-  ]
-  for (let k = 0; k < 3; k++) {
-    const a = (k / 3) * TAU
-    cloverParts.push(
-      new CircleGeometry(0.042, 10)
-        .rotateX(-HALF_PI)
-        .translate(Math.cos(a) * 0.04, 1, Math.sin(a) * 0.04),
-    )
-  }
-  const cloverGeo = mergeGeometries(
-    cloverParts.map((p) => (p.index ? p.toNonIndexed() : p)),
-  )
-  const CLOVER = 160
-  const clover = new InstancedMesh(
-    cloverGeo,
-    new MeshStandardMaterial({ roughness: 0.6, side: DoubleSide }),
-    CLOVER,
-  )
-  for (let n = 0; n < CLOVER; n++) {
-    const [x, z] = pastureSpot()
-    const leaf = 0.8 + Math.random() * 0.6
-    o.position.set(x, 0, z)
-    o.rotation.set(
-      (Math.random() - 0.5) * 0.4,
-      Math.random() * TAU,
-      (Math.random() - 0.5) * 0.4,
-    )
-    o.scale.set(leaf, 0.12 + Math.random() * 0.2, leaf)
-    o.updateMatrix()
-    clover.setMatrixAt(n, o.matrix)
-    clover.setColorAt(
-      n,
-      col.setHSL(
-        0.31 + Math.random() * 0.03,
-        0.45 + Math.random() * 0.15,
-        0.07 + Math.random() * 0.04,
-      ),
-    )
-  }
-  root.add(clover)
 
   return root
 }

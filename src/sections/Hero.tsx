@@ -39,9 +39,9 @@ export function Hero() {
         </div>
         <div
           ref={modelRef}
-          className="relative aspect-square w-full"
+          className="relative aspect-[3/4] max-h-[calc(100svh-14rem)] w-full"
           role="img"
-          aria-label="Wai sensor unit on a pond bank, with one probe rod in the soil and one in the water"
+          aria-label="Wai sensor unit with a whip antenna and two probe rods"
         >
           <Suspense
             fallback={
