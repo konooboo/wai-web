@@ -10,6 +10,7 @@ import {
   EdgesGeometry,
   MathUtils,
   ShaderMaterial,
+  Vector2,
   Vector3,
   type LineBasicMaterial,
 } from 'three'
@@ -18,6 +19,7 @@ import type { NzDots } from './nzDots'
 import {
   ALERT_RADIUS,
   SCAN_RADIUS,
+  WORLD,
   type PointCloud,
   type Vec3,
 } from './pointCloud'
@@ -75,6 +77,7 @@ const vertexShader = /* glsl */ `
   uniform float uPaddock;
   uniform float uScale;
   uniform float uPulse;
+  uniform vec2 uSensors[${FARM_SENSORS.length}];
   varying vec3 vColour;
   varying float vAlpha;
 
@@ -97,9 +100,18 @@ const vertexShader = /* glsl */ `
     // First scan: a bright front moves out and leaves the points behind it.
     if (uScan < 1.0) alpha += 0.6 * band(d, radius, 0.012);
 
-    // Repeating pulses: each sensor sends a front out along its rings.
-    float w = fract(uTime * 0.14 + data.z) * ${(SCAN_RADIUS * 1.3).toFixed(3)};
-    float pulse = band(d, w, 0.01) * uScan * uPulse;
+    // Repeating pulses: each sensor sends a ring out. The ring is measured
+    // from the sensor itself, so it carries on across the neighbouring
+    // sensors' areas instead of stopping at the border, and fades with
+    // distance.
+    vec2 map = position.xz / ${WORLD.toFixed(1)} + 0.5;
+    float pulse = 0.0;
+    for (int i = 0; i < ${FARM_SENSORS.length}; i++) {
+      float di = distance(map, uSensors[i]);
+      float w = fract(uTime * 0.14 + float(i) * 0.37) * 0.45;
+      pulse = max(pulse, band(di, w, 0.01) * (1.0 - smoothstep(0.25, 0.4, di)));
+    }
+    pulse *= uScan * uPulse;
     alpha += 0.5 * pulse;
     colour = mix(colour, vec3(1.0), 0.45 * pulse);
 
@@ -244,6 +256,7 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
       uPaddock: { value: 0 },
       uScale: { value: 1 },
       uPulse: { value: reduced ? 0 : 1 },
+      uSensors: { value: FARM_SENSORS.map((s) => new Vector2(s.x, s.y)) },
     }),
     [reduced],
   )
