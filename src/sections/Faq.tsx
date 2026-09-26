@@ -8,19 +8,16 @@ const FAQS = [
     question: 'How are sensors installed?',
     // TODO(data): confirm install process and time.
     answer:
-      'A Wai technician places sensors in the paddock soil and mounts a unit at the water point. Installation takes about [X] hours per site.',
+      'A Wai technician installs one unit at each site. Installation takes about [X] hours per site.',
   },
   {
-    question: 'How long does the battery last?',
-    // TODO(data): confirm battery life and replacement process.
-    answer:
-      'Each sensor runs on battery power for about [X] months before it needs a check or a swap.',
+    question: 'How is each unit powered?',
+    answer: 'Each unit runs on solar power.',
   },
   {
     question: 'What coverage or connectivity do I need?',
-    // TODO(data): confirm the connectivity type and any coverage limits.
     answer:
-      'Sensors send readings over [connectivity type, e.g. LoRaWAN or cellular]. Most farms in range of the nearest gateway or tower do not need extra equipment.',
+      'Each unit sends readings over LoRa radio. LoRa reaches across several hectares with no cell coverage.',
   },
   {
     question: 'Who owns my data?',
