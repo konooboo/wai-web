@@ -8,6 +8,7 @@ import {
   Mesh,
   MeshStandardMaterial,
   Object3D,
+  Path,
   PlaneGeometry,
   RepeatWrapping,
   Shape,
@@ -136,14 +137,26 @@ export function buildSensorModel() {
   const CYL = (rt: number, rb: number, h: number, seg = 24) =>
     new CylinderGeometry(rt, rb, h, seg)
   // Rounded rectangle in the XZ plane, extruded up from y = 0. Only the
-  // vertical edges are round, as on a moulded box.
-  const EXT = (w: number, d: number, r: number, h: number, bevel = 0) => {
+  // vertical edges are round, as on a moulded box. A notch sets the flat
+  // front back by that depth, to take a separate front plate.
+  const EXT = (
+    w: number,
+    d: number,
+    r: number,
+    h: number,
+    bevel = 0,
+    notch = 0,
+  ) => {
     const s = new Shape()
     const x = w / 2 - r
     const z = d / 2 - r
     s.absarc(x, z, r, 0, HALF_PI)
     s.absarc(-x, z, r, HALF_PI, Math.PI)
     s.absarc(-x, -z, r, Math.PI, Math.PI * 1.5)
+    if (notch) {
+      s.lineTo(-x, -d / 2 + notch)
+      s.lineTo(x, -d / 2 + notch)
+    }
     s.absarc(x, -z, r, Math.PI * 1.5, TAU)
     const g = new ExtrudeGeometry(s, {
       depth: h - bevel * 2,
@@ -173,7 +186,62 @@ export function buildSensorModel() {
   const H = 2.3
   const R = 0.08
   const LID = 0.13
-  put('plastic', EXT(W, D, R, H))
+  // Front plate with a round hole for the recessed logo
+  const PLATE_T = 0.18
+  const RING_R = 0.47
+  const LOGO_Y = H / 2 + 0.12
+  put('plastic', EXT(W, D, R, H, 0, PLATE_T))
+  {
+    const s = new Shape()
+    s.moveTo(-(W / 2 - R), 0)
+    s.lineTo(W / 2 - R, 0)
+    s.lineTo(W / 2 - R, H)
+    s.lineTo(-(W / 2 - R), H)
+    const hole = new Path()
+    hole.absarc(0, LOGO_Y, RING_R, 0, TAU, true)
+    s.holes.push(hole)
+    put(
+      'plastic',
+      new ExtrudeGeometry(s, {
+        depth: PLATE_T,
+        bevelEnabled: false,
+        curveSegments: 96,
+      }),
+      0,
+      0,
+      D / 2 - PLATE_T,
+    )
+  }
+  // Logo floor in the hole: one flat terrace that winds down to the centre,
+  // with a step wall between turns. 2.5 turns; the wall starts at the ring
+  // at 2 o'clock and winds clockwise to the centre.
+  {
+    const TURNS = 2.5
+    const rz = Math.PI / 3 - TAU * TURNS
+    const BASE = 0.04
+    const STEP = 0.03
+    const N = 280
+    const g = new PlaneGeometry(2 * RING_R, 2 * RING_R, N, N)
+    const pos = g.attributes.position
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      const r = Math.hypot(x, y)
+      // Outside the ring the grid hides behind the front plate.
+      let depth = PLATE_T + 0.01
+      if (r < RING_R) {
+        // s is a whole number on the spiral wall; f is the fraction of a
+        // turn past the wall.
+        const rho = (r / RING_R) * TURNS
+        const s = rho - (Math.atan2(y, x) - rz) / TAU
+        const f = s - Math.floor(s)
+        depth = BASE + STEP * (TURNS - rho + f)
+      }
+      pos.setZ(i, -depth)
+    }
+    g.computeVertexNormals()
+    put('plastic', g, 0, LOGO_Y, D / 2)
+  }
   put('plastic', EXT(W + 0.03, D + 0.03, R + 0.015, LID, 0.03), 0, H, 0)
   // Cable notch in the left rim, under the lid
   put(
@@ -294,66 +362,6 @@ export function buildSensorModel() {
     const merged = mergeGeometries(buckets[k], false)
     buckets[k].forEach((g) => g.dispose())
     root.add(new Mesh(merged, mats[k]))
-  }
-
-  // Engraved spiral logo: bump and roughness maps on a panel over the flat
-  // front face. A thin ring and a spiral line are cut into the face.
-  {
-    const PW = W - 2 * R - 0.04
-    const PH = H - 0.3
-    const CW = 1024
-    const CH = Math.round((CW * PH) / PW)
-    const px = CW / PW
-    const RING_R = 0.47
-    const LOGO_DY = 0.12
-    const cx = CW / 2
-    const cy = CH / 2 - LOGO_DY * px
-    // Spiral: 2.5 turns. It winds clockwise inwards from 2 o'clock and ends
-    // in a small hook at the centre.
-    const tMax = TAU * 2.5
-    const rz = Math.PI / 3 - tMax
-    const spiralR = (k: number) => 0.05 + 0.31 * Math.pow(k, 1.1)
-    const logoCanvas = (base: string, line: string) => {
-      const c = document.createElement('canvas')
-      c.width = CW
-      c.height = CH
-      const g = c.getContext('2d')!
-      g.fillStyle = base
-      g.fillRect(0, 0, CW, CH)
-      g.filter = 'blur(1.5px)'
-      g.strokeStyle = line
-      g.lineCap = 'round'
-      g.lineWidth = 0.026 * px
-      g.beginPath()
-      for (let i = 0; i <= 500; i++) {
-        const k = i / 500
-        const t = k * tMax + rz
-        const r = spiralR(k)
-        g.lineTo(cx + Math.cos(t) * r * px, cy - Math.sin(t) * r * px)
-      }
-      g.stroke()
-      g.lineWidth = 0.022 * px
-      g.beginPath()
-      g.arc(cx, cy, RING_R * px, 0, TAU)
-      g.stroke()
-      g.filter = 'none'
-      const t = new CanvasTexture(c)
-      t.anisotropy = 4
-      return t
-    }
-    const face = new Mesh(
-      new PlaneGeometry(PW, PH),
-      new MeshStandardMaterial({
-        color: mats.plastic.color,
-        roughness: 1,
-        envMapIntensity: 0.9,
-        bumpMap: logoCanvas('#808080', '#303030'),
-        bumpScale: 0.05,
-        roughnessMap: logoCanvas('#9e9e9e', '#d0d0d0'),
-      }),
-    )
-    face.position.set(0, H / 2 + Y0, D / 2 + 0.0006)
-    root.add(face)
   }
 
   return root
