@@ -35,16 +35,12 @@ export function ReadingCard({ progress }: { progress: MotionValue<number> }) {
     v >= LIMIT ? v.toFixed(0) : v.toFixed(S3.decimals),
   )
   const red = useTransform(value, [LIMIT - 1, LIMIT + 1], [0, 1])
-  const green = useTransform(red, (v) => 1 - v)
 
   return (
     <article className="border-line mt-8 w-full max-w-xs rounded-2xl border bg-white p-6">
-      <div className="text-muted flex justify-between font-mono text-xs tracking-wider uppercase">
-        <span>
-          {S3.id} · {S3.place}
-        </span>
-        <span>{INFO.label}</span>
-      </div>
+      <p className="text-muted font-mono text-xs tracking-wider uppercase">
+        {S3.id} · {S3.place}
+      </p>
 
       <p className="mt-4 text-5xl font-medium tracking-tight tabular-nums">
         <motion.span>{reading}</motion.span>
@@ -82,19 +78,10 @@ export function ReadingCard({ progress }: { progress: MotionValue<number> }) {
           style={{ pathLength: draw }}
         />
       </svg>
-      <p className="text-muted mt-1 text-right font-mono text-[10px] tracking-wider uppercase">
-        {LIMIT} {INFO.unit} normal
-      </p>
 
-      <p className="relative mt-4 h-7 font-mono text-xs tracking-wider uppercase">
+      <p className="mt-4 h-7 font-mono text-xs tracking-wider uppercase">
         <motion.span
-          className="bg-healthy/15 text-healthy absolute top-0 left-0 rounded-full px-3 py-1.5"
-          style={{ opacity: green }}
-        >
-          ● Normal
-        </motion.span>
-        <motion.span
-          className="bg-alert/10 text-alert absolute top-0 left-0 rounded-full px-3 py-1.5"
+          className="bg-alert/10 text-alert inline-block rounded-full px-3 py-1.5"
           style={{ opacity: red }}
         >
           ● Above normal

@@ -53,22 +53,16 @@ const PROBLEMS = {
     },
   },
   fertiliser: {
-    label: 'Water and fertiliser',
+    label: 'Fertiliser price',
     icon: (
       <>
-        <motion.path
-          variants={draw}
-          d="M12 3s-6 6.5-6 11a6 6 0 0 0 12 0c0-4.5-6-11-6-11z"
-        />
-        <motion.path
-          variants={draw}
-          d="M12 19v-5m0 0c0-2 1.5-3 3-3 0 2-1.5 3-3 3z"
-        />
+        <motion.path variants={draw} d="M3 17l6-6 4 4 8-8" />
+        <motion.path variants={draw} d="M14 7h7v7" />
       </>
     ),
     figure: { value: 43, prefix: '+', suffix: '%' },
     caption: 'nitrogen fertiliser cost for an average dairy farm this spring',
-    panel: 'bg-mint text-healthy',
+    panel: 'bg-ink/5 text-ink',
     body: 'Without soil data, farms irrigate wet soil and fertilise before rain.',
     source: {
       label: 'Ravensdown via NZ Herald, 20/07/2026',

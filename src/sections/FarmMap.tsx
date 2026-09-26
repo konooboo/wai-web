@@ -6,11 +6,10 @@ import {
   useScroll,
   useSpring,
   useTransform,
-  type MotionValue,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
-import { Reveal } from '../components/Reveal'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
+import { AlertNotification } from '../farm/AlertNotification'
 import { Phone } from '../farm/Phone'
 import { ReadingCard } from '../farm/ReadingCard'
 import { SensorMarker } from '../farm/SensorMarker'
@@ -56,52 +55,6 @@ const STEPS: Step[] = [
     problem: 'compliance',
   },
 ]
-
-const HOW_IT_WORKS = ['Sense', 'Diagnose', 'Act']
-
-// Same shape as the ProblemCard panel: one number and a few words.
-function AlertCard() {
-  return (
-    <Reveal className="mt-8 w-full max-w-xs">
-      <div className="bg-alert/10 text-alert flex aspect-[4/3] flex-col justify-between rounded-2xl p-6">
-        <p className="font-mono text-xs tracking-wider uppercase">Alert</p>
-        <div>
-          <p className="text-4xl font-medium tracking-tight">2 am</p>
-          <p className="text-ink/70 mt-2 max-w-[16rem] text-sm">
-            Alert sent. Likely cause attached.
-          </p>
-        </div>
-      </div>
-    </Reveal>
-  )
-}
-
-// One word of "Sense → Diagnose → Act". The words come in one after another
-// while the camera zooms from the country to the farm.
-function HowItWorksWord({
-  word,
-  index,
-  progress,
-}: {
-  word: string
-  index: number
-  progress: MotionValue<number>
-}) {
-  const [from, to] = STORY.howItWorks
-  const span = (to - from) / HOW_IT_WORKS.length
-  const start = from + span * index
-  const reveal = useTransform(progress, [start, start + span], [0, 1])
-  const y = useTransform(reveal, [0, 1], [8, 0])
-  return (
-    <motion.span
-      className="inline-block whitespace-nowrap"
-      style={{ opacity: reveal, y }}
-    >
-      {index > 0 && '→ '}
-      {word}
-    </motion.span>
-  )
-}
 
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
@@ -203,27 +156,6 @@ export function FarmMap() {
                   className="flex min-h-svh flex-col items-start pt-6 pb-16 md:pt-[22svh]"
                 >
                   <div className="max-w-md">
-                    {i === 0 && (
-                      // On mobile the step text sits under the pinned map
-                      // during the zoom, so the words show at once there.
-                      <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase md:hidden">
-                        <span className="text-muted">How it works:</span>{' '}
-                        {HOW_IT_WORKS.join(' → ')}
-                      </p>
-                    )}
-                    {i === 0 && (
-                      <p className="text-healthy mb-8 hidden flex-wrap gap-x-[1ch] font-mono text-xs tracking-wider uppercase md:flex">
-                        <span className="text-muted">How it works:</span>
-                        {HOW_IT_WORKS.map((word, j) => (
-                          <HowItWorksWord
-                            key={word}
-                            word={word}
-                            index={j}
-                            progress={progress}
-                          />
-                        ))}
-                      </p>
-                    )}
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">
                       {step.eyebrow}
                     </p>
@@ -238,7 +170,7 @@ export function FarmMap() {
                   {step.visual === 'reading' && (
                     <ReadingCard progress={progress} />
                   )}
-                  {step.visual === 'alert' && <AlertCard />}
+                  {step.visual === 'alert' && <AlertNotification />}
                 </div>
               )
             })}
