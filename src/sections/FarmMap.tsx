@@ -8,45 +8,55 @@ import {
   useTransform,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
-import { SectionHeading } from '../components/SectionHeading'
-import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
+import { ALERT_EXAMPLE } from '../content'
+import { AlertNotification } from '../farm/AlertNotification'
 import { Phone } from '../farm/Phone'
+import { ReadingCard } from '../farm/ReadingCard'
 import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
-import { MAP_METRES } from '../farm/terrain'
+import { ProblemCard } from './Problem'
 
 const FarmScene = lazy(() => import('../farm/FarmScene'))
 
-const STEPS = [
+type Step = {
+  eyebrow: string
+  title: string
+  body?: string
+  problem?: 'time' | 'fertiliser' | 'compliance'
+  visual?: 'reading' | 'alert'
+}
+
+const STEPS: Step[] = [
   {
-    eyebrow: '01 · Sensors',
+    eyebrow: 'Sensors',
     title: 'Sensors in your water and soil.',
-    body: 'Wai sensors go in streams, ponds and paddocks. Water sensors measure pH, turbidity, nitrate and temperature. Soil sensors measure moisture and temperature.',
+    problem: 'time',
   },
   {
-    eyebrow: '02 · Always on',
-    title: `Readings every ${READING_INTERVAL_MIN} minutes, day and night.`,
-    body: 'Each sensor sends its readings to the app. Green means the reading is in its normal range.',
+    eyebrow: 'Always on',
+    title: 'Wai AI listens to your pastures, all day, every day.',
+    problem: 'fertiliser',
   },
   {
-    eyebrow: '03 · Problem',
-    title: `${ALERT_EXAMPLE.sensor} detects a change.`,
-    body: `After heavy rain, the reading goes up to ${ALERT_EXAMPLE.reading.charAt(0).toLowerCase()}${ALERT_EXAMPLE.reading.slice(1)}. ${ALERT_EXAMPLE.normal}.`,
+    eyebrow: 'Problem',
+    title: `${ALERT_EXAMPLE.sensor} detects a change. Wai is already using our AI to work out why.`,
+    body: 'Save the manual discovery and testing process. Our models will handle it.',
+    visual: 'reading',
   },
   {
-    eyebrow: '04 · Alert',
-    title: 'You get an alert on your phone.',
-    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem.',
+    eyebrow: 'Alert',
+    title: 'You wake up to clear solutions, to focus on the real work.',
+    body: 'Wai evaluates the root cause, next steps and downstream effects internally.',
+    visual: 'alert',
   },
   {
-    eyebrow: '05 · Next step',
-    title: 'Wai tells you why, and what to do.',
-    body: 'The app compares the reading with rainfall and the nearby sensors. It gives a likely cause and a clear next step.',
+    eyebrow: 'Next step',
+    title:
+      'Wai AI gives you clear, actionable steps, and what happens if you wait.',
+    problem: 'compliance',
   },
 ]
-
-const HECTARES = (MAP_METRES * MAP_METRES) / 10000
 
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
@@ -70,11 +80,6 @@ export function FarmMap() {
   const progress = reduced ? finalState : smooth
   const paddock = useTransform(progress, [...STORY.paddock], [0, 1])
   const site = useTransform(progress, [...STORY.zoom], [1, 0])
-  const farmLabel = useTransform(
-    progress,
-    [STORY.zoom[1], STORY.zoom[1] + 0.02],
-    [0, 1],
-  )
 
   return (
     <section
@@ -97,17 +102,12 @@ export function FarmMap() {
                   />
                 </Suspense>
               )}
-              <p className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase">
-                <motion.span className="absolute" style={{ opacity: site }}>
-                  New Zealand
-                </motion.span>
-                <motion.span
-                  className="whitespace-nowrap"
-                  style={{ opacity: farmLabel }}
-                >
-                  Lidar · {HECTARES} ha
-                </motion.span>
-              </p>
+              <motion.p
+                className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase"
+                style={{ opacity: site }}
+              >
+                New Zealand
+              </motion.p>
             </div>
 
             <motion.p
@@ -150,33 +150,34 @@ export function FarmMap() {
 
         <div>
           <div ref={stepsRef}>
-            {STEPS.map((step, i) => (
-              <div
-                key={step.eyebrow}
-                className="flex min-h-[55svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
-              >
-                {i === 0 ? (
-                  <div>
-                    <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
-                      How it works: Sense → Diagnose → Act
-                    </p>
-                    <SectionHeading eyebrow={step.eyebrow} title={step.title}>
-                      {step.body}
-                    </SectionHeading>
-                  </div>
-                ) : (
+            {STEPS.map((step, i) => {
+              const Title = i === 0 ? 'h2' : 'h3'
+              return (
+                <div
+                  key={step.eyebrow}
+                  className="flex min-h-svh flex-col items-start pt-6 pb-16 md:pt-[22svh]"
+                >
                   <div className="max-w-md">
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">
                       {step.eyebrow}
                     </p>
-                    <h3 className="mt-4 text-3xl leading-tight font-medium tracking-tight">
+                    <Title className="mt-4 text-3xl leading-tight font-medium tracking-tight">
                       {step.title}
-                    </h3>
-                    <p className="text-muted mt-4 text-lg">{step.body}</p>
+                    </Title>
                   </div>
-                )}
-              </div>
-            ))}
+                  {step.problem && <ProblemCard id={step.problem} />}
+                  {step.visual === 'reading' && (
+                    <ReadingCard progress={progress} />
+                  )}
+                  {step.visual === 'alert' && <AlertNotification />}
+                  {step.body && (
+                    <p className="text-muted mt-4 max-w-xs text-sm leading-relaxed">
+                      {step.body}
+                    </p>
+                  )}
+                </div>
+              )
+            })}
           </div>
           <div className="md:h-[25svh]" />
         </div>
