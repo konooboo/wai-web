@@ -28,19 +28,21 @@ const SPECS: { label: string; value: string }[] = [
 export function Hardware() {
   return (
     <Section id="hardware" className="border-line border-b">
-      <SectionHeading eyebrow="Hardware" title="The hardware">
-        One unit for water, one for soil. Both report to the same app.
-      </SectionHeading>
-      <div className="mt-12 grid gap-12 md:grid-cols-2 md:items-start">
-        <Reveal>
-          <div className="border-muted/40 text-muted flex aspect-square items-center justify-center rounded-3xl border border-dashed font-mono text-sm">
-            Product photo
-          </div>
-        </Reveal>
+      <div className="grid gap-12 md:grid-cols-2 md:items-start">
+        <div>
+          <SectionHeading eyebrow="Hardware" title="The hardware">
+            One unit for water, one for soil. Both report to the same app.
+          </SectionHeading>
+          <Reveal className="mt-10">
+            <div className="border-muted/40 text-muted flex aspect-[4/3] items-center justify-center rounded-3xl border border-dashed font-mono text-sm">
+              Product photo
+            </div>
+          </Reveal>
+        </div>
         <div className="divide-line border-line divide-y border-t">
           {SPECS.map((spec, i) => (
             <Reveal key={spec.label} delay={i * 0.05}>
-              <div className="flex items-baseline justify-between gap-6 py-4">
+              <div className="flex items-baseline justify-between gap-6 py-3">
                 <span className="text-sm">{spec.label}</span>
                 <span className="text-right font-mono text-sm">
                   {spec.value}
