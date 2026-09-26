@@ -82,8 +82,8 @@ export function Nav() {
                   clear
                     ? 'border-paper/15 hover:bg-paper/10'
                     : active === link.href
-                      ? 'border-line bg-white'
-                      : 'border-line hover:bg-white'
+                      ? 'border-line bg-ink/[0.07]'
+                      : 'border-line hover:bg-ink/5'
                 }`}
               >
                 {link.label}
@@ -97,7 +97,7 @@ export function Nav() {
             className={`rounded-full border px-4 py-2 transition-colors ${
               clear
                 ? 'border-paper/15 hover:bg-paper/10'
-                : 'border-line hover:bg-white'
+                : 'border-line hover:bg-ink/5'
             }`}
           >
             Sign in
