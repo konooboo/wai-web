@@ -78,7 +78,7 @@ export function Nav() {
           : 'border-line bg-paper/95 text-ink'
       }`}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:h-[76px]">
+      <nav className="flex h-16 items-center justify-between px-6 md:h-[76px] md:px-10">
         <a
           href="#top"
           aria-label="Wai home"
