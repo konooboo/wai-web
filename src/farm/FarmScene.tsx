@@ -242,12 +242,11 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
   const boxMaterials = useRef<(LineBasicMaterial | null)[]>([])
   const paddock = useRef<Line2>(null)
   const anchors = useRef<[HTMLElement, Vector3][]>([])
-  const view = useRef<number[] | null>(null)
   const alertAnchor = cloud.anchors[ALERT_SENSOR_ID]
   const anchorAt = (id: string): Vec3 =>
     id === 'site' ? [0, 0, 0] : cloud.anchors[id]
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     const { camera, size, viewport } = state
     const p = progress.get()
     const u = material.current?.uniforms
@@ -269,21 +268,16 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
     })
     if (paddock.current) paddock.current.material.opacity = u.uPaddock.value
 
-    const target = shotAt(p)
-    if (!reduced) target[0] += Math.sin(state.clock.elapsedTime * 0.08) * 0.06
-    const k = reduced || !view.current ? 1 : 1 - Math.exp(-3 * delta)
-    view.current ??= target
-    const v = view.current.map((c, i) => c + (target[i] - c) * k)
-    view.current = v
-    const [azimuth, elevation, logDistance, focus, country] = v
+    const [azimuth, elevation, logDistance, focus, country] = shotAt(p)
+    const drift = reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.08) * 0.06
     const distance = Math.exp(logDistance)
     const fx = alertAnchor[0] * focus + nz.centre[0] * country
     const fz = alertAnchor[2] * focus + nz.centre[2] * country
     const el = (elevation * Math.PI) / 180
     camera.position.set(
-      fx + Math.sin(azimuth) * Math.cos(el) * distance,
+      fx + Math.sin(azimuth + drift) * Math.cos(el) * distance,
       0.12 + Math.sin(el) * distance,
-      fz + Math.cos(azimuth) * Math.cos(el) * distance,
+      fz + Math.cos(azimuth + drift) * Math.cos(el) * distance,
     )
     camera.lookAt(fx, 0.12, fz)
     camera.near = distance * 0.02

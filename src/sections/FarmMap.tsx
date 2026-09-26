@@ -3,6 +3,7 @@ import {
   useMotionValue,
   useReducedMotion,
   useScroll,
+  useSpring,
   useTransform,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
@@ -54,9 +55,16 @@ export function FarmMap() {
     // Progress starts when the map panel sticks, so the NZ zoom is in view.
     offset: ['start 0.25', 'end 0.7'],
   })
+  // One smoothed progress for the camera, shaders and overlays, so a fast
+  // scroll cannot put the popups ahead of the map.
+  const smooth = useSpring(scrollYProgress, {
+    visualDuration: 0.3,
+    bounce: 0,
+    restDelta: 0.0005,
+  })
   const reduced = useReducedMotion() ?? false
   const finalState = useMotionValue(1)
-  const progress = reduced ? finalState : scrollYProgress
+  const progress = reduced ? finalState : smooth
   const paddock = useTransform(progress, [...STORY.paddock], [0, 1])
   const site = useTransform(progress, [...STORY.zoom], [1, 0])
   const farmLabel = useTransform(
