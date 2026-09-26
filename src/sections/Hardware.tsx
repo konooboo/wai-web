@@ -83,7 +83,7 @@ export function Hardware() {
               Hardware
             </p>
             <h2 className="mt-4 text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-              Built for the paddock.
+              Built for the outdoors.
             </h2>
           </div>
           <div className={`${cell} flex items-center`}>
