@@ -8,7 +8,7 @@ import {
   useTransform,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
-import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
+import { ALERT_EXAMPLE } from '../content'
 import { AlertNotification } from '../farm/AlertNotification'
 import { Phone } from '../farm/Phone'
 import { ReadingCard } from '../farm/ReadingCard'
@@ -35,23 +35,25 @@ const STEPS: Step[] = [
   },
   {
     eyebrow: '02 · Always on',
-    title: `Wai AI reads your data every ${READING_INTERVAL_MIN} minutes, day and night.`,
+    title: 'Wai AI listens to your pastures, all day, every day.',
     problem: 'fertiliser',
   },
   {
     eyebrow: '03 · Problem',
-    title: `${ALERT_EXAMPLE.sensor} detects a change. Wai AI is already working out why.`,
+    title: `${ALERT_EXAMPLE.sensor} detects a change. Wai is already using our AI to work out why.`,
+    body: 'Save the manual discovery and testing process. Our models will handle it.',
     visual: 'reading',
   },
   {
     eyebrow: '04 · Alert',
-    title: 'You wake up to the answer, not a guess.',
-    body: 'The likely cause and the next step wait on your phone. You do not have to walk the farm to find the problem.',
+    title: 'You wake up to clear solutions, without having to lift a finger.',
+    body: 'Wai evaluates the root cause, next steps and downstream effects internally.',
     visual: 'alert',
   },
   {
     eyebrow: '05 · Next step',
-    title: 'Wai AI tells you what to do, and what happens if you wait.',
+    title:
+      'Wai AI gives you clear, actionable steps, and what happens if you wait.',
     problem: 'compliance',
   },
 ]

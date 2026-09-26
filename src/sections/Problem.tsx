@@ -27,9 +27,10 @@ const PROBLEMS = {
       </>
     ),
     figure: { value: 88, prefix: '', suffix: '%' },
-    caption: 'of farmers say resource consent is getting harder to get',
+    caption:
+      'of farmers say resource consent is getting harder. Wai does this all for you.',
     panel: 'bg-alert/10 text-alert',
-    body: 'Nitrogen is capped at 190 kg/ha a year. A breach can cost a company $10M.',
+    body: 'Nitrogen is capped at 190 kg/ha a year. A breach can cost a company $10M+.',
     source: {
       label: 'Farmers Weekly poll, 09/10/2025',
       href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
@@ -44,9 +45,10 @@ const PROBLEMS = {
       </>
     ),
     figure: { value: 1, prefix: 'Save ', suffix: ' h+ a day' },
-    caption: 'on office work and data entry, for the average dairy farmer',
+    caption:
+      'on monitoring, compliance and data checks for the average dairy farmer',
     panel: 'bg-mint text-healthy',
-    body: 'Someone still drives to every trough, probe and pond to read the numbers.',
+    body: 'Nobody needs to drive to every trough, probe and pond to read the numbers.',
     source: {
       label: 'DairyNZ, 21/10/2025',
       href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
@@ -64,7 +66,7 @@ const PROBLEMS = {
     caption: 'nitrogen fertiliser cost for an average dairy farm this spring',
     panel: 'bg-ink/5 text-ink',
     iconColour: 'text-alert',
-    body: 'Without soil data, farms irrigate wet soil and fertilise before rain.',
+    body: 'Leading to smarter decisions around irrigation and fertilisation.',
     source: {
       label: 'Ravensdown via NZ Herald, 20/07/2026',
       href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
