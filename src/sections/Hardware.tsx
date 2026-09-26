@@ -23,7 +23,7 @@ const AI_SPECS: Spec[] = [
     label: 'On every alert',
     value: 'Alert diagnosis',
     detail:
-      'The likely cause, two or three steps to fix it and the cost if you wait',
+      'For level, soil, water quality, moved and offline alerts: the likely cause, two or three steps to fix it and the cost if you wait',
   },
   {
     label: 'On the home screen',
@@ -38,8 +38,6 @@ const AI_SPECS: Spec[] = [
       'Soil moisture plus the 48\u00a0h rain forecast: Apply now, Wait for rain or Too wet',
   },
 ]
-
-const ALERT_KINDS = ['Level', 'Soil', 'Water quality', 'Moved', 'Offline']
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
@@ -146,29 +144,6 @@ export function Hardware() {
             {AI_SPECS.map((spec, i) => (
               <SpecCell key={spec.label} spec={spec} ai delay={i * 0.05} />
             ))}
-          </div>
-
-          <div className="bg-paper/[0.03] grid lg:grid-cols-3">
-            <div className={cell}>
-              <Glow />
-              <p className="text-mint font-mono text-xs tracking-wider uppercase">
-                Alerts
-              </p>
-              <p className="text-paper/60 mt-2">
-                Wai AI diagnoses all five kinds:
-              </p>
-            </div>
-            <ul className="grid grid-cols-2 sm:grid-cols-5 lg:col-span-2">
-              {ALERT_KINDS.map((kind) => (
-                <li
-                  key={kind}
-                  className={`${cell} flex items-center font-medium max-sm:last:col-span-2`}
-                >
-                  <Glow />
-                  {kind}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
         <span
