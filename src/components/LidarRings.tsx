@@ -21,6 +21,15 @@ export function LidarRings({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const inView = useInView(canvasRef)
   const reducedMotion = useReducedMotion()
+  const sweepStart = useRef<number | null>(null)
+
+  // Start the first sweep from the centre when the loading screen is gone.
+  useEffect(() => {
+    const start = () => (sweepStart.current ??= performance.now())
+    if (!document.getElementById('loader')) start()
+    window.addEventListener('wai:loader-done', start, { once: true })
+    return () => window.removeEventListener('wai:loader-done', start)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -89,8 +98,9 @@ export function LidarRings({
       const { width, height } = canvas.getBoundingClientRect()
       ctx.clearRect(0, 0, width, height)
       ctx.drawImage(base, 0, 0, width, height)
-      if (reducedMotion) return
-      const sweep = ((now % SWEEP_MS) / SWEEP_MS) * (maxR + BAND)
+      if (reducedMotion || sweepStart.current === null) return
+      const elapsed = (now - sweepStart.current) % SWEEP_MS
+      const sweep = (elapsed / SWEEP_MS) * (maxR + BAND)
       // Points are in ring order, so skip to the first ring in the band.
       let i = 0
       while (i < rs.length && rs[i] < sweep - BAND) i += 64
