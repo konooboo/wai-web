@@ -80,7 +80,7 @@ export function Nav() {
                 href={link.href}
                 className={`block rounded-full border px-4 py-2 transition-colors ${
                   clear
-                    ? 'border-paper/30 hover:bg-paper/10'
+                    ? 'border-paper/15 hover:bg-paper/10'
                     : active === link.href
                       ? 'border-line bg-white'
                       : 'border-line hover:bg-white'
@@ -96,7 +96,7 @@ export function Nav() {
             type="button"
             className={`rounded-full border px-4 py-2 transition-colors ${
               clear
-                ? 'border-paper/30 hover:bg-paper/10'
+                ? 'border-paper/15 hover:bg-paper/10'
                 : 'border-line hover:bg-white'
             }`}
           >
