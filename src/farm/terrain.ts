@@ -3,14 +3,26 @@
 
 export type Point = { x: number; y: number }
 
-export const MAP_METRES = 800
-export const HEIGHTMAP_SIZE = 768
+export const MAP_METRES = 1600
+export const HEIGHTMAP_SIZE = 1024
+// Normalised units per metre, for widths that must keep their size in metres.
+const M = 1 / MAP_METRES
 
 export type Heightmap = {
   size: number
   cellMetres: number
+  // Top surface, including tree canopy and roofs.
   heights: Float32Array
+  // Bare terrain under the canopy and buildings.
+  ground: Float32Array
   water: Uint8Array
+  // Per cell: 0 ground, 1 water, 2 tree canopy, 3 building.
+  cover: Uint8Array
+  // Bottom of the canopy in metres, for cells with cover 2.
+  canopyBase: Float32Array
+  // Small objects as [kind, x, y, height above ground] per entry:
+  // 0 fence post, 1 silage swath, 2 hay bale, 3 water trough.
+  props: Float32Array
 }
 
 // Fence grid, rotated to follow the farm boundary.
@@ -30,7 +42,7 @@ const fromGrid = (a: number, b: number): Point => ({
 })
 
 export const POND = { x: 0.76, y: 0.3, rx: 0.075, ry: 0.045, rot: -0.35 }
-const YARD = { x: 0.87, y: 0.1, r: 0.07 }
+const YARD = { x: 0.834, y: 0.138, r: 80 * M }
 
 const STREAM_CONTROL: Point[] = [
   { x: 0.18, y: -0.04 },
@@ -154,6 +166,25 @@ function fbm(x: number, y: number, octaves: number) {
 const smoothstep = (e0: number, e1: number, v: number) => {
   const t = Math.min(1, Math.max(0, (v - e0) / (e1 - e0)))
   return t * t * (3 - 2 * t)
+}
+
+// Rolling downs, higher to the north-west.
+const regionalAt = (x: number, y: number) =>
+  60 * (0.45 * (1 - x) + 0.55 * (1 - y))
+const lowAt = (x: number, y: number) => 18 * fbm(x * 3, y * 3, 2)
+
+function bilinear(grid: Float32Array, size: number, x: number, y: number) {
+  const fx = Math.min(size - 1.001, Math.max(0, x * size - 0.5))
+  const fy = Math.min(size - 1.001, Math.max(0, y * size - 0.5))
+  const x0 = Math.floor(fx)
+  const y0 = Math.floor(fy)
+  const tx = fx - x0
+  const ty = fy - y0
+  const a = grid[y0 * size + x0]
+  const b = grid[y0 * size + x0 + 1]
+  const c = grid[(y0 + 1) * size + x0]
+  const d = grid[(y0 + 1) * size + x0 + 1]
+  return (a + (b - a) * tx) * (1 - ty) + (c + (d - c) * tx) * ty
 }
 
 // ---------- polylines ----------
@@ -285,12 +316,12 @@ function beltHeight(a: number, b: number, x: number, y: number) {
     const across = axis === 'a' ? a - line : b - line
     const along = axis === 'a' ? b : a
     if (along < from || along > to) continue
-    const w = 0.009
+    const w = 7 * M
     if (Math.abs(across) > w) continue
     const profile = 1 - (across / w) ** 2
-    const crowns = 0.6 + 0.6 * fbm(x * 160, y * 160, 2)
+    const crowns = 0.6 + 0.6 * fbm(x * 320, y * 320, 2)
     const ends =
-      smoothstep(from, from + 0.01, along) * smoothstep(to, to - 0.01, along)
+      smoothstep(from, from + 8 * M, along) * smoothstep(to, to - 8 * M, along)
     h = Math.max(h, 9 * Math.sqrt(profile) * crowns * ends)
   }
   return h
@@ -306,15 +337,18 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
   const n = size * size
   const heights = new Float32Array(n)
   const water = new Uint8Array(n)
+  // The wide valley is cheap on a coarse grid; the channel needs the full one.
+  const COARSE = 256
+  const dValley = new Float32Array(COARSE * COARSE).fill(1)
   const dStream = new Float32Array(n).fill(1)
   const dTrack = new Float32Array(n).fill(1)
   const dDrain = new Float32Array(n).fill(1)
-  stampPolyline(STREAM, 0.16, size, dStream)
-  stampPolyline(TRACK, 0.01, size, dTrack)
-  for (const drain of DRAINS) stampPolyline(drain, 0.01, size, dDrain)
+  stampPolyline(STREAM, 0.16, COARSE, dValley)
+  stampPolyline(STREAM, 0.04, size, dStream)
+  stampPolyline(TRACK, 8 * M, size, dTrack)
+  for (const drain of DRAINS) stampPolyline(drain, 8 * M, size, dDrain)
 
-  const pondBase = 40 * (0.45 * (1 - POND.x) + 0.55 * (1 - POND.y))
-  const pondLevel = pondBase + 18 * fbm(POND.x * 3, POND.y * 3, 2) - 2
+  const pondLevel = regionalAt(POND.x, POND.y) + lowAt(POND.x, POND.y) - 2
 
   for (let cy = 0; cy < size; cy++) {
     const y = (cy + 0.5) / size
@@ -323,9 +357,9 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
       const k = cy * size + cx
 
       // Rolling hills, higher and rougher to the north-west.
-      const regional = 40 * (0.45 * (1 - x) + 0.55 * (1 - y))
+      const regional = regionalAt(x, y)
       const rough = 0.2 + 1.3 * (1 - x) * (1 - y)
-      const low = 18 * fbm(x * 3, y * 3, 2)
+      const low = lowAt(x, y)
       const wx = x + 0.04 * fbm(x * 6, y * 6, 2)
       const wy = y + 0.04 * fbm(x * 6 + 5.2, y * 6 - 2.4, 2)
       const detail =
@@ -334,17 +368,17 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
 
       // Stream valley, flat flood plain and channel.
       const ds = dStream[k]
-      h -= 9 * (1 - smoothstep(0, 0.15, ds)) ** 2
-      const plainWidth = 0.028 + 0.014 * fbm(x * 7, y * 7, 2)
+      h -= 9 * (1 - smoothstep(0, 0.15, bilinear(dValley, COARSE, x, y))) ** 2
+      const plainWidth = (22 + 11 * fbm(x * 7, y * 7, 2)) * M
       const plain = 0.85 * (1 - smoothstep(plainWidth * 0.4, plainWidth, ds))
       h += (regional + low - 9 + 0.3 * fbm(x * 40, y * 40, 2) - h) * plain
-      const channel = 0.0055
+      const channel = 4.4 * M
       if (ds < channel) {
         h -= 2 * Math.sqrt(1 - (ds / channel) ** 2)
         if (ds < channel * 0.55) water[k] = 1
       }
       // Riparian fence.
-      if (Math.abs(ds - 0.032) < 0.0014) h += 0.3
+      if (Math.abs(ds - 26 * M) < 1.1 * M) h += 0.3
 
       // Pond with an embankment on the down-slope side.
       const e = pondEllipse(x, y)
@@ -359,39 +393,47 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
         }
       }
 
-      // Farm yard: a flat pad with sheds.
+      // Farm yard: a flat pad. The buildings are stamped later.
       const dy = Math.hypot(x - YARD.x, y - YARD.y)
       if (dy < YARD.r * 1.4) {
         const pad = 1 - smoothstep(YARD.r * 0.8, YARD.r * 1.4, dy)
-        const padLevel = 40 * (0.45 * (1 - YARD.x) + 0.55 * (1 - YARD.y)) + low
+        const padLevel = regionalAt(YARD.x, YARD.y) + low
         h += (padLevel - h) * pad * 0.9
       }
-      const g = toGrid(x - YARD.x, y - YARD.y)
-      if (
-        (Math.abs(g.a + 0.012) < 0.018 && Math.abs(g.b - 0.01) < 0.008) ||
-        (Math.abs(g.a - 0.03) < 0.009 && Math.abs(g.b + 0.02) < 0.014)
-      )
-        h += 5
 
       // Farm track: a shallow cut with low berms.
       const dt = dTrack[k]
-      if (dt < 0.0028) h -= 0.35
-      else if (dt < 0.0048) h += 0.25
+      if (dt < 2.2 * M) h -= 0.35
+      else if (dt < 3.8 * M) h += 0.25
 
       // Field drains.
       const dd = dDrain[k]
-      if (dd < 0.0025) h -= 0.8 * (1 - dd / 0.0025)
+      if (dd < 2 * M) h -= 0.8 * (1 - dd / (2 * M))
 
       // Fences and shelter belts.
       const grid = toGrid(x, y)
-      const fenceOk = ds > 0.034 && e > 1.45 && dy > YARD.r * 1.2 && dt > 0.005
-      if (fenceOk && fenceDistance(grid.a, grid.b) < 0.0013) h += 0.3
+      const fenceOk = ds > 27 * M && e > 1.45 && dy > YARD.r * 1.2 && dt > 4 * M
+      if (fenceOk && fenceDistance(grid.a, grid.b) < 0.9 * M) h += 0.3
       if (fenceOk) h += beltHeight(grid.a, grid.b, x, y)
 
       heights[k] = h
     }
   }
 
-  cached = { size, cellMetres: MAP_METRES / size, heights, water }
+  const ground = heights.slice()
+  const cover = water.slice()
+  const canopyBase = new Float32Array(n)
+  const props = new Float32Array(0)
+
+  cached = {
+    size,
+    cellMetres: MAP_METRES / size,
+    heights,
+    ground,
+    water,
+    cover,
+    canopyBase,
+    props,
+  }
   return cached
 }
