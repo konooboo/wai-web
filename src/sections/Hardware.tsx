@@ -1,11 +1,8 @@
+import productPhoto from '../assets/product-photo.jpeg'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { READING_INTERVAL_MIN, SENSORS } from '../content'
-import product640Avif from '../assets/product-640.avif'
-import product640Webp from '../assets/product-640.webp'
-import product1280Avif from '../assets/product-1280.avif'
-import product1280Webp from '../assets/product-1280.webp'
 
 const MEASURES = SENSORS.map((s) =>
   s.unit ? `${s.label} (${s.unit})` : s.label,
@@ -38,25 +35,11 @@ export function Hardware() {
             One unit for water, one for soil. Both report to the same app.
           </SectionHeading>
           <Reveal className="mt-10">
-            {/* TODO(data): replace the 3D render with a real product photo. */}
-            <picture>
-              <source
-                type="image/avif"
-                srcSet={`${product640Avif} 640w, ${product1280Avif} 1280w`}
-                sizes="(min-width: 768px) 560px, 100vw"
-              />
-              <img
-                src={product1280Webp}
-                srcSet={`${product640Webp} 640w, ${product1280Webp} 1280w`}
-                sizes="(min-width: 768px) 560px, 100vw"
-                width={1467}
-                height={1100}
-                loading="lazy"
-                decoding="async"
-                alt="Wai sensor unit with an antenna and a soil probe"
-                className="border-line aspect-[4/3] w-full rounded-3xl border object-cover"
-              />
-            </picture>
+            <img
+              src={productPhoto}
+              alt="Blue sensor unit with a soil moisture probe and two ultrasonic sensors"
+              className="aspect-square w-full rounded-3xl object-cover"
+            />
           </Reveal>
         </div>
         <div className="divide-line border-line divide-y border-t">

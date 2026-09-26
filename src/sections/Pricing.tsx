@@ -54,7 +54,7 @@ function TotalPerMonth({ hectares }: { hectares: number }) {
     })
   }, [display])
 
-  return <span ref={ref} className="font-mono" />
+  return <span ref={ref} />
 }
 
 export function Pricing() {
@@ -99,7 +99,7 @@ export function Pricing() {
                   Draft pricing
                 </span>
               </div>
-              <p className="mt-2 text-4xl font-medium tracking-tight">
+              <p className="mt-2 text-4xl font-medium tracking-tight tabular-nums">
                 <TotalPerMonth hectares={hectares} />
               </p>
               <p className="text-muted mt-2 font-mono text-sm">

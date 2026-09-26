@@ -34,7 +34,7 @@ export function ProofStrip() {
             key={i}
             className={`max-w-xs ${i > 0 ? 'border-line border-l pl-12' : ''}`}
           >
-            <p className="text-3xl font-medium tracking-tight md:text-4xl">
+            <p className="text-3xl font-medium tracking-tight tabular-nums md:text-4xl">
               {item.figure}
             </p>
             <p className="text-muted mt-2 font-mono text-sm">{item.label}</p>

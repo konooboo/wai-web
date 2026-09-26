@@ -10,7 +10,7 @@
   --color-mint: #dcefe0;
 
   --font-sans: 'Geist', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 html {
@@ -19,4 +19,18 @@ html {
 
 body {
   @apply bg-paper text-ink font-sans antialiased;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  blockquote {
+    text-wrap: pretty;
+  }
 }

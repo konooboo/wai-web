@@ -47,7 +47,7 @@ function HoursStat() {
     <motion.p
       ref={ref}
       style={{ scale, opacity }}
-      className="text-6xl font-medium tracking-tight md:text-7xl"
+      className="text-6xl font-medium tracking-tight tabular-nums md:text-7xl"
     >
       {/* TODO(data): replace with the measured average */}
       [X]
