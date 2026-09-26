@@ -5,15 +5,16 @@ import {
   useScroll,
   useTransform,
 } from 'motion/react'
-import { useRef } from 'react'
+import { lazy, Suspense, useRef } from 'react'
 import { SectionHeading } from '../components/SectionHeading'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
-import { FarmCanvas } from '../farm/FarmCanvas'
 import { Phone } from '../farm/Phone'
 import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
-import { MAP_METRES, PADDOCK_7 } from '../farm/terrain'
+import { MAP_METRES } from '../farm/terrain'
+
+const FarmScene = lazy(() => import('../farm/FarmScene'))
 
 const STEPS = [
   {
@@ -44,10 +45,10 @@ const STEPS = [
 ]
 
 const HECTARES = (MAP_METRES * MAP_METRES) / 10000
-const SCALE_METRES = 200
 
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: stepsRef,
     offset: ['start 0.7', 'end 0.7'],
@@ -64,48 +65,33 @@ export function FarmMap() {
     >
       <div className="mx-auto grid max-w-[88rem] px-6 md:grid-cols-[1.5fr_1fr] md:gap-16">
         <div className="bg-paper sticky top-16 z-20 -mx-6 px-6 py-4 md:mx-0 md:flex md:h-[calc(100svh-4rem)] md:items-center md:self-start md:bg-transparent md:px-0 md:py-0">
-          <div className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-8rem)]">
-            <div className="border-line absolute inset-0 overflow-hidden rounded-2xl border bg-white">
-              <FarmCanvas progress={progress} />
-              <svg
-                aria-hidden
-                viewBox="0 0 1 1"
-                className="absolute inset-0 size-full"
-              >
-                <motion.polygon
-                  points={PADDOCK_7.map((p) => `${p.x},${p.y}`).join(' ')}
-                  className="fill-alert/10 stroke-alert"
-                  strokeWidth={1.5}
-                  strokeDasharray="4 3"
-                  vectorEffect="non-scaling-stroke"
-                  style={{ opacity: paddock }}
+          <div
+            ref={overlayRef}
+            className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-8rem)]"
+          >
+            <div className="bg-ink absolute inset-0 overflow-hidden rounded-2xl">
+              <Suspense>
+                <FarmScene
+                  progress={progress}
+                  reduced={reduced}
+                  overlay={overlayRef}
                 />
-              </svg>
-              <motion.p
-                aria-hidden
-                className="text-alert absolute font-mono text-[10px] tracking-wider uppercase"
-                style={{
-                  left: `${PADDOCK_7[1].x * 100}%`,
-                  top: `${PADDOCK_7[1].y * 100 - 0.5}%`,
-                  translateX: '-100%',
-                  translateY: '-100%',
-                  opacity: paddock,
-                }}
-              >
-                Paddock 7
-              </motion.p>
-              <p className="text-muted absolute top-3 left-3 rounded bg-white/80 px-1.5 py-0.5 font-mono text-[10px] tracking-wider uppercase">
+              </Suspense>
+              <p className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase">
                 Lidar · {HECTARES} ha
               </p>
-              <div
-                aria-hidden
-                className="text-muted absolute bottom-3 left-3 rounded bg-white/80 px-1.5 pt-1 pb-0.5 font-mono text-[10px]"
-                style={{ width: `${(SCALE_METRES / MAP_METRES) * 100}%` }}
-              >
-                <div className="border-muted h-1.5 border-x border-b" />
-                <span className="mt-0.5 block">{SCALE_METRES} m</span>
-              </div>
             </div>
+
+            <motion.p
+              aria-hidden
+              data-anchor="paddock"
+              className="text-alert invisible absolute top-0 left-0 z-10 font-mono text-[10px] tracking-wider uppercase"
+              style={{ opacity: paddock }}
+            >
+              <span className="bg-ink/80 absolute bottom-1 left-1 rounded px-1 py-0.5 whitespace-nowrap">
+                Paddock 7
+              </span>
+            </motion.p>
 
             {FARM_SENSORS.map((sensor, i) => (
               <SensorMarker
@@ -113,7 +99,6 @@ export function FarmMap() {
                 sensor={sensor}
                 index={i}
                 progress={progress}
-                reduced={reduced}
               />
             ))}
 

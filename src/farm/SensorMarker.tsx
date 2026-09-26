@@ -7,48 +7,18 @@ type Props = {
   sensor: FarmSensor
   index: number
   progress: MotionValue<number>
-  reduced: boolean
 }
 
-function Pulse({ colour, delay }: { colour: string; delay: number }) {
-  return (
-    <motion.span
-      className={`absolute inset-0 rounded-full border ${colour}`}
-      initial={{ scale: 1, opacity: 0.7 }}
-      animate={{ scale: 3, opacity: 0 }}
-      transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut', delay }}
-    />
-  )
-}
-
-function Dot({
-  tone,
-  pulse,
-  delay,
-}: {
-  tone: 'healthy' | 'alert'
-  pulse: boolean
-  delay: number
-}) {
+// The lidar pulses in the 3D scene replace a CSS pulse here.
+function Dot({ tone }: { tone: 'healthy' | 'alert' }) {
   const fill = tone === 'healthy' ? 'bg-healthy' : 'bg-alert'
-  const ring = tone === 'healthy' ? 'border-healthy' : 'border-alert'
   return (
-    <span className="absolute inset-0">
-      {pulse ? (
-        <Pulse colour={ring} delay={delay} />
-      ) : (
-        <span
-          className={`absolute -inset-1 rounded-full border ${ring} opacity-60`}
-        />
-      )}
-      <span
-        className={`absolute inset-0 rounded-full ${fill} ring-2 ring-white`}
-      />
-    </span>
+    <span className={`absolute inset-0 rounded-full ${fill} ring-ink ring-2`} />
   )
 }
 
-export function SensorMarker({ sensor, index, progress, reduced }: Props) {
+// FarmScene positions this marker on its 3D anchor with `translate`.
+export function SensorMarker({ sensor, index, progress }: Props) {
   const [open, setOpen] = useState(false)
   const info = sensorInfo(sensor.kind)
   const isAlert = sensor.id === ALERT_SENSOR_ID
@@ -77,14 +47,12 @@ export function SensorMarker({ sensor, index, progress, reduced }: Props) {
   const cardPos = isAlert
     ? 'top-full mt-4 left-1/2 -translate-x-1/2'
     : `${left ? 'right-full mr-3' : 'left-full ml-3'} ${above ? 'bottom-0' : 'top-1/2 -translate-y-1/2'}`
-  const delay = index * 0.37
 
   return (
     <motion.div
-      className={`absolute ${open ? 'z-30' : isAlert ? 'z-20' : 'z-10'}`}
+      data-anchor={sensor.id}
+      className={`invisible absolute top-0 left-0 ${open ? 'z-30' : isAlert ? 'z-20' : 'z-10'}`}
       style={{
-        left: `${sensor.x * 100}%`,
-        top: `${sensor.y * 100}%`,
         opacity: appear,
         scale,
       }}
@@ -98,13 +66,13 @@ export function SensorMarker({ sensor, index, progress, reduced }: Props) {
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
       >
-        <span className="absolute inset-[9px]">
+        <span className="absolute inset-[10px]">
           <motion.span className="absolute inset-0" style={{ opacity: green }}>
-            <Dot tone="healthy" pulse={!reduced} delay={delay} />
+            <Dot tone="healthy" />
           </motion.span>
           {isAlert && (
             <motion.span className="absolute inset-0" style={{ opacity: red }}>
-              <Dot tone="alert" pulse={!reduced} delay={0} />
+              <Dot tone="alert" />
             </motion.span>
           )}
         </span>
