@@ -5,7 +5,6 @@ import { READING_INTERVAL_MIN } from '../content'
 
 const INTRO = `One low-power unit per site. It takes a reading every ${READING_INTERVAL_MIN} min and sends it to the app by LoRa radio.`
 
-// Battery life is not measured yet.
 const SPECS: { label: string; value: string; detail: string }[] = [
   {
     label: 'Water level',
@@ -38,10 +37,10 @@ const SPECS: { label: string; value: string; detail: string }[] = [
       'Uptime, chip temperature, free memory and firmware version on each reading',
   },
   {
-    label: 'Battery',
-    value: 'Up to [X] months',
-    detail: 'Low-power design · rechargeable battery',
-  }, // TODO(data): measure battery life in the field
+    label: 'Power',
+    value: 'Solar powered',
+    detail: 'Renewable · sustainable',
+  },
 ]
 
 const ALERTS = [
