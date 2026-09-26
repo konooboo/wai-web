@@ -38,6 +38,27 @@ const ALERTS = [
   { name: 'Unit offline', detail: 'Stopped reporting' },
 ]
 
+// Example outputs, worded as the app shows them. TODO(data): confirm with the team.
+const PREDICTIONS: { label: string; value: string; detail: string }[] = [
+  {
+    label: 'Time to empty',
+    value: 'Runs dry in 6 h',
+    detail: 'Level trend over the last 6 h · low-level alert at 25 % full',
+  },
+  {
+    label: 'Fertiliser timing',
+    value: 'Wait for rain',
+    detail:
+      'Soil moisture plus the 48 h rain forecast · Apply now, Wait for rain, or Too wet',
+  },
+  {
+    label: 'Trough visits',
+    value: '14 visits today',
+    detail:
+      'Counted from the level sensor: an animal at the trough reads closer than the water',
+  },
+]
+
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
 export function Hardware() {
@@ -115,6 +136,26 @@ export function Hardware() {
                   {alert.detail}
                 </p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-healthy/[0.06]">
+          <p className="text-mint border-paper/10 border-t border-l px-6 pt-6 font-mono text-xs tracking-wider uppercase md:px-8">
+            Predictions
+          </p>
+          <div className="grid sm:grid-cols-3">
+            {PREDICTIONS.map((p, i) => (
+              <Reveal key={p.label} delay={i * 0.05} className={cell}>
+                <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
+                <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
+                  {p.label}
+                </p>
+                <p className="mt-6 text-3xl font-medium tracking-tight">
+                  {p.value}
+                </p>
+                <p className="text-paper/60 mt-4">{p.detail}</p>
+              </Reveal>
             ))}
           </div>
         </div>
