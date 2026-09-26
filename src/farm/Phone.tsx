@@ -36,7 +36,7 @@ export function Phone({ progress }: { progress: MotionValue<number> }) {
             className="border-line rounded-lg border bg-white p-2 md:rounded-xl md:p-2.5"
             style={{ opacity: card, y: cardY }}
           >
-            <p className="text-muted flex justify-between font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
+            <p className="text-muted flex justify-between gap-1 font-mono text-[7px] tracking-wider whitespace-nowrap uppercase md:text-[9px]">
               <span className="text-alert">● Alert</span>
               <span>{ALERT_EXAMPLE.time}</span>
             </p>
@@ -58,10 +58,10 @@ export function Phone({ progress }: { progress: MotionValue<number> }) {
             <p className="text-muted font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
               Likely cause
             </p>
-            <p className="mt-0.5 text-[8px] leading-snug md:text-[10px]">
+            <p className="mt-0.5 mb-1.5 text-[8px] leading-snug md:text-[10px]">
               {ALERT_EXAMPLE.cause}
             </p>
-            <p className="text-muted mt-1.5 font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
+            <p className="text-muted font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
               Next step
             </p>
             <p className="mt-0.5 text-[8px] leading-snug font-medium md:text-[10px]">

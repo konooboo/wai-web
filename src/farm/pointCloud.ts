@@ -127,7 +127,7 @@ function turbo(t: number) {
 const BUCKETS = 48
 // Near the sensor: red. Far: blue.
 const PALETTE = Array.from({ length: BUCKETS }, (_, i) =>
-  turbo(0.93 - (i / (BUCKETS - 1)) * 0.83),
+  turbo(0.86 - (i / (BUCKETS - 1)) * 0.76),
 )
 const ALERT_COLOUR = '#d9482b'
 
@@ -140,19 +140,21 @@ export function drawPointCloud(
   pointSize: number,
   scan: number,
   alert: number,
+  stride: number,
 ) {
   const radius = scan * SCAN_RADIUS
   const front = 0.035
   let bucket = -1
   const half = pointSize / 2
-  for (let i = 0; i < cloud.count; i++) {
+  for (let i = 0; i < cloud.count; i += stride) {
     const d = cloud.d[i]
     if (d > radius) break
     const b = Math.min(BUCKETS - 1, Math.floor((d / SCAN_RADIUS) * BUCKETS))
     // Points fade in behind the moving ring.
     const behind = radius - d
+    const rest = 0.7 - 0.3 * alert
     const alpha =
-      scan >= 1 ? 0.7 : behind < front ? 1 - (behind / front) * 0.3 : 0.7
+      behind < front && scan < 1 ? 1 - (behind / front) * (1 - rest) : rest
     if (b !== bucket || ctx.globalAlpha !== alpha) {
       bucket = b
       ctx.fillStyle = PALETTE[b]
@@ -169,12 +171,12 @@ export function drawPointCloud(
   if (alert > 0) {
     const reach = alert * ALERT_RADIUS
     ctx.fillStyle = ALERT_COLOUR
-    for (let j = 0; j < cloud.alertIndex.length; j++) {
+    for (let j = 0; j < cloud.alertIndex.length; j += stride) {
       const dist = cloud.alertD[j]
       if (dist > reach) break
       const i = cloud.alertIndex[j]
       if (cloud.d[i] > radius) continue
-      ctx.globalAlpha = 0.9 * (1 - dist / ALERT_RADIUS) ** 0.7
+      ctx.globalAlpha = (1 - dist / ALERT_RADIUS) ** 0.6
       ctx.fillRect(
         cloud.x[i] * size - half,
         cloud.y[i] * size - half,

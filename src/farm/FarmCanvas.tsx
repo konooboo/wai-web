@@ -29,7 +29,8 @@ function loadFarm() {
   return farmPromise
 }
 
-const POINT_SIZE = 1.6
+// Point size as a fraction of the map width.
+const POINT_SIZE = 0.0029
 
 export function FarmCanvas({ progress }: { progress: MotionValue<number> }) {
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -50,7 +51,6 @@ export function FarmCanvas({ progress }: { progress: MotionValue<number> }) {
     const baseCtx = base.getContext('2d')!
     const ctx = points.getContext('2d')!
     let frame = 0
-    let dpr = 1
     let last = ''
 
     const draw = () => {
@@ -66,16 +66,17 @@ export function FarmCanvas({ progress }: { progress: MotionValue<number> }) {
         ctx,
         farm.cloud,
         points.width,
-        POINT_SIZE * dpr,
+        Math.max(1, POINT_SIZE * points.width),
         scan,
         alert,
+        points.clientWidth < 450 ? 2 : 1,
       )
     }
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(draw)
     }
     const resize = () => {
-      dpr = Math.min(2, window.devicePixelRatio || 1)
+      const dpr = Math.min(2, window.devicePixelRatio || 1)
       const width = Math.round(base.clientWidth * dpr)
       if (base.width !== width) {
         for (const canvas of [base, points])

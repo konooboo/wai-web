@@ -30,7 +30,7 @@ const STEPS = [
   {
     eyebrow: '03 · Problem',
     title: `${ALERT_EXAMPLE.sensor} detects a change.`,
-    body: `After heavy rain, the reading goes up to ${ALERT_EXAMPLE.reading.toLowerCase()}. ${ALERT_EXAMPLE.normal}.`,
+    body: `After heavy rain, the reading goes up to ${ALERT_EXAMPLE.reading.charAt(0).toLowerCase()}${ALERT_EXAMPLE.reading.slice(1)}. ${ALERT_EXAMPLE.normal}.`,
   },
   {
     eyebrow: '04 · Alert',
@@ -83,9 +83,10 @@ export function FarmMap() {
                 aria-hidden
                 className="text-alert absolute font-mono text-[10px] tracking-wider uppercase"
                 style={{
-                  left: `${PADDOCK_7[1].x * 100 - 1}%`,
-                  top: `${PADDOCK_7[1].y * 100 + 1}%`,
+                  left: `${PADDOCK_7[1].x * 100}%`,
+                  top: `${PADDOCK_7[1].y * 100 - 0.5}%`,
                   translateX: '-100%',
+                  translateY: '-100%',
                   opacity: paddock,
                 }}
               >
@@ -96,7 +97,7 @@ export function FarmMap() {
               </p>
               <div
                 aria-hidden
-                className="text-muted absolute bottom-3 left-3 font-mono text-[10px]"
+                className="text-muted absolute bottom-3 left-3 rounded bg-white/80 px-1.5 pt-1 pb-0.5 font-mono text-[10px]"
                 style={{ width: `${(SCALE_METRES / MAP_METRES) * 100}%` }}
               >
                 <div className="border-muted h-1.5 border-x border-b" />
@@ -114,35 +115,38 @@ export function FarmMap() {
               />
             ))}
 
-            <div className="absolute right-2 bottom-2 z-20 w-[30%] md:-right-8 md:-bottom-6 md:w-[28%]">
+            <div className="absolute -right-2 -bottom-3 z-20 w-[42%] md:-right-8 md:-bottom-6 md:w-[28%]">
               <Phone progress={progress} />
             </div>
           </div>
         </div>
 
-        <div ref={stepsRef}>
-          {STEPS.map((step, i) => (
-            <div
-              key={step.eyebrow}
-              className="flex min-h-[70svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
-            >
-              {i === 0 ? (
-                <SectionHeading eyebrow={step.eyebrow} title={step.title}>
-                  {step.body}
-                </SectionHeading>
-              ) : (
-                <div className="max-w-md">
-                  <p className="text-muted font-mono text-xs tracking-wider uppercase">
-                    {step.eyebrow}
-                  </p>
-                  <h3 className="mt-4 text-3xl leading-tight font-medium tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-muted mt-4 text-lg">{step.body}</p>
-                </div>
-              )}
-            </div>
-          ))}
+        <div>
+          <div ref={stepsRef}>
+            {STEPS.map((step, i) => (
+              <div
+                key={step.eyebrow}
+                className="flex min-h-[55svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
+              >
+                {i === 0 ? (
+                  <SectionHeading eyebrow={step.eyebrow} title={step.title}>
+                    {step.body}
+                  </SectionHeading>
+                ) : (
+                  <div className="max-w-md">
+                    <p className="text-muted font-mono text-xs tracking-wider uppercase">
+                      {step.eyebrow}
+                    </p>
+                    <h3 className="mt-4 text-3xl leading-tight font-medium tracking-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-muted mt-4 text-lg">{step.body}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="md:h-[25svh]" />
         </div>
       </div>
     </Section>

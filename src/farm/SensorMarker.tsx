@@ -74,7 +74,9 @@ export function SensorMarker({ sensor, index, progress, reduced }: Props) {
 
   const left = sensor.x > 0.5
   const above = sensor.y > 0.75
-  const cardPos = `${left ? 'right-full mr-3' : 'left-full ml-3'} ${above ? 'bottom-0' : 'top-1/2 -translate-y-1/2'}`
+  const cardPos = isAlert
+    ? 'top-full mt-4 left-1/2 -translate-x-1/2'
+    : `${left ? 'right-full mr-3' : 'left-full ml-3'} ${above ? 'bottom-0' : 'top-1/2 -translate-y-1/2'}`
   const delay = index * 0.37
 
   return (
@@ -90,7 +92,7 @@ export function SensorMarker({ sensor, index, progress, reduced }: Props) {
       <button
         type="button"
         aria-label={`Sensor ${sensor.id}, ${sensor.place}: ${info.label} ${sensor.value} ${info.unit}`}
-        className="absolute size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full outline-offset-2"
+        className="focus-visible:outline-ink absolute size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full outline-offset-2 focus-visible:outline-2"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onFocus={() => setOpen(true)}
@@ -110,7 +112,7 @@ export function SensorMarker({ sensor, index, progress, reduced }: Props) {
 
       <motion.div
         aria-hidden
-        className={`border-line pointer-events-none absolute w-40 rounded-lg border bg-white px-3 py-2 font-mono text-xs ${cardPos}`}
+        className={`border-line pointer-events-none absolute w-36 rounded-lg border bg-white px-2.5 py-1.5 font-mono text-xs md:w-40 md:px-3 md:py-2 ${cardPos}`}
         style={{ opacity: open ? 1 : isAlert ? autoCard : 0 }}
       >
         <p className="text-muted text-[10px] tracking-wider uppercase">
