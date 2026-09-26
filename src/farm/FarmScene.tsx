@@ -123,7 +123,8 @@ const vertexShader = /* glsl */ `
     float alerting = (1.0 - smoothstep(reach * 0.6, reach + 0.001, data.y)) * step(0.001, uAlert);
     colour = mix(colour, turbo(0.93 - ka * 0.25), alerting);
     float wa = fract(uTime * 0.4) * ${(ALERT_RADIUS * 1.2).toFixed(3)};
-    float alertPulse = band(data.y, wa, 0.008) * alerting * uPulse;
+    float alertPulse = band(data.y, wa, 0.008) * alerting * uPulse
+      * (1.0 - smoothstep(0.06, 0.16, data.y));
     vec3 red = vec3(${ALERT.r.toFixed(3)}, ${ALERT.g.toFixed(3)}, ${ALERT.b.toFixed(3)});
     colour = mix(colour, red, uPaddock * data.w * 0.9);
     colour = mix(colour, vec3(1.0, 0.75, 0.65), 0.5 * alertPulse);
