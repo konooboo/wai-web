@@ -6,14 +6,6 @@ import { BOOK_DEMO_HREF } from '../content'
 // Software fee only. The farmer does not buy hardware. NZD per station per month, excl. GST.
 const BASE_PRICE = 99
 
-// TODO(data): confirm band edges and the volume prices. Only $99 is confirmed.
-const RATE_CARD = [
-  { stations: '1–5', price: `$${BASE_PRICE}` },
-  { stations: '6–15', price: '$[price]' },
-  { stations: '16–30', price: '$[price]' },
-  { stations: 'More than 30', price: 'We quote' },
-]
-
 const SOFTWARE = [
   'Mobile app for every user',
   'AI alerts and suggestions',
@@ -60,29 +52,8 @@ export function Pricing() {
             <p className="text-muted mt-2 font-mono text-sm">
               per station per month · excl. GST
             </p>
-
-            <table className="mt-8 w-full text-sm">
-              <thead>
-                <tr className="text-muted border-line border-b text-left font-mono text-xs tracking-wider uppercase">
-                  <th className="pb-3 font-normal">Stations</th>
-                  <th className="pb-3 text-right font-normal">
-                    Per station / month
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="font-mono">
-                {RATE_CARD.map((row) => (
-                  <tr key={row.stations} className="border-line border-b">
-                    <td className="py-3">{row.stations}</td>
-                    <td className="py-3 text-right tabular-nums">
-                      {row.price}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="text-muted mt-3 font-mono text-xs">
-              Larger farms pay less per station.
+            <p className="text-muted border-line mt-8 border-t pt-8 font-mono text-sm">
+              Larger farms pay less per station. We quote.
             </p>
           </div>
 
