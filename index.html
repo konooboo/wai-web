@@ -116,7 +116,8 @@
     </div>
     <script>
       // Loading screen. A dotted spiral draws outward as the page loads:
-      // 30 % when the JS has run, 60 % with fonts, 100 % with the hero model.
+      // 50 % when the JS has run, 100 % with fonts. The 3D scenes are below
+      // the fold and load on their own when scrolled near.
       // The mark shows 200 ms after the first frame. Maximum 4 s.
       ;(() => {
         const loader = document.getElementById('loader')
@@ -138,7 +139,7 @@
           '#3889f9',
           '#4958dd',
         ]
-        const LEVELS = [0, 0.3, 0.6, 1]
+        const LEVELS = [0, 0.5, 1]
         const MAX_MS = 4000
         const FINISH_MS = 350
         const still = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -190,7 +191,6 @@
 
         let stages = 0
         let fonts = false
-        let scene = false
         let shown = false
         addEventListener('DOMContentLoaded', () => stages++, { once: true })
         // fonts.ready resolves early if no text has asked for a font yet, so
@@ -202,14 +202,6 @@
           fonts = true
           stages++
         })
-        addEventListener(
-          'wai:scene-ready',
-          () => {
-            scene = true
-            stages++
-          },
-          { once: true },
-        )
         const finish = () => {
           if (!loader.isConnected) return
           loader.remove()
@@ -235,7 +227,7 @@
         let finishStart = 0
         const frame = (now) => {
           if (first < 0) first = last = now
-          const ready = (fonts && scene) || now >= MAX_MS
+          const ready = fonts || now >= MAX_MS
           if (ready && (!shown || still)) return hide()
           if (!shown && now - first >= 200) {
             shown = true

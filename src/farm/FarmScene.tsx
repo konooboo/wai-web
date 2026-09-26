@@ -414,13 +414,12 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
 
 export default function FarmScene(props: Props) {
   const wrapRef = useRef<HTMLDivElement>(null)
-  const near = useInView(wrapRef, { margin: '100% 0px', once: true })
   const inView = useInView(wrapRef)
   const [farm, setFarm] = useState<Farm | null>(null)
 
   useEffect(() => {
-    if (near) loadFarm().then(setFarm)
-  }, [near])
+    loadFarm().then(setFarm)
+  }, [])
 
   return (
     <div

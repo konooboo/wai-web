@@ -73,6 +73,8 @@ export function Hardware() {
       <img
         src={farmlandPhoto}
         alt=""
+        loading="lazy"
+        decoding="async"
         className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-sm"
       />
       <div className="border-paper/10 bg-ink/95 relative overflow-hidden rounded-2xl border *:-ml-px *:first:-mt-px">

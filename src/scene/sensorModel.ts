@@ -2,24 +2,25 @@ import {
   BoxGeometry,
   BufferGeometry,
   CanvasTexture,
-  ConeGeometry,
   CylinderGeometry,
   ExtrudeGeometry,
   Group,
   Mesh,
   MeshStandardMaterial,
   Object3D,
+  Path,
   PlaneGeometry,
   RepeatWrapping,
   Shape,
   SphereGeometry,
   TorusGeometry,
+  Vector2,
 } from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-// Pondside soil and water level monitor, ported from
-// prototypes/sensor-model.html. 1 scene unit = 100 mm.
+// Soil and water level monitor, modelled on the product reference render.
+// 1 scene unit = 100 mm.
 
 const HALF_PI = Math.PI / 2
 const TAU = Math.PI * 2
@@ -72,22 +73,34 @@ export function buildSensorModel() {
   const mats = {
     // Smooth moulded plastic, with only a faint grain.
     plastic: new MeshStandardMaterial({
-      color: 0x001a5b,
-      roughness: 0.78,
+      color: 0x0a1020,
+      roughness: 0.8,
       bumpMap: grain,
       bumpScale: 0.003,
-      envMapIntensity: 0.9,
+      envMapIntensity: 0.6,
     }),
-    dark: new MeshStandardMaterial({ color: 0x00020f, roughness: 0.9 }),
+    dark: new MeshStandardMaterial({ color: 0x05070c, roughness: 0.9 }),
     metal: new MeshStandardMaterial({
       color: 0xd4d6d9,
       metalness: 1,
-      roughness: 0.28,
+      roughness: 0.3,
+    }),
+    alloy: new MeshStandardMaterial({
+      color: 0xa4a6aa,
+      metalness: 0.8,
+      roughness: 0.5,
     }),
     rubber: new MeshStandardMaterial({
       color: 0x121314,
       roughness: 0.82,
       envMapIntensity: 0.7,
+    }),
+    whip: new MeshStandardMaterial({ color: 0xecebe8, roughness: 0.55 }),
+    pcb: new MeshStandardMaterial({ color: 0x0b2e5c, roughness: 0.45 }),
+    gold: new MeshStandardMaterial({
+      color: 0xc4a468,
+      metalness: 1,
+      roughness: 0.4,
     }),
   }
   type Bucket = keyof typeof mats
@@ -95,8 +108,9 @@ export function buildSensorModel() {
     Object.keys(mats).map((k) => [k, [] as BufferGeometry[]]),
   ) as Record<Bucket, BufferGeometry[]>
 
+  // Lower the whole unit so it is centred on the origin.
+  const Y0 = -0.55
   const o = new Object3D()
-  let yOff = 0
   function put(
     bucket: Bucket,
     geo: BufferGeometry,
@@ -107,7 +121,7 @@ export function buildSensorModel() {
     ry = 0,
     rz = 0,
   ) {
-    o.position.set(x, y + yOff, z)
+    o.position.set(x, y + Y0, z)
     o.rotation.set(rx, ry, rz)
     o.updateMatrix()
     const g = geo.index ? geo.toNonIndexed() : geo
@@ -123,14 +137,26 @@ export function buildSensorModel() {
   const CYL = (rt: number, rb: number, h: number, seg = 24) =>
     new CylinderGeometry(rt, rb, h, seg)
   // Rounded rectangle in the XZ plane, extruded up from y = 0. Only the
-  // vertical edges are round, as on a moulded box.
-  const EXT = (w: number, d: number, r: number, h: number, bevel = 0) => {
+  // vertical edges are round, as on a moulded box. A notch sets the flat
+  // front back by that depth, to take a separate front plate.
+  const EXT = (
+    w: number,
+    d: number,
+    r: number,
+    h: number,
+    bevel = 0,
+    notch = 0,
+  ) => {
     const s = new Shape()
     const x = w / 2 - r
     const z = d / 2 - r
     s.absarc(x, z, r, 0, HALF_PI)
     s.absarc(-x, z, r, HALF_PI, Math.PI)
     s.absarc(-x, -z, r, Math.PI, Math.PI * 1.5)
+    if (notch) {
+      s.lineTo(-x, -d / 2 + notch)
+      s.lineTo(x, -d / 2 + notch)
+    }
     s.absarc(x, -z, r, Math.PI * 1.5, TAU)
     const g = new ExtrudeGeometry(s, {
       depth: h - bevel * 2,
@@ -144,10 +170,15 @@ export function buildSensorModel() {
     g.rotateX(-HALF_PI)
     return g
   }
-
-  // Enclosure assembly sits 20 mm below the water surface (55 mm into the soil)
-  const BOX_DROP = -0.55
-  yOff = BOX_DROP
+  // Flat polygon in the XY plane, extruded to thickness t about z = 0.
+  const PLATE = (pts: [number, number][], t: number) => {
+    const g = new ExtrudeGeometry(
+      new Shape(pts.map(([x, y]) => new Vector2(x, y))),
+      { depth: t, bevelEnabled: false },
+    )
+    g.translate(0, 0, -t / 2)
+    return g
+  }
 
   // Enclosure: tall body, and a flat lid plate that overhangs it
   const W = 1.5
@@ -155,89 +186,175 @@ export function buildSensorModel() {
   const H = 2.3
   const R = 0.08
   const LID = 0.13
-  put('plastic', EXT(W, D, R, H))
-  put('plastic', EXT(W + 0.02, D + 0.02, R + 0.01, LID, 0.025), 0, H, 0)
-  // Cable notches in the top rim, under the lid
-  const NOTCH = 0.1
-  for (const sx of [-1, 1])
+  // Front plate with a round hole for the recessed logo
+  const PLATE_T = 0.18
+  const RING_R = 0.47
+  const LOGO_Y = H / 2 + 0.12
+  put('plastic', EXT(W, D, R, H, 0, PLATE_T))
+  {
+    const s = new Shape()
+    s.moveTo(-(W / 2 - R), 0)
+    s.lineTo(W / 2 - R, 0)
+    s.lineTo(W / 2 - R, H)
+    s.lineTo(-(W / 2 - R), H)
+    const hole = new Path()
+    hole.absarc(0, LOGO_Y, RING_R, 0, TAU, true)
+    s.holes.push(hole)
     put(
-      'dark',
-      new BoxGeometry(0.06, NOTCH, 0.2),
-      sx * (W / 2 - 0.027),
-      H - NOTCH / 2,
-      -0.1,
+      'plastic',
+      new ExtrudeGeometry(s, {
+        depth: PLATE_T,
+        bevelEnabled: false,
+        curveSegments: 96,
+      }),
+      0,
+      0,
+      D / 2 - PLATE_T,
     )
+  }
+  // Logo floor in the hole: one flat terrace that winds down to the centre,
+  // with a step wall between turns. 2.5 turns; the wall starts at the ring
+  // at 2 o'clock and winds clockwise to the centre.
+  {
+    const TURNS = 2.5
+    const rz = Math.PI / 3 - TAU * TURNS
+    const BASE = 0.04
+    const STEP = 0.03
+    const N = 280
+    const g = new PlaneGeometry(2 * RING_R, 2 * RING_R, N, N)
+    const pos = g.attributes.position
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      const r = Math.hypot(x, y)
+      // Outside the ring the grid hides behind the front plate.
+      let depth = PLATE_T + 0.01
+      if (r < RING_R) {
+        // s is a whole number on the spiral wall; f is the fraction of a
+        // turn past the wall.
+        const rho = (r / RING_R) * TURNS
+        const s = rho - (Math.atan2(y, x) - rz) / TAU
+        const f = s - Math.floor(s)
+        depth = BASE + STEP * (TURNS - rho + f)
+      }
+      pos.setZ(i, -depth)
+    }
+    g.computeVertexNormals()
+    put('plastic', g, 0, LOGO_Y, D / 2)
+  }
+  put('plastic', EXT(W + 0.03, D + 0.03, R + 0.015, LID, 0.03), 0, H, 0)
+  // Cable notch in the left rim, under the lid
   put(
     'dark',
-    new BoxGeometry(0.2, NOTCH, 0.06),
-    0.25,
-    H - NOTCH / 2,
-    -(D / 2 - 0.027),
+    new BoxGeometry(0.06, 0.12, 0.14),
+    -(W / 2 - 0.027),
+    H - 0.06,
+    -0.12,
   )
-  // Cable hole in the right side
+
+  // Antenna on the left side: dark recess, O-ring, threaded barrel,
+  // right-angle elbow and a white whip with a round tip.
+  const SX = -W / 2
+  const CY = H - 0.3
+  const CZ = -0.3
+  const WX = SX - 0.38
+  put('dark', CYL(0.18, 0.18, 0.02, 40), SX, CY, CZ, 0, 0, HALF_PI)
   put(
-    'dark',
-    CYL(0.13, 0.13, 0.04, 32),
-    W / 2 - 0.017,
-    H - 0.55,
-    0.25,
-    0,
+    'rubber',
+    new TorusGeometry(0.095, 0.03, 10, 32),
+    SX - 0.03,
+    CY,
+    CZ,
     0,
     HALF_PI,
   )
-
-  const FACE_Z = D / 2
-
-  // Antenna: washer, hex nut, SMA barrel, rubber knuckle, tapered whip
-  const AX = 0.05
-  const AZ = 0.15
-  const AY = H + LID
-  put('metal', CYL(0.12, 0.12, 0.012, 24), AX, AY + 0.006, AZ)
-  put('metal', CYL(0.1, 0.1, 0.05, 6), AX, AY + 0.037, AZ)
-  put('metal', CYL(0.066, 0.068, 0.24, 24), AX, AY + 0.182, AZ)
-  put('rubber', CYL(0.078, 0.078, 0.14, 24), AX, AY + 0.37, AZ)
-  for (let i = 0; i < 4; i++)
+  put('metal', CYL(0.06, 0.06, 0.26, 24), SX - 0.13, CY, CZ, 0, 0, HALF_PI)
+  for (let i = 0; i < 6; i++)
     put(
-      'rubber',
-      new TorusGeometry(0.074, 0.009, 6, 24),
-      AX,
-      AY + 0.46 + i * 0.045,
-      AZ,
+      'metal',
+      new TorusGeometry(0.06, 0.01, 6, 24),
+      SX - 0.07 - i * 0.028,
+      CY,
+      CZ,
+      0,
       HALF_PI,
     )
-  put('rubber', CYL(0.054, 0.072, 1.85, 24), AX, AY + 0.44 + 0.925, AZ)
+  put('alloy', RB(0.28, 0.2, 0.22, 0.025, 2), WX + 0.02, CY, CZ)
+  const WHIP = 2.06
+  put('whip', CYL(0.1, 0.1, WHIP, 32), WX, CY + 0.1 + WHIP / 2, CZ)
   put(
-    'rubber',
-    new SphereGeometry(0.054, 20, 8, 0, TAU, 0, HALF_PI),
-    AX,
-    AY + 2.29,
-    AZ,
+    'whip',
+    new SphereGeometry(0.1, 24, 8, 0, TAU, 0, HALF_PI),
+    WX,
+    CY + 0.1 + WHIP,
+    CZ,
   )
 
-  // Probe head moulded into the enclosure base, partly buried
-  const PX = 0.3
-  const PZ = 0.02
-  const ROD = 2.0
-  put('plastic', RB(0.95, 0.22, 0.34, 0.05, 2), 0, -0.09, 0)
-  yOff = 0
-  // Two stainless rods, 200 mm, with ferrules and pointed tips
-  for (const sx of [-1, 1]) {
-    put('metal', CYL(0.06, 0.06, 0.05, 20), sx * PX, -0.225 + BOX_DROP, PZ)
+  // Soil moisture probe: a blue PCB with two pointed prongs and gold pads.
+  // The top 150 mm of board is inside the enclosure.
+  {
+    const PX = -0.55
+    const PZ = -0.2
+    const T = 0.035
     put(
-      'metal',
-      CYL(0.035, 0.035, ROD - 0.12, 16),
-      sx * PX,
-      -(ROD - 0.12) / 2,
+      'pcb',
+      PLATE(
+        [
+          [-0.17, 0.15],
+          [0.17, 0.15],
+          [0.17, -0.92],
+          [0.1, -1.05],
+          [0.03, -0.92],
+          [0.03, -0.25],
+          [-0.03, -0.25],
+          [-0.03, -0.92],
+          [-0.1, -1.05],
+          [-0.17, -0.92],
+        ],
+        T,
+      ),
+      PX,
+      0,
       PZ,
     )
-    put(
-      'metal',
-      new ConeGeometry(0.035, 0.12, 16),
-      sx * PX,
-      -ROD + 0.06,
-      PZ,
-      Math.PI,
-    )
+    for (const c of [-0.1, 0.1])
+      put(
+        'gold',
+        PLATE(
+          [
+            [c - 0.035, -0.33],
+            [c + 0.035, -0.33],
+            [c + 0.035, -0.985],
+            [c, -1.05],
+            [c - 0.035, -0.985],
+          ],
+          T + 0.008,
+        ),
+        PX,
+        0,
+        PZ,
+      )
+  }
+
+  // Ultrasonic water level module under the front: blue board, a 4-pin
+  // header at the front edge, and two aluminium transducers facing down.
+  {
+    const UX = -0.15
+    const UZ = 0.42
+    const BT = 0.045
+    put('pcb', new BoxGeometry(1.0, BT, 0.5), UX, -BT / 2, UZ)
+    for (let i = 0; i < 4; i++)
+      put(
+        'gold',
+        new BoxGeometry(0.02, 0.03, 0.05),
+        -0.26 + i * 0.04,
+        0.015,
+        0.645,
+      )
+    for (const dx of [-0.24, 0.24]) {
+      put('metal', CYL(0.15, 0.15, 0.23, 40), UX + dx, -BT - 0.115, UZ - 0.02)
+      put('dark', CYL(0.12, 0.12, 0.01, 32), UX + dx, -BT - 0.23, UZ - 0.02)
+    }
   }
 
   // Merge each bucket into one mesh
@@ -245,91 +362,6 @@ export function buildSensorModel() {
     const merged = mergeGeometries(buckets[k], false)
     buckets[k].forEach((g) => g.dispose())
     root.add(new Mesh(merged, mats[k]))
-  }
-
-  // Raised spiral logo: bump and roughness maps on a panel over the flat front face.
-  // A thin outer ring and a spiral line stand up from the face, a little smoother than it.
-  {
-    const PW = W - 2 * R - 0.04
-    const PH = H - 0.3
-    const CW = 1024
-    const CH = Math.round((CW * PH) / PW)
-    const px = CW / PW
-    const RING_R = 0.4
-    const LOGO_DY = -0.15
-    const cx = CW / 2
-    const cy = CH / 2 - LOGO_DY * px
-    // Spiral: 2 turns. It starts as a point at 1 o'clock, widens as it winds
-    // clockwise inwards, and ends in a round hook around the centre dot.
-    const tMax = TAU * 2
-    const r0 = 0.07
-    const rz = Math.PI / 3 - tMax
-    const grooveR = (k: number) => r0 + 0.265 * Math.pow(k, 1.1)
-    const grooveW = (k: number) =>
-      0.07 * Math.pow(Math.min(1, (1 - k) / 0.4), 0.8) * (0.75 + 0.25 * k)
-    const spiralPath = (g: CanvasRenderingContext2D) => {
-      const outer: [number, number][] = []
-      const inner: [number, number][] = []
-      for (let i = 0; i <= 400; i++) {
-        const k = i / 400
-        const t = k * tMax + rz
-        const r = grooveR(k)
-        const w = grooveW(k)
-        outer.push([Math.cos(t) * (r + w / 2), Math.sin(t) * (r + w / 2)])
-        inner.push([Math.cos(t) * (r - w / 2), Math.sin(t) * (r - w / 2)])
-      }
-      g.beginPath()
-      outer.concat(inner.reverse()).forEach(([x, y], i) => {
-        if (i) g.lineTo(cx + x * px, cy - y * px)
-        else g.moveTo(cx + x * px, cy - y * px)
-      })
-      g.closePath()
-      const capR = grooveW(0) / 2
-      const ex = cx + Math.cos(rz) * r0 * px
-      const ey = cy - Math.sin(rz) * r0 * px
-      g.moveTo(ex + capR * px, ey)
-      g.arc(ex, ey, capR * px, 0, TAU)
-    }
-    const logoCanvas = (base: string, line: string) => {
-      const c = document.createElement('canvas')
-      c.width = CW
-      c.height = CH
-      const g = c.getContext('2d')!
-      const pat = g.createPattern(grain.image as HTMLCanvasElement, 'repeat')!
-      pat.setTransform(new DOMMatrix().scale(1.54))
-      g.fillStyle = base
-      g.fillRect(0, 0, CW, CH)
-      g.globalCompositeOperation = 'overlay'
-      g.fillStyle = pat
-      g.fillRect(0, 0, CW, CH)
-      g.globalCompositeOperation = 'source-over'
-      g.filter = 'blur(1.5px)'
-      g.fillStyle = line
-      spiralPath(g)
-      g.fill()
-      g.strokeStyle = line
-      g.lineWidth = 0.028 * px
-      g.beginPath()
-      g.arc(cx, cy, RING_R * px, -Math.PI / 3 + 0.35, -Math.PI / 3 - 0.35 + TAU)
-      g.stroke()
-      g.filter = 'none'
-      const t = new CanvasTexture(c)
-      t.anisotropy = 4
-      return t
-    }
-    const face = new Mesh(
-      new PlaneGeometry(PW, PH),
-      new MeshStandardMaterial({
-        color: mats.plastic.color,
-        roughness: 1,
-        envMapIntensity: 0.9,
-        bumpMap: logoCanvas('#808080', '#c8c8c8'),
-        bumpScale: 0.02,
-        roughnessMap: logoCanvas('#c7c7c7', '#a8a8a8'),
-      }),
-    )
-    face.position.set(0, H / 2 + BOX_DROP, FACE_Z + 0.0006)
-    root.add(face)
   }
 
   return root
