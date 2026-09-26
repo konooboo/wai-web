@@ -5,37 +5,37 @@ import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { READING_INTERVAL_MIN } from '../content'
 
-const INTRO = `One low-power unit per site. It takes a reading every ${READING_INTERVAL_MIN} min and sends it to the app by LoRa radio.`
+const INTRO = `Each site gets one low-power unit. It reads every ${READING_INTERVAL_MIN}\u00a0min and sends the data to the Wai app over LoRa radio.`
 
 const SPECS: { label: string; value: string; detail: string }[] = [
   {
     label: 'Water and soil',
     value: 'Level and moisture',
     detail:
-      'Tank and trough level as % full · soil wet\u00a0% · in a trough, it shows if the probe is in water',
+      'Tank and trough level as % full · soil moisture as wet\u00a0% · detects an empty trough',
   },
   {
     label: 'Location and radio',
     value: 'GPS and LoRa',
     detail:
-      'GPS position on each reading shows if a unit moves · LoRa covers several hectares with no cell coverage',
+      'GPS shows if a unit moves · LoRa reaches across several hectares with no cell coverage',
   },
   {
     label: 'Power',
     value: 'Solar powered',
-    detail: 'Renewable · sustainable',
+    detail: 'Runs on renewable, sustainable energy',
   },
 ]
 
-const AI_TITLE = 'Wai AI checks every reading.'
+const AI_TITLE = 'Wai AI watches every reading.'
 const AI_COPY =
-  'For each alert, it writes what is wrong, the likely cause, what to do now and the risk over the next 24–\u206048\u00a0h.'
+  'When something needs attention, it tells you what is wrong, the likely cause, what to do now and the risk over the next 24–\u206048\u00a0h.'
 
 const ALERTS = [
-  { name: 'Water low', detail: 'Tank or trough level' },
+  { name: 'Water low', detail: 'Tank or trough' },
   { name: 'Soil too dry or too wet', detail: 'Soil moisture' },
-  { name: 'Unit moved', detail: 'Outside its GPS boundary' },
-  { name: 'Unit offline', detail: 'No packet received' },
+  { name: 'Unit moved', detail: 'Left its GPS boundary' },
+  { name: 'Unit offline', detail: 'Stopped reporting' },
 ]
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
@@ -61,7 +61,7 @@ export function Hardware() {
               Hardware
             </p>
             <h2 className="mt-4 text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-              The hardware.
+              Built for the paddock.
             </h2>
           </div>
           <div className={`${cell} flex items-center`}>
