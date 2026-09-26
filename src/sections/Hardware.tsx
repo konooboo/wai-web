@@ -1,42 +1,55 @@
 import productPhoto from '../assets/product-photo.jpeg'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
-import { READING_INTERVAL_MIN, SENSORS } from '../content'
+import { READING_INTERVAL_MIN } from '../content'
 
-const INTRO = 'One unit for water, one for soil. Both report to the same app.'
+const INTRO = `One low-power unit per site. It takes a reading every ${READING_INTERVAL_MIN} min and sends it to the app by LoRa radio.`
 
-// Draft spec values. Every value here needs the hardware team to confirm it.
+// Values from the prototype. Battery life is not measured yet.
 const SPECS: { label: string; value: string; detail: string }[] = [
   {
-    label: 'Water unit',
-    value: 'Floating buoy',
-    detail: 'Anchored in the waterway',
-  }, // TODO(data): confirm form factor
+    label: 'Water level',
+    value: 'Level and % full',
+    detail:
+      'Ultrasonic distance, median of 5 pings per reading · % full from the tank depth',
+  },
   {
-    label: 'Soil unit',
-    value: 'Buried probe',
-    detail: '15 cm depth',
-  }, // TODO(data): confirm depth
+    label: 'Soil moisture',
+    value: 'Wet %',
+    detail:
+      'Calibrated from 0 % in air to 100 % in water · in a trough, it shows if the probe is in water',
+  },
   {
-    label: 'Reading interval',
-    value: `Every ${READING_INTERVAL_MIN} min`,
-    detail: 'Uploaded each reading interval · stored for [X] years',
-  }, // TODO(data): confirm retention
+    label: 'Location',
+    value: 'GPS position',
+    detail:
+      'Latitude, longitude and altitude · UTC time on each reading · shows if a unit moves',
+  },
   {
-    label: 'Connectivity',
-    value: 'LoRaWAN',
-    detail: 'Cellular fallback',
-  }, // TODO(data): confirm radios
+    label: 'Radio',
+    value: 'LoRa',
+    detail:
+      'Long range, no cell coverage needed · signal strength (RSSI) and SNR on each packet',
+  },
+  {
+    label: 'Unit health',
+    value: 'Self-check',
+    detail:
+      'Uptime, chip temperature, free memory and firmware version on each reading',
+  },
   {
     label: 'Battery',
-    value: 'Up to [X] years',
-    detail: 'Solar-assisted battery',
-  }, // TODO(data): confirm battery life and power source
-  {
-    label: 'Enclosure',
-    value: 'IP68',
-    detail: 'Operates from −10 to 50 °C · under 30 min to install per unit',
-  }, // TODO(data): confirm rating after certification, range and install time
+    value: 'Up to [X] months',
+    detail: 'Low-power ESP32 board · rechargeable battery',
+  }, // TODO(data): measure battery life in the field
+]
+
+const MODULES = [
+  { name: 'ESP32 board', part: 'ESP32' },
+  { name: 'Ultrasonic', part: 'HC-SR04' },
+  { name: 'Soil probe', part: 'XC4604' },
+  { name: 'GPS', part: 'XC3710' },
+  { name: 'LoRa radio', part: 'XC4392' },
 ]
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
@@ -83,22 +96,20 @@ export function Hardware() {
           ))}
         </div>
 
-        <div className="bg-paper/[0.03] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9">
+        <div className="bg-paper/[0.03] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8">
           <div className={`${cell} col-span-2 sm:col-span-3`}>
             <p className="text-healthy font-mono text-xs tracking-wider uppercase">
-              Measures
+              Prototype
             </p>
-            <p className="text-paper/60 mt-2">
-              Every {READING_INTERVAL_MIN} min:
-            </p>
+            <p className="text-paper/60 mt-2">Built from:</p>
           </div>
-          {SENSORS.map((s) => (
+          {MODULES.map((m) => (
             <div
-              key={s.id}
+              key={m.part}
               className="border-paper/10 border-t border-l px-5 py-6"
             >
-              <p>{s.label}</p>
-              <p className="text-paper/50 mt-1 font-mono text-xs">{s.unit}</p>
+              <p>{m.name}</p>
+              <p className="text-paper/50 mt-1 font-mono text-xs">{m.part}</p>
             </div>
           ))}
         </div>
