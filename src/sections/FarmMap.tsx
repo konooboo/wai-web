@@ -129,9 +129,14 @@ export function FarmMap() {
                 className="flex min-h-[55svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
               >
                 {i === 0 ? (
-                  <SectionHeading eyebrow={step.eyebrow} title={step.title}>
-                    {step.body}
-                  </SectionHeading>
+                  <div>
+                    <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
+                      How it works: Sense → Diagnose → Act
+                    </p>
+                    <SectionHeading eyebrow={step.eyebrow} title={step.title}>
+                      {step.body}
+                    </SectionHeading>
+                  </div>
                 ) : (
                   <div className="max-w-md">
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">

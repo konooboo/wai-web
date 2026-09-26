@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { BOOK_DEMO_HREF } from '../content'
 
 const links = [
-  { href: '#how-it-works', label: 'How it works' },
+  { href: '#farm-map', label: 'How it works' },
   { href: '#hardware', label: 'Hardware' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#faq', label: 'FAQ' },

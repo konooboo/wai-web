@@ -6,7 +6,6 @@ import { FarmMap } from './sections/FarmMap'
 import { Footer } from './sections/Footer'
 import { Hardware } from './sections/Hardware'
 import { Hero } from './sections/Hero'
-import { HowItWorks } from './sections/HowItWorks'
 import { Nav } from './sections/Nav'
 import { Pricing } from './sections/Pricing'
 import { Problem } from './sections/Problem'
@@ -21,7 +20,6 @@ export default function App() {
         <ProofStrip />
         <Problem />
         <FarmMap />
-        <HowItWorks />
         <Hardware />
         <Pricing />
         <About />

@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-wrap justify-between gap-6">
           <p>© 2026 Wai. Made in Christchurch, NZ.</p>
           <div className="flex gap-6">
-            <a href="#how-it-works" className="hover:text-ink">
+            <a href="#farm-map" className="hover:text-ink">
               How it works
             </a>
             <a href="#faq" className="hover:text-ink">
