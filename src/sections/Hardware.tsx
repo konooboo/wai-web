@@ -6,49 +6,50 @@ import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { READING_INTERVAL_MIN } from '../content'
 
-const INTRO = `Each site gets one low-power unit. It reads every ${READING_INTERVAL_MIN} min and sends the data over LoRa radio. Wai AI turns the readings into a cause, a fix and a deadline.`
+const TITLE = 'Hardware built for NZ.'
+
+const INTRO = `One unit per site. It checks your water and soil every ${READING_INTERVAL_MIN}\u00a0min, and Wai AI tells you what to do next.`
 
 type Spec = { label: string; value: string; detail: string }
 
 const SENSOR_SPECS: Spec[] = [
   {
-    label: 'Water level',
-    value: 'Median of 5 pings',
-    detail:
-      'HC-SR04 ultrasonic · echo time in µs · distance in cm · echo success rate · level and % full from the tank depth',
+    label: 'Ultrasonic sensor',
+    value: 'Water level',
+    detail: 'Tanks and troughs as % full · warns you before one runs dry',
   },
   {
-    label: 'Soil and water',
-    value: 'Wet % from 0 to 100',
+    label: 'Moisture probe',
+    value: 'Soil moisture',
     detail:
-      'XC4604 probe · raw ADC and mV · calibrated 0 in air, 1500 in water · in a trough, shows if the fork is in water',
+      'Shows when soil is too dry or too wet · in a trough, shows if it is empty',
   },
   {
-    label: 'Location and power',
-    value: 'GPS, LoRa and solar',
+    label: 'Solar, LoRa and GPS',
+    value: 'Works off-grid',
     detail:
-      'GPS shows if a unit moves · LoRa reaches across several hectares with no cell coverage · solar powered',
+      'No mains power or cell coverage needed · tells you if a unit moves',
   },
 ]
 
 const AI_SPECS: Spec[] = [
   {
-    label: 'Alert diagnosis',
-    value: 'Cause, fix and cost',
+    label: 'On every alert',
+    value: 'Alert diagnosis',
     detail:
-      'Reads the current and usual values, the trend, the probe position and the last 48 h of rain at that spot · names the most likely cause and what rules out the other · flags an impossible reading as a sensor fault',
+      'The likely cause, two or three steps to fix it and the cost if you wait',
   },
   {
-    label: 'Today on the farm',
-    value: 'One job for today',
+    label: 'On the home screen',
+    value: 'Today on the farm',
     detail:
-      'Checks every probe at once · ranks stock water first, then a trough close to dry, then soil, then an offline probe · or says all is well and names the reading that would change that',
+      'Checks every sensor and picks the one job to do today, or tells you all is well',
   },
   {
-    label: 'Fertiliser timing',
-    value: 'Apply now or wait',
+    label: 'For soil sensors',
+    value: 'Fertiliser timing',
     detail:
-      'Average soil moisture plus the next 48 h rain forecast · Apply now, Wait for rain, or Too wet with leaching risk · gives the reason with the numbers',
+      'Soil moisture plus the 48\u00a0h rain forecast: Apply now, Wait for rain or Too wet',
   },
 ]
 
@@ -140,7 +141,7 @@ export function Hardware() {
                 Hardware
               </p>
               <h2 className="mt-4 text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-                Built for the outdoors.
+                {TITLE}
               </h2>
             </div>
             <div className={`${cell} flex items-center`}>
