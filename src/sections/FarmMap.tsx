@@ -69,7 +69,9 @@ export function FarmMap() {
     offset: ['start 0.25', 'end 0.7'],
   })
   // One smoothed progress for the camera, shaders and overlays, so a fast
-  // scroll cannot put the popups ahead of the map.
+  // scroll cannot put the popups ahead of the map. Keep the settle time
+  // short: each scroll event restarts the spring, so a long one trails the
+  // text by a whole step and then rushes to catch up.
   const smooth = useSpring(scrollYProgress, {
     visualDuration: 0.3,
     bounce: 0,
@@ -155,7 +157,7 @@ export function FarmMap() {
               return (
                 <div
                   key={step.eyebrow}
-                  className="flex min-h-svh flex-col items-start pt-6 pb-16 md:pt-[22svh]"
+                  className="flex min-h-[150svh] flex-col items-start pt-6 pb-16 md:pt-[22svh]"
                 >
                   <div className="max-w-md">
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">
