@@ -136,7 +136,7 @@ export function Nav() {
           className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
         >
           <motion.span
-            animate={{ rotate: open ? 45 : 0, y: open ? 6 : 0 }}
+            animate={{ rotate: open ? 45 : 0, y: open ? 8 : 0 }}
             className="block h-0.5 w-5 bg-current"
           />
           <motion.span
@@ -144,7 +144,7 @@ export function Nav() {
             className="block h-0.5 w-5 bg-current"
           />
           <motion.span
-            animate={{ rotate: open ? -45 : 0, y: open ? -6 : 0 }}
+            animate={{ rotate: open ? -45 : 0, y: open ? -8 : 0 }}
             className="block h-0.5 w-5 bg-current"
           />
         </button>
