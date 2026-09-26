@@ -10,6 +10,8 @@ const FINE_RADIUS_KM = 45
 const LOCAL_KM = 0.1
 const LOCAL_RADIUS_KM = 5
 const COAST_STEP_KM = 1
+// Half-width of the hole left for the farm point cloud.
+const HOLE_KM = (MAP_METRES / 2000) * 1.05
 
 export type NzDots = {
   count: number
@@ -67,14 +69,14 @@ export function buildNzDots(): NzDots {
   for (let y = -FINE_RADIUS_KM; y < FINE_RADIUS_KM; y += FINE_KM)
     for (let x = -FINE_RADIUS_KM; x < FINE_RADIUS_KM; x += FINE_KM) {
       const d = Math.hypot(x, y)
-      if (d < FINE_RADIUS_KM && Math.max(Math.abs(x), Math.abs(y)) > 0.6)
+      if (d < FINE_RADIUS_KM && Math.max(Math.abs(x), Math.abs(y)) > HOLE_KM)
         if (onLand(x, y)) push(x, y, 2)
     }
   for (let y = -LOCAL_RADIUS_KM; y < LOCAL_RADIUS_KM; y += LOCAL_KM)
     for (let x = -LOCAL_RADIUS_KM; x < LOCAL_RADIUS_KM; x += LOCAL_KM)
       if (
         Math.hypot(x, y) < LOCAL_RADIUS_KM &&
-        Math.max(Math.abs(x), Math.abs(y)) > 0.45
+        Math.max(Math.abs(x), Math.abs(y)) > HOLE_KM
       )
         push(x, y, 3)
 

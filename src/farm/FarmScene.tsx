@@ -261,7 +261,7 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
     [reduced],
   )
   const boxGeometry = useMemo(
-    () => new EdgesGeometry(new BoxGeometry(0.045, 0.04, 0.045)),
+    () => new EdgesGeometry(new BoxGeometry(0.03, 0.028, 0.03)),
     [],
   )
   const boxMaterials = useRef<(LineBasicMaterial | null)[]>([])

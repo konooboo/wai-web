@@ -124,6 +124,30 @@ const GARDEN_TREES: [number, number, number, number][] = [
 // Pine block on the hill above the upper stream, in grid coordinates.
 const PINES = { a0: 0.28, a1: 0.37, b0: 0.05, b1: 0.18 }
 
+// Paddock state per fence-grid cell: 0 grazed, 1 long grass, 2 cut for
+// silage (swath rows), 3 baled. Paddock 7 is grazed.
+const PADDOCK_STATE = FENCE_A.slice(0, -1).map((_, ia) =>
+  FENCE_B.slice(0, -1).map((_, ib) => {
+    if (ia === 3 && ib === 2) return 0
+    const r = mulberry32(ia * 31 + ib * 7 + 3)()
+    return r < 0.4 ? 0 : r < 0.7 ? 1 : r < 0.85 ? 2 : 3
+  }),
+)
+const gridCell = (v: number, lines: number[]) => {
+  let i = -1
+  while (i < lines.length - 1 && v > lines[i + 1]) i++
+  return i
+}
+const paddockState = (a: number, b: number) => {
+  const ia = gridCell(a, FENCE_A)
+  const ib = gridCell(b, FENCE_B)
+  return ia < 0 || ib < 0 || ia > 5 || ib > 5 ? 0 : PADDOCK_STATE[ia][ib]
+}
+
+// Fences stay clear of the stream, the pond, the yard and the track.
+const fenceAllowed = (ds: number, e: number, dy: number, dt: number) =>
+  ds > 27 * M && e > 1.45 && dy > YARD.r * 1.2 && dt > 4 * M
+
 // Buildings: [x, y, length m, width m, eave m, ridge m]. The long side
 // runs along the fence grid and the roof is a gable.
 type Building = [number, number, number, number, number, number]
@@ -498,9 +522,14 @@ export function getHeightmap(
 
       // Fences and shelter belts.
       const grid = toGrid(x, y)
-      const fenceOk = ds > 27 * M && e > 1.45 && dy > YARD.r * 1.2 && dt > 4 * M
+      const fenceOk = fenceAllowed(ds, e, dy, dt)
       if (fenceOk && fenceDistance(grid.a, grid.b) < 0.9 * M) h += 0.3
       if (fenceOk) belt[k] = beltHeight(grid.a, grid.b, x, y)
+
+      // Long grass is rough; a mown paddock loses its micro noise.
+      const state = fenceOk ? paddockState(grid.a, grid.b) : 0
+      if (state === 1) h += 0.3 * hash01(cx, cy)
+      if (state >= 2) h -= 0.08 * fbm(x * 90, y * 90, 2)
 
       heights[k] = h
     }
@@ -509,7 +538,7 @@ export function getHeightmap(
   const ground = heights.slice()
   const cover = water.slice()
   const canopyBase = new Float32Array(n)
-  const props = new Float32Array(0)
+  const propList: number[] = []
 
   // ---------- trees ----------
 
@@ -649,6 +678,106 @@ export function getHeightmap(
       water[k] = 0
     })
   }
+
+  // ---------- props ----------
+
+  const okForProp = (x: number, y: number) => {
+    if (x < 0 || x > 1 || y < 0 || y > 1) return false
+    const k = cellAt(x, y)
+    return (
+      !water[k] &&
+      cover[k] === 0 &&
+      dTrack[k] > 4 * M &&
+      pondEllipse(x, y) > 1.05 &&
+      Math.hypot(x - YARD.x, y - YARD.y) > YARD.r &&
+      !nearKeepClear(x, y, 12 * M)
+    )
+  }
+  const prop = (kind: number, x: number, y: number, dz: number) => {
+    if (okForProp(x, y)) propList.push(kind, x, y, dz)
+  }
+
+  // Fence posts every 3.2 m along the fence grid.
+  const post = (p: Point) => {
+    if (p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) return
+    const k = cellAt(p.x, p.y)
+    const ok = fenceAllowed(
+      dStream[k],
+      pondEllipse(p.x, p.y),
+      Math.hypot(p.x - YARD.x, p.y - YARD.y),
+      dTrack[k],
+    )
+    if (ok) prop(0, p.x, p.y, 1.1)
+  }
+  const [A0, A1] = [FENCE_A[0], FENCE_A[FENCE_A.length - 1]]
+  const [B0, B1] = [FENCE_B[0], FENCE_B[FENCE_B.length - 1]]
+  for (const u of FENCE_A)
+    for (let b = B0; b <= B1; b += 3.2 * M) post(fromGrid(u, b))
+  for (const v of FENCE_B)
+    for (let a = A0; a <= A1; a += 3.2 * M) post(fromGrid(a, v))
+
+  // Round bale: a ring of returns at two heights and a top.
+  const bale = (p: Point) => {
+    for (let i = 0; i < 6; i++) {
+      const t = (i * Math.PI) / 3
+      const r = 0.75 * M
+      prop(2, p.x + Math.cos(t) * r, p.y + Math.sin(t) * r, i % 2 ? 1.1 : 0.4)
+    }
+    prop(2, p.x, p.y, 1.5)
+  }
+
+  const jitter = mulberry32(5)
+  for (let ia = 0; ia < PADDOCK_STATE.length; ia++)
+    for (let ib = 0; ib < PADDOCK_STATE[ia].length; ib++) {
+      const [a0, a1] = [FENCE_A[ia], FENCE_A[ia + 1]]
+      const [b0, b1] = [FENCE_B[ib], FENCE_B[ib + 1]]
+      const state = PADDOCK_STATE[ia][ib]
+
+      // One trough 3 m in from a fence: north, else south, else west.
+      const spots = [
+        [(a0 + a1) / 2, b0 + 3 * M],
+        [(a0 + a1) / 2, b1 - 3 * M],
+        [a0 + 3 * M, (b0 + b1) / 2],
+      ]
+      for (const [a, b] of spots) {
+        const p = fromGrid(a, b)
+        if (!okForProp(p.x, p.y)) continue
+        prop(3, p.x, p.y, 0.65)
+        for (let i = 0; i < 6; i++) {
+          const t = (i * Math.PI) / 3
+          prop(3, p.x + Math.cos(t) * M, p.y + Math.sin(t) * M, 0.65)
+        }
+        break
+      }
+
+      if (state === 2) {
+        // Silage swaths 9 m apart, and a stack of bales by the gate.
+        for (let b = b0 + 4.5 * M; b < b1; b += 9 * M)
+          for (let a = a0 + 2 * M; a < a1 - 2 * M; a += 1.6 * M) {
+            const p = fromGrid(a, b + (jitter() - 0.5) * 0.6 * M)
+            prop(1, p.x, p.y, 0.45)
+          }
+        for (let i = 0; i < 12; i++)
+          bale(
+            fromGrid(
+              a0 + (8 + (i % 6) * 1.8) * M,
+              b0 + (8 + Math.floor(i / 6) * 1.8) * M,
+            ),
+          )
+      }
+      if (state === 3)
+        for (let a = a0 + 9 * M; a < a1; a += 18 * M)
+          for (let b = b0 + 11 * M; b < b1; b += 22 * M) {
+            if (jitter() < 0.45) continue
+            bale(
+              fromGrid(
+                a + (jitter() - 0.5) * 6 * M,
+                b + (jitter() - 0.5) * 6 * M,
+              ),
+            )
+          }
+    }
+  const props = Float32Array.from(propList)
 
   cached = {
     size,

@@ -136,6 +136,22 @@ export function buildPointCloud(
     }
   })
 
+  // Fence posts, swaths, bales and troughs belong to the nearest sensor.
+  for (let i = 0; i < map.props.length; i += 4) {
+    const x = map.props[i + 1]
+    const y = map.props[i + 2]
+    let si = 0
+    let best = Infinity
+    sensors.forEach((s, j) => {
+      const d = Math.hypot(x - s.x, y - s.y)
+      if (d < best) {
+        best = d
+        si = j
+      }
+    })
+    push(x, y, groundAt(x, y) + map.props[i + 3], best, si)
+  }
+
   const anchors: Record<string, Vec3> = {}
   for (const s of sensors) anchors[s.id] = toWorld(s.x, s.y, heightAt(s.x, s.y))
   const corner = PADDOCK_7[1]
