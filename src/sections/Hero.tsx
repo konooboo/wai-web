@@ -105,7 +105,7 @@ export function Hero() {
       />
       <motion.video
         ref={filmRef}
-        className="absolute inset-x-0 bottom-0 h-[calc(100%-65px)] w-full object-contain md:h-[calc(100%-77px)]"
+        className="absolute inset-x-0 bottom-0 h-[calc(100%-65px)] w-full cursor-pointer object-contain md:h-[calc(100%-77px)]"
         src={filmVideo}
         playsInline
         preload="none"
@@ -113,6 +113,7 @@ export function Hero() {
         animate={{ opacity: playing ? 1 : 0 }}
         transition={{ duration: 0.6, delay: playing ? 0.3 : 0 }}
         style={{ pointerEvents: playing ? 'auto' : 'none' }}
+        onClick={stop}
         onEnded={stop}
         onTimeUpdate={(e) =>
           progress.set(e.currentTarget.currentTime / e.currentTarget.duration)
