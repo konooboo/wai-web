@@ -75,7 +75,6 @@ const vertexShader = /* glsl */ `
   uniform float uPaddock;
   uniform float uScale;
   uniform float uPulse;
-  uniform float uAlertSensor;
   varying vec3 vColour;
   varying float vAlpha;
 
@@ -104,12 +103,13 @@ const vertexShader = /* glsl */ `
     alpha += 0.5 * pulse;
     colour = mix(colour, vec3(1.0), 0.45 * pulse);
 
-    // Alert: only the alert sensor's area turns red to orange, spreading
-    // out from the sensor, and pulses faster. Paddock 7 turns red too.
-    float owned = step(abs(data.z - uAlertSensor), 0.01);
+    // Alert: red to orange spreads out from the alert sensor over every
+    // point in reach, whichever sensor owns it, and fades at the edge so
+    // there is no hard border. Paddock 7 turns red too.
     float reach = uAlert * 0.3;
-    float alerting = owned * (1.0 - smoothstep(reach * 0.5, reach + 0.001, d)) * step(0.001, uAlert);
-    colour = mix(colour, turbo(0.93 - k * 0.25), alerting);
+    float ka = clamp(data.y / 0.3, 0.0, 1.0);
+    float alerting = (1.0 - smoothstep(reach * 0.6, reach + 0.001, data.y)) * step(0.001, uAlert);
+    colour = mix(colour, turbo(0.93 - ka * 0.25), alerting);
     float wa = fract(uTime * 0.4) * ${(ALERT_RADIUS * 1.2).toFixed(3)};
     float alertPulse = band(data.y, wa, 0.008) * alerting * uPulse;
     vec3 red = vec3(${ALERT.r.toFixed(3)}, ${ALERT.g.toFixed(3)}, ${ALERT.b.toFixed(3)});
@@ -244,10 +244,6 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
       uPaddock: { value: 0 },
       uScale: { value: 1 },
       uPulse: { value: reduced ? 0 : 1 },
-      // Matches the pulse phase in data.z, which encodes the sensor index.
-      uAlertSensor: {
-        value: FARM_SENSORS.findIndex((s) => s.id === ALERT_SENSOR_ID) * 0.37,
-      },
     }),
     [reduced],
   )
