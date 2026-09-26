@@ -88,7 +88,7 @@ export function LidarRings({
       const b = base.getContext('2d')!
       b.clearRect(0, 0, box.width, box.height)
       for (let i = 0; i < xs.length; i++) {
-        b.fillStyle = `rgb(20 20 18 / ${0.22 * (1 - (rs[i] / maxR) * 0.7)})`
+        b.fillStyle = `rgb(20 20 18 / ${0.55 * (1 - (rs[i] / maxR) * 0.7)})`
         b.fillRect(xs[i] - 0.75, ys[i] - 0.75, 1.5, 1.5)
       }
       draw(performance.now())
