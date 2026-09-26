@@ -20,4 +20,6 @@ export const ALERT_EXAMPLE = {
   time: '5 min ago',
 } // TODO(data): replace with a real example from the team
 
+export const READING_INTERVAL_MIN = 15 // TODO(data): confirm interval
+
 export const CONTACT_EMAIL = '[hello@wai.nz]' // TODO(data)

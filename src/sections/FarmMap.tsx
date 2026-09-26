@@ -8,7 +8,7 @@ import {
 import { useRef } from 'react'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
-import { ALERT_EXAMPLE } from '../content'
+import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
 import { FarmCanvas } from '../farm/FarmCanvas'
 import { Phone } from '../farm/Phone'
 import { SensorMarker } from '../farm/SensorMarker'
@@ -24,7 +24,7 @@ const STEPS = [
   },
   {
     eyebrow: '02 · Always on',
-    title: 'Readings every [X] minutes, day and night.', // TODO(data): reading interval
+    title: `Readings every ${READING_INTERVAL_MIN} minutes, day and night.`,
     body: 'Each sensor sends its readings to the app. Green means the reading is in its normal range.',
   },
   {

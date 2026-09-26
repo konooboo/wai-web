@@ -1,7 +1,7 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
-import { SENSORS } from '../content'
+import { READING_INTERVAL_MIN, SENSORS } from '../content'
 
 const MEASURES = SENSORS.map((s) =>
   s.unit ? `${s.label} (${s.unit})` : s.label,
@@ -12,7 +12,7 @@ const SPECS: { label: string; value: string }[] = [
   { label: 'Measures', value: MEASURES },
   { label: 'Water unit', value: 'Floating buoy, anchored in the waterway' }, // TODO(data): confirm form factor
   { label: 'Soil unit', value: 'Buried probe, 15 cm depth' }, // TODO(data): confirm depth
-  { label: 'Reading interval', value: 'Every 15 min' }, // TODO(data): confirm interval
+  { label: 'Reading interval', value: `Every ${READING_INTERVAL_MIN} min` },
   { label: 'Connectivity', value: 'LoRaWAN, cellular fallback' }, // TODO(data): confirm radios
   { label: 'Battery', value: 'Up to [X] years' }, // TODO(data): confirm battery life
   { label: 'Power', value: 'Solar-assisted battery' }, // TODO(data): confirm power source
