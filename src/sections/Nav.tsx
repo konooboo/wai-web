@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Koru } from '../components/Koru'
 import { BOOK_DEMO_HREF } from '../content'
 
@@ -13,6 +13,9 @@ const links = [
 export function Nav() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string | null>(null)
+  const [overHero, setOverHero] = useState(true)
+  const headerRef = useRef<HTMLElement>(null)
+  const clear = overHero && !open
 
   useEffect(() => {
     const sections = links
@@ -32,6 +35,18 @@ export function Nav() {
   }, [])
 
   useEffect(() => {
+    const hero = document.getElementById('top')
+    const header = headerRef.current
+    if (!hero || !header) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setOverHero(entry.isIntersecting),
+      { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+    )
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false)
@@ -41,7 +56,14 @@ export function Nav() {
   }, [open])
 
   return (
-    <header className="border-line bg-paper/95 sticky top-0 z-50 border-b">
+    <header
+      ref={headerRef}
+      className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+        clear
+          ? 'text-paper border-transparent bg-transparent'
+          : 'border-line bg-paper/95 text-ink'
+      }`}
+    >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:h-[76px]">
         <a
           href="#top"
@@ -51,13 +73,17 @@ export function Nav() {
           <Koru className="size-6" />
           wai
         </a>
-        <ul className="ml-auto hidden items-center gap-1 text-sm md:flex">
+        <ul className="ml-auto hidden items-center gap-2 text-sm md:flex">
           {links.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
-                className={`text-ink block rounded-md px-4 py-2.5 transition-colors ${
-                  active === link.href ? 'bg-ink/[0.07]' : 'hover:bg-ink/5'
+                className={`block rounded-full border px-4 py-2 transition-colors ${
+                  clear
+                    ? 'border-paper/30 hover:bg-paper/10'
+                    : active === link.href
+                      ? 'border-line bg-white'
+                      : 'border-line hover:bg-white'
                 }`}
               >
                 {link.label}
@@ -68,13 +94,21 @@ export function Nav() {
         <div className="ml-4 hidden items-center gap-2 text-sm md:flex">
           <button
             type="button"
-            className="text-ink hover:bg-ink/5 rounded-md px-4 py-2.5 transition-colors"
+            className={`rounded-full border px-4 py-2 transition-colors ${
+              clear
+                ? 'border-paper/30 hover:bg-paper/10'
+                : 'border-line hover:bg-white'
+            }`}
           >
             Sign in
           </button>
           <a
             href={BOOK_DEMO_HREF}
-            className="bg-ink text-paper hover:bg-ink/85 rounded-full px-5 py-2.5"
+            className={`rounded-full border border-transparent px-5 py-2 transition-colors ${
+              clear
+                ? 'bg-paper text-ink hover:bg-paper/85'
+                : 'bg-ink text-paper hover:bg-ink/85'
+            }`}
           >
             Book a demo
           </a>
@@ -89,15 +123,15 @@ export function Nav() {
         >
           <motion.span
             animate={{ rotate: open ? 45 : 0, y: open ? 6 : 0 }}
-            className="bg-ink block h-0.5 w-5"
+            className="block h-0.5 w-5 bg-current"
           />
           <motion.span
             animate={{ opacity: open ? 0 : 1 }}
-            className="bg-ink block h-0.5 w-5"
+            className="block h-0.5 w-5 bg-current"
           />
           <motion.span
             animate={{ rotate: open ? -45 : 0, y: open ? -6 : 0 }}
-            className="bg-ink block h-0.5 w-5"
+            className="block h-0.5 w-5 bg-current"
           />
         </button>
       </nav>

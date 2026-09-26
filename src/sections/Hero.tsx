@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="border-line bg-ink relative overflow-hidden border-b"
+      className="border-line bg-ink relative -mt-16 overflow-hidden border-b md:-mt-[76px]"
     >
       <video
         key={String(reducedMotion)}
@@ -24,7 +24,7 @@ export function Hero() {
         aria-hidden
       />
       <div className="bg-ink/50 absolute inset-0" />
-      <div className="relative mx-auto min-h-[calc(100svh-4rem)] max-w-6xl px-6 pt-16 pb-20 md:pt-24">
+      <div className="relative mx-auto min-h-svh max-w-6xl px-6 pt-32 pb-20 md:pt-[172px]">
         <div className="text-paper">
           <h1 className="max-w-4xl text-5xl leading-[1.02] font-medium tracking-tighter text-balance md:text-7xl">
             Know your soil and water
