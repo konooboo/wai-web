@@ -10,26 +10,12 @@ const TITLE = 'Hardware built for NZ.'
 const INTRO =
   'Our units monitor your water and soil. Wai AI knows what to do next.'
 
-type Spec = { label: string; value: string; detail: string }
+type Spec = { label: string; value: string; detail?: string }
 
 const SENSOR_SPECS: Spec[] = [
-  {
-    label: 'Ultrasonic sensor',
-    value: 'Water level',
-    detail: 'Tanks and troughs as % full · warns you before one runs dry',
-  },
-  {
-    label: 'Moisture probe',
-    value: 'Soil moisture',
-    detail:
-      'Shows when soil is too dry or too wet · in a trough, shows if it is empty',
-  },
-  {
-    label: 'Solar, LoRa and GPS',
-    value: 'Works off-grid',
-    detail:
-      'No mains power or cell coverage needed · tells you if a unit moves',
-  },
+  { label: 'Ultrasonic sensor', value: 'Water level' },
+  { label: 'Moisture probe', value: 'Soil moisture' },
+  { label: 'Solar, LoRa and GPS', value: 'Works off-grid' },
 ]
 
 const AI_SPECS: Spec[] = [
@@ -95,7 +81,7 @@ function SpecCell({
         {spec.label}
       </p>
       <p className="mt-6 text-3xl font-medium tracking-tight">{spec.value}</p>
-      <p className="text-paper/60 mt-4">{spec.detail}</p>
+      {spec.detail && <p className="text-paper/60 mt-4">{spec.detail}</p>}
     </Reveal>
   )
 }
