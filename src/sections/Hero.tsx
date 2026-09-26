@@ -15,7 +15,11 @@ export function Hero() {
   })
 
   return (
-    <section ref={ref} id="top" className="relative overflow-hidden">
+    <section
+      ref={ref}
+      id="top"
+      className="border-line relative overflow-hidden border-b"
+    >
       <LidarRings centre={modelRef} />
       <div className="relative mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
         <div>
@@ -52,10 +56,6 @@ export function Hero() {
             />
           </Suspense>
         </div>
-      </div>
-      <div className="border-line text-muted relative mx-auto flex max-w-6xl items-center gap-3 border-t px-6 py-4 font-mono text-xs tracking-wider uppercase">
-        <span className="bg-healthy size-2 animate-pulse rounded-full" />
-        WAI_01 · Online
       </div>
     </section>
   )
