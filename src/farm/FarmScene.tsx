@@ -75,6 +75,7 @@ const vertexShader = /* glsl */ `
   uniform float uPaddock;
   uniform float uScale;
   uniform float uPulse;
+  uniform float uAlertSensor;
   varying vec3 vColour;
   varying float vAlpha;
 
@@ -88,9 +89,10 @@ const vertexShader = /* glsl */ `
   void main() {
     float d = data.x;
     float radius = uScan * ${SCAN_RADIUS.toFixed(3)};
-    // Colour runs red to blue over one sensor's area, not the full radius.
+    // A healthy sensor runs green near the sensor to blue at the edge of
+    // its area, not the full radius.
     float k = clamp(d / 0.24, 0.0, 1.0);
-    vec3 colour = turbo(0.93 - k * 0.72);
+    vec3 colour = turbo(0.52 - k * 0.32);
     float alpha = 0.95 - 0.35 * k;
 
     // First scan: a bright front moves out and leaves the points behind it.
@@ -102,15 +104,18 @@ const vertexShader = /* glsl */ `
     alpha += 0.5 * pulse;
     colour = mix(colour, vec3(1.0), 0.45 * pulse);
 
-    // Alert: the points near the alert sensor turn red and pulse faster.
-    float reach = uAlert * ${ALERT_RADIUS.toFixed(3)};
-    float near = (1.0 - smoothstep(reach * 0.5, reach + 0.001, data.y)) * step(0.001, uAlert);
+    // Alert: only the alert sensor's area turns red to orange, spreading
+    // out from the sensor, and pulses faster. Paddock 7 turns red too.
+    float owned = step(abs(data.z - uAlertSensor), 0.01);
+    float reach = uAlert * 0.3;
+    float alerting = owned * (1.0 - smoothstep(reach * 0.5, reach + 0.001, d)) * step(0.001, uAlert);
+    colour = mix(colour, turbo(0.93 - k * 0.25), alerting);
     float wa = fract(uTime * 0.4) * ${(ALERT_RADIUS * 1.2).toFixed(3)};
-    float alertPulse = band(data.y, wa, 0.008) * near * uPulse;
+    float alertPulse = band(data.y, wa, 0.008) * alerting * uPulse;
     vec3 red = vec3(${ALERT.r.toFixed(3)}, ${ALERT.g.toFixed(3)}, ${ALERT.b.toFixed(3)});
-    colour = mix(colour, red, max(near, uPaddock * data.w * 0.9));
+    colour = mix(colour, red, uPaddock * data.w * 0.9);
     colour = mix(colour, vec3(1.0, 0.75, 0.65), 0.5 * alertPulse);
-    alpha += 0.3 * near + 0.5 * alertPulse + 0.3 * uPaddock * data.w;
+    alpha += 0.3 * alerting + 0.5 * alertPulse + 0.3 * uPaddock * data.w;
 
     // Points the scan has not reached yet show as a faint grey cloud.
     float scanned = step(d, radius);
@@ -239,6 +244,10 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
       uPaddock: { value: 0 },
       uScale: { value: 1 },
       uPulse: { value: reduced ? 0 : 1 },
+      // Matches the pulse phase in data.z, which encodes the sensor index.
+      uAlertSensor: {
+        value: FARM_SENSORS.findIndex((s) => s.id === ALERT_SENSOR_ID) * 0.37,
+      },
     }),
     [reduced],
   )
