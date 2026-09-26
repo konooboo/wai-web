@@ -26,7 +26,7 @@ export function Phone({ progress }: { progress: MotionValue<number> }) {
       <Frame />
       <div
         ref={screen}
-        className="@container absolute top-[2.18%] left-[4.91%] h-[95.63%] w-[89.95%] overflow-hidden rounded-[14.31%/6.61%] bg-white"
+        className="bg-paper @container absolute top-[2.18%] left-[4.91%] h-[95.63%] w-[89.95%] overflow-hidden rounded-[14.31%/6.61%]"
       >
         <div
           ref={app}
