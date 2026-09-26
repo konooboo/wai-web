@@ -1,5 +1,6 @@
 import {
   motion,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -50,6 +51,8 @@ const HECTARES = (MAP_METRES * MAP_METRES) / 10000
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  // Load the 3D chunk and build the point cloud one viewport early.
+  const near = useInView(overlayRef, { margin: '100% 0px', once: true })
   const { scrollYProgress } = useScroll({
     target: stepsRef,
     // Progress starts when the map panel sticks, so the NZ zoom is in view.
@@ -85,13 +88,15 @@ export function FarmMap() {
             className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-8rem)]"
           >
             <div className="bg-ink absolute inset-0 overflow-hidden rounded-2xl">
-              <Suspense>
-                <FarmScene
-                  progress={progress}
-                  reduced={reduced}
-                  overlay={overlayRef}
-                />
-              </Suspense>
+              {near && (
+                <Suspense>
+                  <FarmScene
+                    progress={progress}
+                    reduced={reduced}
+                    overlay={overlayRef}
+                  />
+                </Suspense>
+              )}
               <p className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase">
                 <motion.span className="absolute" style={{ opacity: site }}>
                   New Zealand

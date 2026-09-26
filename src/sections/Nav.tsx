@@ -41,7 +41,7 @@ export function Nav() {
   }, [open])
 
   return (
-    <header className="border-line bg-paper/95 sticky top-0 z-50 border-b backdrop-blur">
+    <header className="border-line bg-paper/95 sticky top-0 z-50 border-b">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:h-[76px]">
         <a
           href="#top"

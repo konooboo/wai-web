@@ -1,4 +1,4 @@
-import { useReducedMotion, useScroll } from 'motion/react'
+import { useInView, useReducedMotion, useScroll } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
 import { LidarRings } from '../components/LidarRings'
 
@@ -16,6 +16,9 @@ export function SensorBridge() {
     target: ref,
     offset: ['start end', 'end start'],
   })
+  // Load the 3D chunk one viewport early, and render only while visible.
+  const near = useInView(ref, { margin: '100% 0px', once: true })
+  const inView = useInView(modelRef)
 
   return (
     <div className="relative z-30 h-0">
@@ -33,13 +36,16 @@ export function SensorBridge() {
             role="img"
             aria-label="Wai sensor unit with a whip antenna and two probe rods"
           >
-            <Suspense>
-              <SensorScene
-                scrollProgress={scrollYProgress}
-                reducedMotion={reducedMotion}
-                tilt={TILT}
-              />
-            </Suspense>
+            {near && (
+              <Suspense>
+                <SensorScene
+                  scrollProgress={scrollYProgress}
+                  reducedMotion={reducedMotion}
+                  active={inView}
+                  tilt={TILT}
+                />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>
