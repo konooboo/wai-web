@@ -35,9 +35,66 @@
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        background: #f6f5f1;
+        transition: opacity 0.5s ease;
+      }
+      #loader.done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #loader > span {
+        grid-area: 1 / 1;
+        border-radius: 50%;
+      }
+      .loader-dot {
+        width: 14px;
+        height: 14px;
+        background: #3a9d5d;
+      }
+      .loader-ring {
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid #3a9d5d;
+        animation: loader-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+      }
+      .loader-ring:nth-child(3) {
+        animation-delay: 0.8s;
+      }
+      .loader-ring:nth-child(4) {
+        animation-delay: 1.6s;
+      }
+      @keyframes loader-pulse {
+        from {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        to {
+          transform: scale(7);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .loader-ring {
+          display: none;
+        }
+      }
+    </style>
     <title>Wai: water and soil monitoring for NZ farms</title>
   </head>
   <body>
+    <div id="loader" role="status" aria-label="Loading">
+      <span class="loader-dot"></span>
+      <span class="loader-ring"></span>
+      <span class="loader-ring"></span>
+      <span class="loader-ring"></span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

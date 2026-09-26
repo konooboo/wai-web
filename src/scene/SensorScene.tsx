@@ -129,6 +129,7 @@ export default function SensorScene(props: Props) {
       frameloop={props.reducedMotion ? 'demand' : 'always'}
       camera={{ position: [0, 1.4, 7.6], fov: 30 }}
       gl={{ antialias: true, alpha: true }}
+      onCreated={() => window.dispatchEvent(new Event('wai:scene-ready'))}
     >
       <ambientLight intensity={0.15} />
       <directionalLight position={[-3, 5, 4]} intensity={1.2} />
