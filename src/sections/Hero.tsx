@@ -24,10 +24,12 @@ export function Hero() {
         aria-hidden
       />
       <div className="bg-ink/50 absolute inset-0" />
-      <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl items-end px-6 py-20">
+      <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl items-center px-6 py-20">
         <div className="text-paper">
-          <h1 className="max-w-xl text-5xl leading-[1.05] font-medium tracking-tight md:text-6xl">
-            Know your soil and water without the walk.
+          <h1 className="max-w-3xl text-5xl leading-[1.05] font-medium tracking-tight md:text-6xl">
+            Know your soil and water
+            <br />
+            without the walk.
           </h1>
           <p className="text-paper/80 mt-6 max-w-md text-lg">
             Wai sensors sit in your paddocks and waterways. The app tells you
