@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700&family=Chivo+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -80,7 +80,7 @@
       .loader-label {
         height: 16px;
         font:
-          11px/16px 'Geist Mono',
+          11px/16px 'Chivo Mono',
           ui-monospace,
           monospace;
         letter-spacing: 0.08em;
@@ -196,8 +196,8 @@
         // fonts.ready resolves early if no text has asked for a font yet, so
         // load the 2 page fonts explicitly.
         Promise.all([
-          document.fonts.load('16px Geist'),
-          document.fonts.load('11px "Geist Mono"'),
+          document.fonts.load('16px Chivo'),
+          document.fonts.load('11px "Chivo Mono"'),
         ]).then(() => {
           fonts = true
           stages++
