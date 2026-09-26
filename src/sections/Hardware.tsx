@@ -75,7 +75,7 @@ export function Hardware() {
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
       />
-      <div className="border-paper/10 bg-ink/60 relative border-r border-b">
+      <div className="border-paper/10 bg-ink/80 relative border-r border-b">
         <div className="grid lg:grid-cols-3">
           <div className={`${cell} lg:col-span-2`}>
             <p className="text-paper/60 flex items-center gap-2 font-mono text-xs tracking-wider uppercase">
