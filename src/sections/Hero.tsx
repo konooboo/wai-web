@@ -254,23 +254,28 @@ export function Hero() {
       )}
 
       <motion.div
-        className="absolute inset-x-0 bottom-0 z-[60]"
+        className="pointer-events-none absolute inset-0 z-[60]"
         initial={false}
         animate={{ opacity: playing ? 1 : 0 }}
         transition={{ duration: 0.4, delay: playing ? 0.6 : 0 }}
-        style={{ pointerEvents: playing ? 'auto' : 'none' }}
         inert={!playing}
       >
-        <div className="mx-auto flex max-w-6xl justify-end px-6 pb-6">
-          <button
-            type="button"
-            onClick={stop}
-            className="border-paper/30 text-paper hover:bg-paper/10 rounded-full border px-5 py-2 font-mono text-xs tracking-wider uppercase backdrop-blur-sm"
-          >
-            Close ✕
-          </button>
-        </div>
-        <div className="bg-paper/15 h-0.5">
+        <button
+          type="button"
+          onClick={stop}
+          aria-label="Close the film"
+          className="text-paper pointer-events-auto absolute top-3 right-4 grid size-10 place-items-center opacity-90 drop-shadow-[0_0_6px_var(--color-ink)] transition hover:scale-110 hover:opacity-100 md:top-[18px] md:right-8"
+        >
+          <svg viewBox="0 0 24 24" className="size-6" aria-hidden>
+            <path
+              d="M5 5l14 14M19 5L5 19"
+              stroke="currentColor"
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+        <div className="bg-paper/15 absolute inset-x-0 bottom-0 h-0.5">
           <motion.div
             className="bg-paper h-full origin-left"
             style={{ scaleX: progress }}
