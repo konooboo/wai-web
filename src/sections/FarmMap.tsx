@@ -76,7 +76,7 @@ export function FarmMap() {
   return (
     <section
       id="farm-map"
-      className="border-line scroll-mt-16 border-b py-24 md:py-32"
+      className="border-line scroll-mt-16 border-b pt-24 pb-48 md:pt-32 md:pb-64"
     >
       <div className="mx-auto grid max-w-[88rem] px-6 md:grid-cols-[1.5fr_1fr] md:gap-16">
         <div className="bg-paper sticky top-16 z-20 -mx-6 px-6 py-4 md:mx-0 md:flex md:h-[calc(100svh-4rem)] md:items-center md:self-start md:bg-transparent md:px-0 md:py-0">
