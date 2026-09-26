@@ -15,19 +15,34 @@ import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
 import { MAP_METRES } from '../farm/terrain'
+import { ProblemCard } from './Problem'
 
 const FarmScene = lazy(() => import('../farm/FarmScene'))
 
-const STEPS = [
+type Step = {
+  eyebrow: string
+  title: string
+  body: string
+  ai?: { label: string; items: string[] }
+  problem?: 'time' | 'fertiliser' | 'compliance'
+}
+
+const STEPS: Step[] = [
   {
     eyebrow: '01 · Sensors',
     title: 'Sensors in your water and soil.',
     body: 'Wai sensors go in streams, ponds and paddocks. Water sensors measure pH, turbidity, nitrate and temperature. Soil sensors measure moisture and temperature.',
+    problem: 'time',
   },
   {
     eyebrow: '02 · Always on',
     title: `Readings every ${READING_INTERVAL_MIN} minutes, day and night.`,
-    body: 'Each sensor sends its readings to the app. Green means the reading is in its normal range.',
+    body: 'Each sensor sends its readings to the app. Wai AI compares soil moisture with the 48 h rain forecast and tells you when to fertilise.',
+    ai: {
+      label: 'Fertiliser timing',
+      items: ['Apply now', 'Wait for rain', 'Too wet — leaching risk'],
+    },
+    problem: 'fertiliser',
   },
   {
     eyebrow: '03 · Problem',
@@ -37,12 +52,22 @@ const STEPS = [
   {
     eyebrow: '04 · Alert',
     title: 'You get an alert on your phone.',
-    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem.',
+    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem. On days with no alert, Wai AI writes one tip for the farm.',
   },
   {
     eyebrow: '05 · Next step',
-    title: 'Wai tells you why, and what to do.',
-    body: 'The app compares the reading with rainfall and the nearby sensors. It gives a likely cause and a clear next step.',
+    title: 'Wai AI tells you why, and what to do.',
+    body: 'For each alert, Wai AI reads the current and usual values of the sensor. Then it writes four short answers.',
+    ai: {
+      label: 'Alert diagnosis',
+      items: [
+        "What's wrong",
+        'Likely cause',
+        'Next step',
+        'Risk in the next 24–48 h',
+      ],
+    },
+    problem: 'compliance',
   },
 ]
 
@@ -153,7 +178,7 @@ export function FarmMap() {
             {STEPS.map((step, i) => (
               <div
                 key={step.eyebrow}
-                className="flex min-h-[55svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
+                className="flex min-h-svh flex-col items-start pt-6 pb-16 md:justify-center md:py-16"
               >
                 {i === 0 ? (
                   <div>
@@ -175,6 +200,24 @@ export function FarmMap() {
                     <p className="text-muted mt-4 text-lg">{step.body}</p>
                   </div>
                 )}
+                {step.ai && (
+                  <div className="mt-6">
+                    <p className="text-healthy font-mono text-xs tracking-wider uppercase">
+                      Wai AI · {step.ai.label}
+                    </p>
+                    <ul className="mt-3 flex max-w-md flex-wrap gap-2">
+                      {step.ai.items.map((item) => (
+                        <li
+                          key={item}
+                          className="border-line rounded-full border bg-white px-3 py-1 font-mono text-xs"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {step.problem && <ProblemCard id={step.problem} />}
               </div>
             ))}
           </div>

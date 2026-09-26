@@ -7,7 +7,6 @@ import { Hardware } from './sections/Hardware'
 import { Hero } from './sections/Hero'
 import { Nav } from './sections/Nav'
 import { Pricing } from './sections/Pricing'
-import { Problem } from './sections/Problem'
 import { SensorBridge } from './sections/SensorBridge'
 
 export default function App() {
@@ -16,7 +15,6 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Problem />
         <FarmMap />
         <SensorBridge />
         <Hardware />

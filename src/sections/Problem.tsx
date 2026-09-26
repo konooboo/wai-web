@@ -6,12 +6,6 @@ import {
   type Variants,
 } from 'motion/react'
 import { useEffect, useRef } from 'react'
-import { Reveal } from '../components/Reveal'
-import { Section } from '../components/Section'
-
-const TITLE = 'Farming now means proving it, by hand.'
-const INTRO =
-  'Farms must follow strict water and nutrient rules. Most still check water and soil on foot or by bike. That costs time, water and fertiliser.'
 
 const draw: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
@@ -22,8 +16,8 @@ const draw: Variants = {
   },
 }
 
-const PROBLEMS = [
-  {
+const PROBLEMS = {
+  compliance: {
     label: 'Compliance',
     icon: (
       <>
@@ -42,7 +36,7 @@ const PROBLEMS = [
       href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
     },
   },
-  {
+  time: {
     label: 'Time',
     icon: (
       <>
@@ -60,7 +54,7 @@ const PROBLEMS = [
       href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
     },
   },
-  {
+  fertiliser: {
     label: 'Water and fertiliser',
     icon: (
       <>
@@ -84,7 +78,7 @@ const PROBLEMS = [
       href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
     },
   },
-]
+}
 
 const monoLabel = 'font-mono text-xs tracking-wider uppercase'
 
@@ -109,73 +103,58 @@ function CountUp({ value }: { value: number }) {
   return <span ref={ref}>{reduceMotion ? value : 0}</span>
 }
 
-export function Problem() {
+// A problem stat card for one step of the farm map story.
+export function ProblemCard({ id }: { id: keyof typeof PROBLEMS }) {
   const reduceMotion = useReducedMotion()
+  const problem = PROBLEMS[id]
 
   return (
-    <Section id="problem" className="border-line border-b">
-      <div className="max-w-2xl">
-        <h2 className="text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-          {TITLE}
-        </h2>
-        <p className="text-muted mt-5 text-lg">{INTRO}</p>
+    <article className="mt-8 w-full max-w-xs">
+      <div
+        className={`flex aspect-[4/3] flex-col justify-between rounded-2xl p-6 ${problem.panel}`}
+      >
+        <div className="flex items-start justify-between">
+          <p className={monoLabel}>{problem.label}</p>
+          <a
+            href={problem.source.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Source: ${problem.source.label}`}
+            title={`Source: ${problem.source.label}`}
+            className="-m-2 rounded-full p-2 transition-opacity hover:opacity-60"
+          >
+            <motion.svg
+              initial={reduceMotion ? 'shown' : 'hidden'}
+              whileInView="shown"
+              viewport={{ once: true, margin: '-10% 0px' }}
+              viewBox="0 0 24 24"
+              className="size-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              {problem.icon}
+            </motion.svg>
+          </a>
+        </div>
+        <div>
+          <p className="text-4xl font-medium tracking-tight tabular-nums">
+            {problem.figure.prefix}
+            <CountUp value={problem.figure.value} />
+            {problem.figure.suffix}
+          </p>
+          <p className="text-ink/70 mt-2 max-w-[16rem] text-sm">
+            {problem.caption}
+          </p>
+        </div>
       </div>
-
-      <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
-        {PROBLEMS.map((problem, i) => (
-          <Reveal key={problem.label} delay={i * 0.1} className="h-full">
-            <article className="flex h-full flex-col">
-              <div
-                className={`flex aspect-[4/3] flex-col justify-between rounded-2xl p-6 ${problem.panel}`}
-              >
-                <div className="flex items-start justify-between">
-                  <p className={monoLabel}>{problem.label}</p>
-                  <a
-                    href={problem.source.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Source: ${problem.source.label}`}
-                    title={`Source: ${problem.source.label}`}
-                    className="-m-2 rounded-full p-2 transition-opacity hover:opacity-60"
-                  >
-                    <motion.svg
-                      initial={reduceMotion ? 'shown' : 'hidden'}
-                      whileInView="shown"
-                      viewport={{ once: true, margin: '-10% 0px' }}
-                      viewBox="0 0 24 24"
-                      className="size-7"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      {problem.icon}
-                    </motion.svg>
-                  </a>
-                </div>
-                <div>
-                  <p className="text-5xl font-medium tracking-tight tabular-nums lg:text-6xl">
-                    {problem.figure.prefix}
-                    <CountUp value={problem.figure.value} />
-                    {problem.figure.suffix}
-                  </p>
-                  <p className="text-ink/70 mt-3 max-w-[16rem] text-sm">
-                    {problem.caption}
-                  </p>
-                </div>
-              </div>
-              <h3 className="mt-6 text-xl font-medium tracking-tight">
-                {problem.title}
-              </h3>
-              <p className="text-muted mt-3 text-sm leading-relaxed">
-                {problem.body}
-              </p>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-    </Section>
+      <h4 className="mt-5 text-lg font-medium tracking-tight">
+        {problem.title}
+      </h4>
+      <p className="text-muted mt-2 text-sm leading-relaxed">{problem.body}</p>
+    </article>
   )
 }
