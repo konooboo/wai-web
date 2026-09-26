@@ -72,8 +72,8 @@ export function Hardware() {
         className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-15 blur-2xl"
       />
       <div className="border-paper/10 relative border-r border-b">
-        <div className="grid md:grid-cols-12">
-          <div className={`${cell} md:col-span-7`}>
+        <div className="grid lg:grid-cols-3">
+          <div className={`${cell} lg:col-span-2`}>
             <p className="text-paper/60 flex items-center gap-2 font-mono text-xs tracking-wider uppercase">
               <span className="bg-healthy size-1.5 rounded-full" />
               Hardware
@@ -82,7 +82,7 @@ export function Hardware() {
               The hardware.
             </h2>
           </div>
-          <div className={`${cell} flex items-center md:col-span-5`}>
+          <div className={`${cell} flex items-center`}>
             <p className="text-paper/70 text-lg">{INTRO}</p>
           </div>
         </div>
@@ -102,8 +102,8 @@ export function Hardware() {
           ))}
         </div>
 
-        <div className="bg-healthy/[0.06] grid lg:grid-cols-12">
-          <div className={`${cell} overflow-hidden lg:col-span-5`}>
+        <div className="bg-healthy/[0.06] grid lg:grid-cols-3">
+          <div className={`${cell} overflow-hidden`}>
             <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
             <motion.span
               aria-hidden="true"
@@ -122,7 +122,7 @@ export function Hardware() {
             </p>
             <p className="text-paper/70 relative mt-4">{AI_COPY}</p>
           </div>
-          <div className="grid grid-cols-2 lg:col-span-7">
+          <div className="grid grid-cols-2 lg:col-span-2">
             {ALERTS.map((alert) => (
               <div
                 key={alert.name}
