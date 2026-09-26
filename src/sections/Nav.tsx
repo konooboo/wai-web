@@ -82,7 +82,7 @@ export function Nav() {
         <a
           href="#top"
           aria-label="Wai home"
-          className="flex items-center gap-2 text-[28px] leading-none font-bold tracking-tight"
+          className="font-logo flex items-center gap-2 text-[28px] leading-none font-semibold tracking-tight [font-stretch:125%]"
         >
           <Koru className="size-6" />
           wai

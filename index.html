@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700&family=Chivo+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700&family=Chivo+Mono:wght@400;500&family=Archivo:wdth,wght@125,600&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -194,10 +194,11 @@
         let shown = false
         addEventListener('DOMContentLoaded', () => stages++, { once: true })
         // fonts.ready resolves early if no text has asked for a font yet, so
-        // load the 2 page fonts explicitly.
+        // load the page fonts explicitly.
         Promise.all([
           document.fonts.load('16px Chivo'),
           document.fonts.load('11px "Chivo Mono"'),
+          document.fonts.load('600 expanded 28px Archivo'),
         ]).then(() => {
           fonts = true
           stages++
