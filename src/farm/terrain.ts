@@ -124,6 +124,29 @@ const GARDEN_TREES: [number, number, number, number][] = [
 // Pine block on the hill above the upper stream, in grid coordinates.
 const PINES = { a0: 0.28, a1: 0.37, b0: 0.05, b1: 0.18 }
 
+// Buildings: [x, y, length m, width m, eave m, ridge m]. The long side
+// runs along the fence grid and the roof is a gable.
+type Building = [number, number, number, number, number, number]
+const inYard = (a: number, b: number): Point => {
+  const p = fromGrid(a, b)
+  return { x: YARD.x + p.x, y: YARD.y + p.y }
+}
+const at = (p: Point, ...size: [number, number, number, number]): Building => [
+  p.x,
+  p.y,
+  ...size,
+]
+const BUILDINGS: Building[] = [
+  at(inYard(-0.012, -0.018), 30, 15, 5, 8), // hay barn
+  at(inYard(0.014, -0.018), 24, 12, 4, 6), // implement shed
+  at(inYard(0.002, 0.004), 40, 14, 4, 6.5), // milking shed
+  at(inYard(0.022, 0.004), 8, 6, 3, 4), // vat shed
+  at(HOUSE, HOUSE.length, HOUSE.width, 2.8, 5),
+  at({ x: 0.22, y: 0.8 }, 18, 9, 3.5, 5.5), // hay shed in the back paddocks
+]
+// Concrete yard beside the milking shed, flat.
+const CONCRETE = { ...inYard(0.002, 0.018), length: 40, width: 26 }
+
 // Paddock 7 is the grid cell up-slope of sensor S3 (see sensors.ts).
 const P7 = { a0: FENCE_A[3], a1: FENCE_A[4], b0: FENCE_B[2], b1: FENCE_B[3] }
 export const PADDOCK_7: Point[] = [
@@ -588,6 +611,43 @@ export function getHeightmap(
           setCanopy(k, HEDGE.height, 0.1)
       },
     )
+  }
+
+  // ---------- buildings ----------
+
+  const cellAt = (x: number, y: number) =>
+    Math.min(size - 1, Math.floor(y * size)) * size +
+    Math.min(size - 1, Math.floor(x * size))
+  // Cells inside a grid-aligned box at (bx, by), with the box coordinates.
+  const forBox = (
+    bx: number,
+    by: number,
+    length: number,
+    width: number,
+    fn: (k: number, along: number, across: number) => void,
+  ) => {
+    const hl = (length / 2) * M
+    const hw = (width / 2) * M
+    const diag = Math.hypot(hl, hw)
+    forCells(bx - diag, by - diag, bx + diag, by + diag, size, (k, x, y) => {
+      const g = toGrid(x - bx, y - by)
+      if (Math.abs(g.a) <= hl && Math.abs(g.b) <= hw) fn(k, g.a / hl, g.b / hw)
+    })
+  }
+
+  const padLevel = ground[cellAt(CONCRETE.x, CONCRETE.y)]
+  forBox(CONCRETE.x, CONCRETE.y, CONCRETE.length, CONCRETE.width, (k) => {
+    ground[k] = heights[k] = padLevel
+    cover[k] = 0
+  })
+  for (const [bx, by, length, width, eave, ridge] of BUILDINGS) {
+    const base = ground[cellAt(bx, by)]
+    forBox(bx, by, length, width, (k, _along, across) => {
+      ground[k] = base
+      heights[k] = base + eave + (ridge - eave) * (1 - Math.abs(across))
+      cover[k] = 3
+      water[k] = 0
+    })
   }
 
   cached = {
