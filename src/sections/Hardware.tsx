@@ -73,7 +73,7 @@ export function Hardware() {
       <img
         src={farmlandPhoto}
         alt=""
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
+        className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-sm"
       />
       <div className="border-paper/10 bg-ink/95 relative border-r border-b">
         <div className="grid lg:grid-cols-3">
