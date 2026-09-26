@@ -9,8 +9,10 @@ import {
   type MotionValue,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
+import { Reveal } from '../components/Reveal'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
 import { Phone } from '../farm/Phone'
+import { ReadingCard } from '../farm/ReadingCard'
 import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
@@ -23,6 +25,7 @@ type Step = {
   title: string
   body?: string
   problem?: 'time' | 'fertiliser' | 'compliance'
+  visual?: 'reading' | 'alert'
 }
 
 const STEPS: Step[] = [
@@ -39,12 +42,13 @@ const STEPS: Step[] = [
   {
     eyebrow: '03 · Problem',
     title: `${ALERT_EXAMPLE.sensor} detects a change. Wai AI is already working out why.`,
-    body: `After heavy rain, the reading goes up to ${ALERT_EXAMPLE.reading.charAt(0).toLowerCase()}${ALERT_EXAMPLE.reading.slice(1)}. ${ALERT_EXAMPLE.normal}.`,
+    visual: 'reading',
   },
   {
     eyebrow: '04 · Alert',
     title: 'You wake up to the answer, not a guess.',
-    body: 'An alert from 2 am waits on your phone with the likely cause, the next step and the risk over the next 24–48 h. You do not have to walk the farm to find the problem.',
+    body: 'The likely cause and the next step wait on your phone. You do not have to walk the farm to find the problem.',
+    visual: 'alert',
   },
   {
     eyebrow: '05 · Next step',
@@ -54,6 +58,23 @@ const STEPS: Step[] = [
 ]
 
 const HOW_IT_WORKS = ['Sense', 'Diagnose', 'Act']
+
+// Same shape as the ProblemCard panel: one number and a few words.
+function AlertCard() {
+  return (
+    <Reveal className="mt-8 w-full max-w-xs">
+      <div className="bg-alert/10 text-alert flex aspect-[4/3] flex-col justify-between rounded-2xl p-6">
+        <p className="font-mono text-xs tracking-wider uppercase">Alert</p>
+        <div>
+          <p className="text-4xl font-medium tracking-tight">2 am</p>
+          <p className="text-ink/70 mt-2 max-w-[16rem] text-sm">
+            Alert sent. Likely cause attached.
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  )
+}
 
 // One word of "Sense → Diagnose → Act". The words come in one after another
 // while the camera zooms from the country to the farm.
@@ -214,6 +235,10 @@ export function FarmMap() {
                     )}
                   </div>
                   {step.problem && <ProblemCard id={step.problem} />}
+                  {step.visual === 'reading' && (
+                    <ReadingCard progress={progress} />
+                  )}
+                  {step.visual === 'alert' && <AlertCard />}
                 </div>
               )
             })}

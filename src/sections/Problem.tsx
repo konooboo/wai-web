@@ -29,8 +29,6 @@ const PROBLEMS = {
     figure: { value: 88, prefix: '', suffix: '%' },
     caption: 'of farmers say resource consent is getting harder to get',
     panel: 'bg-alert/10 text-alert',
-    title: 'The rules are strict, and a mistake is expensive.',
-    body: 'Nitrogen is capped at 190 kg/ha a year. A breach can cost a company $10M.',
     source: {
       label: 'Farmers Weekly poll, 09/10/2025',
       href: 'https://www.farmersweekly.co.nz/news/consenting-woes-shared-with-visiting-mps/',
@@ -47,8 +45,6 @@ const PROBLEMS = {
     figure: { value: 1, prefix: '', suffix: ' h/day' },
     caption: 'on office work and data entry, for the average dairy farmer',
     panel: 'bg-ink/5 text-ink',
-    title: 'Checks and records take hours every day.',
-    body: 'Someone still drives to every trough, probe and pond to read the numbers.',
     source: {
       label: 'DairyNZ, 21/10/2025',
       href: 'https://www.dairynz.co.nz/news/farm-focus-and-dairynz-partner-to-help-deliver-smarter-faster-benchmarking/',
@@ -71,8 +67,6 @@ const PROBLEMS = {
     figure: { value: 43, prefix: '+', suffix: '%' },
     caption: 'nitrogen fertiliser cost for an average dairy farm this spring',
     panel: 'bg-mint text-healthy',
-    title: 'Water and fertiliser go to waste.',
-    body: 'Without soil data, farms irrigate wet soil and fertilise before rain.',
     source: {
       label: 'Ravensdown via NZ Herald, 20/07/2026',
       href: 'https://www.nzherald.co.nz/business/companies/agribusiness/fertiliser-prices-surge-for-nz-farmers-as-middle-east-conflict-escalates/TXCTPPZPBRHXZEEHLJI5563UEE/',
@@ -151,10 +145,6 @@ export function ProblemCard({ id }: { id: keyof typeof PROBLEMS }) {
           </p>
         </div>
       </div>
-      <h4 className="mt-5 text-lg font-medium tracking-tight">
-        {problem.title}
-      </h4>
-      <p className="text-muted mt-2 text-sm leading-relaxed">{problem.body}</p>
     </article>
   )
 }
