@@ -16,7 +16,8 @@ export const ALERT_EXAMPLE = {
   normal: 'Normal: below 10 NTU',
   cause:
     'Turbidity rose 5× after 22 mm of rain. Likely run-off from Paddock 7.',
-  action: 'Hold fertiliser for 48 h. Check the riparian fence on Paddock 7.',
+  action: 'Hold fertiliser for 48 h.\nCheck the riparian fence on Paddock 7.',
+  risk: 'Stock cut their intake and scour within 2–3 days. Trough filters on this line block in about a week.',
   time: '5 min ago',
 } // TODO(data): replace with a real example from the team
 

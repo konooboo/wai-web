@@ -1,13 +1,13 @@
 import { motion, useTransform, type MotionValue } from 'motion/react'
 import type { ReactNode } from 'react'
+import { Koru } from '../components/Koru'
 import { ALERT_EXAMPLE, SENSORS } from '../content'
 import { FARM_SENSORS, type FarmSensor } from './sensors'
 import { STORY } from './story'
 import { MAP_METRES } from './terrain'
 
 // Static port of the Wai app (Home and Alert screens), styled as wai-carwho
-// 6618fff. It renders at this
-// logical size and Phone scales it to the screen.
+// ac11e47. It renders at this logical size and Phone scales it to the screen.
 export const APP_WIDTH = 320
 export const APP_HEIGHT = 693
 
@@ -31,7 +31,7 @@ const HEALTH = {
     ],
   },
   alert: {
-    score: 64,
+    score: 46,
     label: 'Action needed',
     tip: `${S3.id} turbidity is above normal.`,
     factors: [
@@ -40,6 +40,18 @@ const HEALTH = {
       [`${FARM_SENSORS.length} of ${FARM_SENSORS.length}`, 'Sensors live'],
       ['1 open', 'Alerts'],
     ],
+  },
+}
+
+// What the Wai AI card on Home says in each state. TODO(data): confirm.
+const TIP = {
+  ok: {
+    title: 'All looks good',
+    body: 'Water quality is in range and soil moisture is steady, so no checks are needed today.',
+  },
+  alert: {
+    title: 'Hold fertiliser on Paddock 7',
+    body: `${S3.id} is at ${S3.alertValue} NTU after 22 mm of rain. Hold fertiliser for 48 h and check the Paddock 7 fence.`,
   },
 }
 
@@ -65,7 +77,6 @@ const CHOICES = [
     'Snooze 1 hour',
     'Hides the alert, then shows it again if still out of limits',
   ],
-  ['Send to worker', 'Share the problem and what to do'],
 ]
 
 export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
@@ -85,9 +96,19 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
         className="absolute inset-0 px-4 pt-[34px]"
         style={{ x: homeX }}
       >
-        <div className="bg-paper relative z-10 flex min-h-[64px] items-center justify-between pt-4">
-          <h1 className="text-[32px] font-medium tracking-tight">Home</h1>
-          <Label>{FARM}</Label>
+        <div className="bg-paper relative z-10 flex min-h-[64px] items-center justify-between gap-3 pt-4">
+          <h1 className="font-logo flex items-center gap-2 text-[28px] leading-none font-semibold tracking-tight [font-stretch:125%]">
+            <Koru className="size-6" />
+            wai
+          </h1>
+          <div className="flex items-center gap-3">
+            <Label>{FARM}</Label>
+            <span className="border-line grid size-10 place-items-center rounded-full border bg-white">
+              <svg viewBox="0 0 24 24" className="size-5" {...STROKE}>
+                <path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />
+              </svg>
+            </span>
+          </div>
         </div>
 
         <motion.div className="mt-4 flex flex-col gap-7" style={{ y: shift }}>
@@ -107,6 +128,15 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
             </div>
             <Chevron />
           </motion.div>
+
+          <div className="grid [&>*]:[grid-area:1/1]">
+            <AICard note="From your sensors now" opacity={ok}>
+              <Tip {...TIP.ok} />
+            </AICard>
+            <AICard note="From your sensors now" bad opacity={bad}>
+              <Tip {...TIP.alert} />
+            </AICard>
+          </div>
 
           <section className="flex flex-col gap-3">
             <h2 className="text-[20px] font-medium tracking-tight">In Focus</h2>
@@ -196,12 +226,22 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
           </tbody>
         </table>
 
-        <div className="border-line flex flex-col gap-4 rounded-2xl border bg-white p-4">
-          <DetailBlock title="Likely cause">{ALERT_EXAMPLE.cause}</DetailBlock>
-          <DetailBlock title="Next step" strong>
-            {ALERT_EXAMPLE.action}
-          </DetailBlock>
-        </div>
+        <AICard note="From this sensor" bad>
+          <div className="flex flex-col gap-4">
+            <DetailBlock title="What's happening">
+              {ALERT_EXAMPLE.cause}
+            </DetailBlock>
+            <div className="text-alert text-[15px] leading-relaxed font-medium whitespace-pre-line">
+              <span className="font-mono text-xs tracking-wider uppercase">
+                Next
+              </span>{' '}
+              {'\n' + ALERT_EXAMPLE.action}
+            </div>
+            <DetailBlock title="If nothing changes">
+              {ALERT_EXAMPLE.risk}
+            </DetailBlock>
+          </div>
+        </AICard>
 
         <div className="flex flex-col gap-2.5">
           <div className="text-[20px] font-medium tracking-tight">
@@ -223,6 +263,14 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
               </span>
             </div>
           ))}
+          <div className="mt-2 flex items-center gap-4">
+            <span className="text-muted flex-1 text-center text-[16px] underline underline-offset-4">
+              Cancel
+            </span>
+            <span className="bg-ink text-paper flex-1 rounded-full py-3 text-center text-[16px]">
+              Confirm
+            </span>
+          </div>
         </div>
       </motion.div>
 
@@ -296,22 +344,66 @@ function Chevron() {
 
 function DetailBlock({
   title,
-  strong = false,
   children,
 }: {
   title: string
-  strong?: boolean
   children: ReactNode
 }) {
   return (
     <div>
       <Label>{title}</Label>
-      <div
-        className={`mt-1 text-[15px] leading-relaxed ${strong ? 'font-medium' : ''}`}
-      >
-        {children}
-      </div>
+      <div className="mt-1 text-[15px] leading-relaxed">{children}</div>
     </div>
+  )
+}
+
+// The app's AICard: a status-coloured bar, a soft pulsing glow and the koru.
+function AICard({
+  note,
+  bad = false,
+  opacity,
+  children,
+}: {
+  note: string
+  bad?: boolean
+  opacity?: MotionValue<number>
+  children: ReactNode
+}) {
+  const tone = bad ? 'text-alert' : 'text-healthy'
+  return (
+    <motion.div
+      className="border-line relative shrink-0 overflow-hidden rounded-2xl border bg-white p-4"
+      style={{ opacity }}
+    >
+      <span
+        className={`absolute top-0 left-4 h-0.5 w-6 ${bad ? 'bg-alert' : 'bg-healthy'}`}
+      />
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute -top-6 -left-6 size-32 rounded-full blur-3xl motion-safe:animate-[ai-glow_4s_ease-in-out_infinite] ${bad ? 'bg-alert/15' : 'bg-healthy/15'}`}
+      />
+      <div className={`relative flex items-center gap-2 ${tone}`}>
+        <Koru className="size-5" />
+        <span className="font-mono text-xs tracking-wider whitespace-nowrap uppercase">
+          Wai AI
+        </span>
+        <span className="text-muted ml-auto font-mono text-[11px] whitespace-nowrap">
+          {note}
+        </span>
+      </div>
+      <div className="relative mt-3">{children}</div>
+    </motion.div>
+  )
+}
+
+function Tip({ title, body }: { title: string; body: string }) {
+  return (
+    <>
+      <div className="text-[22px] leading-tight font-medium tracking-tight">
+        {title}
+      </div>
+      <div className="text-muted mt-1 text-[15px] leading-relaxed">{body}</div>
+    </>
   )
 }
 
