@@ -202,7 +202,7 @@ export function Hero() {
 
       {VARIANT === 'cursor' && (
         <motion.div
-          className="bg-paper text-ink pointer-events-none absolute top-0 left-0 hidden size-24 -translate-1/2 flex-col items-center justify-center gap-1 rounded-full pointer-fine:flex"
+          className="text-paper pointer-events-none absolute top-0 left-0 hidden size-7 -translate-1/2 pointer-fine:block"
           style={{ x: springX, y: springY }}
           initial={false}
           animate={{
@@ -212,10 +212,15 @@ export function Hero() {
           transition={{ duration: 0.25, ease: EASE }}
           aria-hidden
         >
-          <PlayIcon className="ml-0.5 size-5" />
-          <span className="font-mono text-[10px] tracking-wider uppercase">
-            Play
-          </span>
+          <svg viewBox="0 0 24 24" className="size-full">
+            <path
+              d="M6 3.5v17l14-8.5z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth={3}
+              strokeLinejoin="round"
+            />
+          </svg>
         </motion.div>
       )}
 
