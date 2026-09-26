@@ -1,30 +1,11 @@
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from 'motion/react'
+import { motion, useMotionValue, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
-import type { MouseEvent, PointerEvent } from 'react'
 import heroPoster from '../assets/hero-poster.webp'
 import heroVideo from '../assets/hero-loop.mp4'
 import filmVideo from '../assets/wai-web.mp4'
 import { BOOK_DEMO_HREF } from '../content'
 
-// Demo only: ?hero=cursor or ?hero=corner picks a variant. Remove once we pick one.
-const HERO_PARAM = new URLSearchParams(window.location.search).get('hero')
-const VARIANT =
-  HERO_PARAM === 'cursor' || HERO_PARAM === 'corner' ? HERO_PARAM : 'button'
-
 const EASE = [0.22, 1, 0.36, 1] as const
-
-function PlayIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden>
-      <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
-    </svg>
-  )
-}
 
 function RoundedPlayIcon({ className }: { className?: string }) {
   return (
@@ -43,14 +24,8 @@ function RoundedPlayIcon({ className }: { className?: string }) {
 export function Hero() {
   const reducedMotion = useReducedMotion() ?? false
   const [playing, setPlaying] = useState(false)
-  const [overLink, setOverLink] = useState(false)
-  const [inside, setInside] = useState(false)
   const filmRef = useRef<HTMLVideoElement>(null)
   const progress = useMotionValue(0)
-  const cursorX = useMotionValue(0)
-  const cursorY = useMotionValue(0)
-  const springX = useSpring(cursorX, { stiffness: 600, damping: 45 })
-  const springY = useSpring(cursorY, { stiffness: 600, damping: 45 })
 
   const play = () => {
     const film = filmRef.current
@@ -74,29 +49,10 @@ export function Hero() {
     return () => window.removeEventListener('keydown', onKey)
   }, [playing])
 
-  const onPointerMove = (e: PointerEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    cursorX.set(e.clientX - rect.left)
-    cursorY.set(e.clientY - rect.top)
-    setOverLink((e.target as HTMLElement).closest('a, button') !== null)
-  }
-
-  const onSectionClick = (e: MouseEvent<HTMLElement>) => {
-    if (VARIANT !== 'cursor' || playing) return
-    if ((e.target as HTMLElement).closest('a, button')) return
-    play()
-  }
-
-  const cursorMode = VARIANT === 'cursor' && !playing
-
   return (
     <section
       id="top"
-      className={`border-line bg-ink relative -mt-[65px] overflow-hidden border-b md:-mt-[77px] ${cursorMode ? 'pointer-fine:cursor-none' : ''}`}
-      onPointerMove={cursorMode ? onPointerMove : undefined}
-      onPointerEnter={cursorMode ? () => setInside(true) : undefined}
-      onPointerLeave={cursorMode ? () => setInside(false) : undefined}
-      onClick={onSectionClick}
+      className="border-line bg-ink relative -mt-[65px] overflow-hidden border-b md:-mt-[77px]"
     >
       <motion.video
         key={String(reducedMotion)}
@@ -171,87 +127,27 @@ export function Hero() {
               See how it works
             </a>
           </div>
-
-          {/* Touch screens and keyboard users have no cursor, so the button
-              and cursor variants need a real button. The cursor variant hides
-              it on fine pointers until it gets focus. */}
-          {VARIANT !== 'corner' && (
-            <button
-              type="button"
-              onClick={play}
-              className={`text-paper mt-8 inline-flex items-center gap-3 font-mono text-xs tracking-wider uppercase ${
-                VARIANT === 'cursor'
-                  ? 'pointer-fine:sr-only pointer-fine:focus-visible:not-sr-only'
-                  : 'md:hidden'
-              }`}
-            >
-              <span className="border-paper/40 grid size-11 place-items-center rounded-full border backdrop-blur-sm">
-                <PlayIcon className="ml-0.5 size-4" />
-              </span>
-              Watch the film
-            </button>
-          )}
         </div>
       </motion.div>
 
-      {VARIANT === 'corner' && (
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0"
-          initial={false}
-          animate={{ opacity: playing ? 0 : 1 }}
-          transition={{ duration: 0.4, ease: EASE }}
-          inert={playing}
-        >
-          <div className="px-6 pb-8 md:px-10">
-            <button
-              type="button"
-              onClick={play}
-              aria-label="Watch the film"
-              className="text-paper pointer-events-auto -m-2 block p-2 opacity-90 transition hover:scale-110 hover:opacity-100"
-            >
-              <RoundedPlayIcon className="-ml-1.5 size-8" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-
-      {VARIANT === 'button' && (
-        <motion.button
-          type="button"
-          onClick={play}
-          className="group absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 md:flex"
-          initial={false}
-          animate={
-            playing ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }
-          }
-          transition={{ duration: 0.4, ease: EASE }}
-          style={{ pointerEvents: playing ? 'none' : 'auto' }}
-          inert={playing}
-        >
-          <span className="border-paper/40 bg-paper/10 text-paper group-hover:bg-paper group-hover:text-ink grid size-24 place-items-center rounded-full border backdrop-blur-md transition-colors duration-300">
-            <PlayIcon className="ml-1 size-7" />
-          </span>
-          <span className="text-paper/80 font-mono text-xs tracking-wider uppercase">
-            Watch the film
-          </span>
-        </motion.button>
-      )}
-
-      {VARIANT === 'cursor' && (
-        <motion.div
-          className="text-paper pointer-events-none absolute top-0 left-0 hidden size-7 -translate-1/2 pointer-fine:block"
-          style={{ x: springX, y: springY }}
-          initial={false}
-          animate={{
-            opacity: cursorMode && inside && !overLink ? 1 : 0,
-            scale: cursorMode && inside && !overLink ? 1 : 0.4,
-          }}
-          transition={{ duration: 0.25, ease: EASE }}
-          aria-hidden
-        >
-          <RoundedPlayIcon className="size-full" />
-        </motion.div>
-      )}
+      <motion.div
+        className="pointer-events-none absolute inset-x-0 bottom-0"
+        initial={false}
+        animate={{ opacity: playing ? 0 : 1 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        inert={playing}
+      >
+        <div className="px-6 pb-8 md:px-10">
+          <button
+            type="button"
+            onClick={play}
+            aria-label="Watch the film"
+            className="text-paper pointer-events-auto -m-2 block p-2 opacity-90 transition hover:scale-110 hover:opacity-100"
+          >
+            <RoundedPlayIcon className="-ml-1.5 size-8" />
+          </button>
+        </div>
+      </motion.div>
 
       <motion.div
         className="pointer-events-none absolute inset-0 z-[60]"
