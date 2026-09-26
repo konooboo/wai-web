@@ -135,7 +135,7 @@ export function Hero() {
       />
 
       <motion.div
-        className="relative mx-auto min-h-svh max-w-6xl px-6 pt-32 pb-20 md:pt-[172px]"
+        className="relative min-h-svh px-6 pt-32 pb-20 md:px-10 md:pt-[172px]"
         initial={false}
         animate={
           playing
@@ -201,7 +201,7 @@ export function Hero() {
           transition={{ duration: 0.4, ease: EASE }}
           inert={playing}
         >
-          <div className="mx-auto max-w-6xl px-6 pb-8">
+          <div className="px-6 pb-8 md:px-10">
             <button
               type="button"
               onClick={play}
