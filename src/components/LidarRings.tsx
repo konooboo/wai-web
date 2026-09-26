@@ -89,7 +89,7 @@ export function LidarRings({
       b.clearRect(0, 0, box.width, box.height)
       for (let i = 0; i < xs.length; i++) {
         b.fillStyle = `rgb(20 20 18 / ${0.55 * (1 - (rs[i] / maxR) * 0.7)})`
-        b.fillRect(xs[i] - 0.75, ys[i] - 0.75, 1.5, 1.5)
+        b.fillRect(xs[i] - 1.1, ys[i] - 1.1, 2.2, 2.2)
       }
       draw(performance.now())
     }
@@ -111,7 +111,7 @@ export function LidarRings({
         ctx.globalAlpha = k * 0.55 * (1 - (rs[i] / maxR) * 0.6)
         ctx.fillStyle =
           PALETTE[Math.min(BUCKETS - 1, Math.floor((rs[i] / maxR) * BUCKETS))]
-        ctx.fillRect(xs[i] - 1, ys[i] - 1, 2, 2)
+        ctx.fillRect(xs[i] - 1.4, ys[i] - 1.4, 2.8, 2.8)
       }
       ctx.globalAlpha = 1
     }
