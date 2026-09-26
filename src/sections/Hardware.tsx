@@ -57,7 +57,7 @@ const ALERT_KINDS = ['Level', 'Soil', 'Water quality', 'Moved', 'Offline']
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
 const glow =
-  'border-healthy pointer-events-none absolute opacity-0 drop-shadow-[0_0_8px_var(--color-healthy)] transition-opacity duration-300 group-data-[glow]:opacity-100'
+  'border-healthy pointer-events-none absolute opacity-0 transition-opacity duration-300 group-data-[glow]:opacity-100'
 const glowMask = {
   maskImage:
     'radial-gradient(220px circle at var(--x) var(--y), black 25%, transparent)',
