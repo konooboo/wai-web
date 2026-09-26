@@ -52,7 +52,10 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="border-line bg-ink relative -mt-[65px] overflow-hidden border-b md:-mt-[77px]"
+      className="border-line bg-ink relative -mt-[65px] cursor-pointer overflow-hidden border-b md:-mt-[77px]"
+      onClick={(e) => {
+        if (!playing && !(e.target as Element).closest('a, button')) play()
+      }}
     >
       <motion.video
         key={String(reducedMotion)}
