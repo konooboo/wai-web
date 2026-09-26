@@ -33,45 +33,25 @@ const STEPS: Step[] = [
   },
   {
     eyebrow: '02 · Always on',
-    title: `Readings every ${READING_INTERVAL_MIN} minutes, day and night.`,
+    title: `Wai AI reads your data every ${READING_INTERVAL_MIN} minutes, day and night.`,
     problem: 'fertiliser',
   },
   {
     eyebrow: '03 · Problem',
-    title: `${ALERT_EXAMPLE.sensor} detects a change.`,
+    title: `${ALERT_EXAMPLE.sensor} detects a change. Wai AI is already working out why.`,
     body: `After heavy rain, the reading goes up to ${ALERT_EXAMPLE.reading.charAt(0).toLowerCase()}${ALERT_EXAMPLE.reading.slice(1)}. ${ALERT_EXAMPLE.normal}.`,
   },
   {
     eyebrow: '04 · Alert',
-    title: 'You get an alert on your phone.',
-    body: 'The alert shows the sensor, the reading, the normal range and the time. You do not have to walk the farm to find the problem.',
+    title: 'You wake up to the answer, not a guess.',
+    body: 'An alert from 2 am waits on your phone with the likely cause, the next step and the risk over the next 24–48 h. You do not have to walk the farm to find the problem.',
   },
   {
     eyebrow: '05 · Next step',
-    title: 'Wai tells you why, and what to do.',
+    title: 'Wai AI tells you what to do, and what happens if you wait.',
     problem: 'compliance',
   },
 ]
-
-const AI_TITLE = 'Wai AI does three jobs for you.'
-const AI_FEATURES = [
-  {
-    label: 'Alert diagnosis',
-    title: 'It explains each alert.',
-    body: 'It writes what is wrong, the likely cause, the next step and the risk in the next 24–48 h. It uses the current and usual readings of the sensor.',
-  },
-  {
-    label: 'Fertiliser timing',
-    title: 'It tells you when to fertilise.',
-    body: 'It compares soil moisture with the 48 h rain forecast. Then it gives one answer: Apply now, Wait for rain, or Too wet — leaching risk.',
-  },
-  {
-    label: 'Daily tip',
-    title: 'It gives you one tip for today.',
-    body: 'It reads all your sensors and open alerts, and writes the most useful suggestion for the day.',
-  },
-]
-const AI_NOTE = 'Rules in the app raise every alert. Wai AI explains it.'
 
 const HECTARES = (MAP_METRES * MAP_METRES) / 10000
 
@@ -204,32 +184,6 @@ export function FarmMap() {
                 </div>
               )
             })}
-          </div>
-          <div className="flex min-h-svh flex-col items-start pt-6 pb-16 md:pt-[22svh]">
-            <div className="max-w-md">
-              <p className="text-healthy font-mono text-xs tracking-wider uppercase">
-                06 · Wai AI
-              </p>
-              <h3 className="mt-4 text-3xl leading-tight font-medium tracking-tight">
-                {AI_TITLE}
-              </h3>
-            </div>
-            <ol className="border-line divide-line mt-8 w-full max-w-md divide-y rounded-2xl border bg-white">
-              {AI_FEATURES.map((feature) => (
-                <li key={feature.label} className="p-6">
-                  <p className="text-healthy font-mono text-xs tracking-wider uppercase">
-                    {feature.label}
-                  </p>
-                  <h4 className="mt-3 text-lg font-medium tracking-tight">
-                    {feature.title}
-                  </h4>
-                  <p className="text-muted mt-2 text-sm leading-relaxed">
-                    {feature.body}
-                  </p>
-                </li>
-              ))}
-            </ol>
-            <p className="text-muted mt-4 max-w-md text-sm">{AI_NOTE}</p>
           </div>
           <div className="md:h-[25svh]" />
         </div>
