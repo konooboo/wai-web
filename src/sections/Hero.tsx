@@ -57,6 +57,7 @@ export function Hero() {
     if (!film) return
     film.currentTime = 0
     progress.set(0)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     setPlaying(true)
     void film.play()
   }
@@ -118,7 +119,7 @@ export function Hero() {
       />
       <motion.video
         ref={filmRef}
-        className="absolute inset-x-0 bottom-0 h-[calc(100%-65px)] w-full cursor-pointer object-contain md:h-[calc(100%-77px)]"
+        className="bg-ink absolute inset-0 z-[60] size-full cursor-pointer object-contain md:object-cover"
         src={filmVideo}
         playsInline
         preload="none"
@@ -253,7 +254,7 @@ export function Hero() {
       )}
 
       <motion.div
-        className="absolute inset-x-0 bottom-0"
+        className="absolute inset-x-0 bottom-0 z-[60]"
         initial={false}
         animate={{ opacity: playing ? 1 : 0 }}
         transition={{ duration: 0.4, delay: playing ? 0.6 : 0 }}
