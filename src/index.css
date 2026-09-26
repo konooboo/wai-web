@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-paper: #f6f5f1;
+  --color-ink: #141412;
+  --color-muted: #6b6a64;
+  --color-line: #e3e1da;
+  --color-healthy: #3a9d5d;
+  --color-alert: #d9482b;
+  --color-mint: #dcefe0;
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+}
