@@ -1,7 +1,6 @@
 import { MotionConfig } from 'motion/react'
 import { About } from './sections/About'
 import { Close } from './sections/Close'
-import { Contact } from './sections/Contact'
 import { Faq } from './sections/Faq'
 import { FarmMap } from './sections/FarmMap'
 import { Footer } from './sections/Footer'
@@ -27,7 +26,6 @@ export default function App() {
         <Pricing />
         <About />
         <Faq />
-        <Contact />
         <Close />
       </main>
       <Footer />

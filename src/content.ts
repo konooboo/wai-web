@@ -22,4 +22,6 @@ export const ALERT_EXAMPLE = {
 
 export const READING_INTERVAL_MIN = 15 // TODO(data): confirm interval
 
-export const CONTACT_EMAIL = '[hello@wai.nz]' // TODO(data)
+export const CONTACT_EMAIL = 'hello@wai.nz' // TODO(data): confirm address
+
+export const BOOK_DEMO_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Book a Wai demo')}`

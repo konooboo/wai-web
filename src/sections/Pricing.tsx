@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
+import { BOOK_DEMO_HREF } from '../content'
 
 // TODO(data): confirm price. Draft value for the calculator only.
 const PRICE_PER_HA_MONTH = 2.5 // NZD per ha per month
@@ -118,7 +119,7 @@ export function Pricing() {
               ))}
             </ul>
             <a
-              href="#contact"
+              href={BOOK_DEMO_HREF}
               className="bg-ink text-paper hover:bg-ink/85 mt-8 inline-block self-start rounded-full px-6 py-3"
             >
               Book a demo

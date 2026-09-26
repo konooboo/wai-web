@@ -1,5 +1,6 @@
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
+import { BOOK_DEMO_HREF } from '../content'
 
 function QrPlaceholderIcon() {
   return (
@@ -60,7 +61,7 @@ export function Close() {
           </h2>
           {/* TODO(data): confirm the hours-saved figure with the team. */}
           <a
-            href="#contact"
+            href={BOOK_DEMO_HREF}
             className="bg-ink text-paper hover:bg-ink/85 mt-8 inline-block rounded-full px-6 py-3"
           >
             Book a demo

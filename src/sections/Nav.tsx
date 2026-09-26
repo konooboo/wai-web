@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { BOOK_DEMO_HREF } from '../content'
 
 const links = [
   { href: '#how-it-works', label: 'How it works' },
   { href: '#hardware', label: 'Hardware' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#faq', label: 'FAQ' },
-  { href: '#contact', label: 'Contact' },
 ]
 
 export function Nav() {
@@ -66,7 +66,7 @@ export function Nav() {
             Sign in
           </button>
           <a
-            href="#contact"
+            href={BOOK_DEMO_HREF}
             className="bg-ink text-paper hover:bg-ink/85 rounded-full px-4 py-2"
           >
             Book a demo
@@ -130,7 +130,7 @@ export function Nav() {
                 Sign in
               </button>
               <a
-                href="#contact"
+                href={BOOK_DEMO_HREF}
                 onClick={() => setOpen(false)}
                 className="bg-ink text-paper hover:bg-ink/85 rounded-full px-4 py-3 text-center"
               >

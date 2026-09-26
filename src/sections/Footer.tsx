@@ -1,3 +1,5 @@
+import { BOOK_DEMO_HREF } from '../content'
+
 export function Footer() {
   return (
     <footer className="overflow-hidden bg-white">
@@ -11,7 +13,7 @@ export function Footer() {
             <a href="#faq" className="hover:text-ink">
               FAQ
             </a>
-            <a href="#contact" className="hover:text-ink">
+            <a href={BOOK_DEMO_HREF} className="hover:text-ink">
               Book a demo
             </a>
           </div>

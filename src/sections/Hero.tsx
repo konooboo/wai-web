@@ -1,6 +1,7 @@
 import { lazy, Suspense, useRef } from 'react'
 import { useReducedMotion, useScroll } from 'motion/react'
 import { LidarRings } from '../components/LidarRings'
+import { BOOK_DEMO_HREF } from '../content'
 
 const SensorScene = lazy(() => import('../scene/SensorScene'))
 
@@ -26,7 +27,7 @@ export function Hero() {
             when something changes, why, and what to do next.
           </p>
           <a
-            href="#contact"
+            href={BOOK_DEMO_HREF}
             className="bg-ink text-paper hover:bg-ink/85 mt-8 inline-block rounded-full px-6 py-3"
           >
             Book a demo
