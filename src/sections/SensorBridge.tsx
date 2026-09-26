@@ -23,14 +23,18 @@ export function SensorBridge() {
   const [ready, setReady] = useState(false)
 
   return (
-    <div className="relative z-30 h-0">
-      <div
-        ref={ref}
-        className="pointer-events-none absolute inset-x-0 top-0 h-[56rem] -translate-y-1/2 overflow-hidden"
-      >
-        <div className="absolute top-0 left-1/2 h-[56rem] w-[76rem] -translate-x-1/2 [mask-image:radial-gradient(ellipse_48%_46%_at_42%_42%,black_55%,transparent)] md:right-[-12rem] md:left-auto md:translate-x-0">
+    <div className="relative h-0">
+      {/* The rings sit below the farm map's sticky phone (z-20); the model
+          sits above it. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[56rem] -translate-y-1/2 overflow-hidden">
+        <div className="absolute top-0 left-1/2 size-[56rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,black_45%,transparent)] md:right-[-12rem] md:left-auto md:w-[76rem] md:translate-x-0 md:[mask-image:radial-gradient(ellipse_48%_46%_at_42%_42%,black_55%,transparent)]">
           <LidarRings centre={modelRef} />
         </div>
+      </div>
+      <div
+        ref={ref}
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[56rem] -translate-y-1/2 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 size-[26rem] -translate-1/2 md:right-[26rem] md:left-auto md:size-[42rem] md:translate-x-1/2">
           <div
             ref={modelRef}
