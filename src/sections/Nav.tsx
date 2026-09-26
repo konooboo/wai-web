@@ -51,7 +51,7 @@ export function Nav() {
           <Koru className="size-6" />
           wai
         </a>
-        <ul className="ml-auto hidden items-center gap-1 text-[15px] md:flex">
+        <ul className="ml-auto hidden items-center gap-1 text-sm md:flex">
           {links.map((link) => (
             <li key={link.href}>
               <a
@@ -65,7 +65,7 @@ export function Nav() {
             </li>
           ))}
         </ul>
-        <div className="ml-4 hidden items-center gap-2 text-[15px] md:flex">
+        <div className="ml-4 hidden items-center gap-2 text-sm md:flex">
           <button
             type="button"
             className="text-ink hover:bg-ink/5 rounded-md px-4 py-2.5 transition-colors"
