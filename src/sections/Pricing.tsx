@@ -5,18 +5,29 @@ import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { BOOK_DEMO_HREF } from '../content'
 
-// TODO(data): confirm price. Draft value for the calculator only.
-const PRICE_PER_HA_MONTH = 2.5 // NZD per ha per month
+// TODO(data): confirm bands, rates and minimum. Draft values from docs/pricing-research.md.
+// Each rate applies only to the hectares inside its band. NZD per ha per month.
+const BANDS = [
+  { upToHa: 150, ratePerHa: 3 },
+  { upToHa: 400, ratePerHa: 2 },
+  { upToHa: 1000, ratePerHa: 1 },
+]
+const MIN_PER_MONTH = 150
+const HA_TO_AC = 2.471
 
 const MIN_HA = 10
-const MAX_HA = 2000
-const DEFAULT_HA = 200
+const MAX_HA = BANDS[BANDS.length - 1].upToHa
+const DEFAULT_HA = 160
+
+// TODO(data): confirm reply time.
+const CTA_NOTE =
+  'We reply within [X] working days to set a time to visit your farm.'
 
 const INCLUDED = [
   'Water and soil sensors',
   'Installation on your farm',
   'Mobile app for every user',
-  'AI alerts and recommendations',
+  'AI alerts and suggestions',
   'Compliance reports',
   'Support',
 ]
@@ -33,9 +44,19 @@ const rate = new Intl.NumberFormat('en-NZ', {
   minimumFractionDigits: 2,
 })
 
-function TotalPerMonth({ hectares }: { hectares: number }) {
+function monthlyPrice(ha: number) {
+  let prev = 0
+  let sum = 0
+  for (const { upToHa, ratePerHa } of BANDS) {
+    sum += Math.max(0, Math.min(ha, upToHa) - prev) * ratePerHa
+    prev = upToHa
+  }
+  return Math.max(sum, MIN_PER_MONTH)
+}
+
+function TotalPerMonth({ value }: { value: number }) {
   const prefersReducedMotion = useReducedMotion()
-  const spring = useSpring(hectares * PRICE_PER_HA_MONTH, {
+  const spring = useSpring(value, {
     stiffness: 120,
     damping: 20,
     ...(prefersReducedMotion ? { duration: 0 } : {}),
@@ -44,8 +65,8 @@ function TotalPerMonth({ hectares }: { hectares: number }) {
   const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    spring.set(hectares * PRICE_PER_HA_MONTH)
-  }, [hectares, spring])
+    spring.set(value)
+  }, [value, spring])
 
   useEffect(() => {
     ref.current!.textContent = display.get()
@@ -59,6 +80,8 @@ function TotalPerMonth({ hectares }: { hectares: number }) {
 
 export function Pricing() {
   const [hectares, setHectares] = useState(DEFAULT_HA)
+  const monthly = monthlyPrice(hectares)
+  const acres = Math.round(hectares * HA_TO_AC)
 
   return (
     <Section id="pricing" className="border-line border-b">
@@ -72,7 +95,9 @@ export function Pricing() {
               <label htmlFor="farm-size" className="text-sm">
                 Farm size
               </label>
-              <span className="font-mono text-sm">{hectares} ha</span>
+              <span className="font-mono text-sm">
+                {hectares} ha <span className="text-muted">· {acres} ac</span>
+              </span>
             </div>
             <input
               id="farm-size"
@@ -82,12 +107,12 @@ export function Pricing() {
               step={10}
               value={hectares}
               onChange={(e) => setHectares(Number(e.target.value))}
-              aria-valuetext={`${hectares} hectares`}
+              aria-valuetext={`${hectares} hectares, ${acres} acres`}
               className="bg-line accent-ink [&::-moz-range-thumb]:bg-ink [&::-webkit-slider-thumb]:bg-ink mt-4 h-1 w-full cursor-pointer appearance-none rounded-full [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
             />
             <div className="text-muted mt-2 flex justify-between font-mono text-xs">
               <span>{MIN_HA} ha</span>
-              <span>{MAX_HA} ha</span>
+              <span>{MAX_HA.toLocaleString('en-NZ')} ha</span>
             </div>
 
             <div className="border-line mt-8 border-t pt-8">
@@ -100,10 +125,14 @@ export function Pricing() {
                 </span>
               </div>
               <p className="mt-2 text-4xl font-medium tracking-tight tabular-nums">
-                <TotalPerMonth hectares={hectares} />
+                <TotalPerMonth value={monthly} />
               </p>
               <p className="text-muted mt-2 font-mono text-sm">
-                {rate.format(PRICE_PER_HA_MONTH)}/ha/month · NZD
+                {rate.format(monthly / hectares)}/ha/month average · excl. GST
+              </p>
+              <p className="text-muted mt-1 font-mono text-sm">
+                Larger farms pay less per hectare. Over{' '}
+                {MAX_HA.toLocaleString('en-NZ')} ha? We quote.
               </p>
             </div>
           </div>
@@ -124,6 +153,7 @@ export function Pricing() {
             >
               Book a demo
             </a>
+            <p className="text-muted mt-3 text-sm">{CTA_NOTE}</p>
           </div>
         </div>
       </Reveal>
