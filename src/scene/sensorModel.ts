@@ -4,12 +4,14 @@ import {
   CanvasTexture,
   ConeGeometry,
   CylinderGeometry,
+  ExtrudeGeometry,
   Group,
   Mesh,
   MeshStandardMaterial,
   Object3D,
   PlaneGeometry,
   RepeatWrapping,
+  Shape,
   SphereGeometry,
   TorusGeometry,
 } from 'three'
@@ -68,22 +70,15 @@ export function buildSensorModel() {
 
   // One material per bucket, one draw call per bucket
   const mats = {
+    // Smooth moulded plastic, with only a faint grain.
     plastic: new MeshStandardMaterial({
-      color: 0x0c1628,
-      roughness: 0.62,
-      roughnessMap: grain,
+      color: 0x001a5b,
+      roughness: 0.78,
       bumpMap: grain,
-      bumpScale: 0.012,
+      bumpScale: 0.003,
       envMapIntensity: 0.9,
     }),
-    badge: new MeshStandardMaterial({
-      color: 0x5a5e60,
-      roughness: 0.55,
-      roughnessMap: grain,
-      bumpMap: grain,
-      bumpScale: 0.006,
-    }),
-    dark: new MeshStandardMaterial({ color: 0x060b14, roughness: 0.7 }),
+    dark: new MeshStandardMaterial({ color: 0x00020f, roughness: 0.9 }),
     metal: new MeshStandardMaterial({
       color: 0xd4d6d9,
       metalness: 1,
@@ -127,42 +122,76 @@ export function buildSensorModel() {
     new RoundedBoxGeometry(w, h, d, seg, r)
   const CYL = (rt: number, rb: number, h: number, seg = 24) =>
     new CylinderGeometry(rt, rb, h, seg)
+  // Rounded rectangle in the XZ plane, extruded up from y = 0. Only the
+  // vertical edges are round, as on a moulded box.
+  const EXT = (w: number, d: number, r: number, h: number, bevel = 0) => {
+    const s = new Shape()
+    const x = w / 2 - r
+    const z = d / 2 - r
+    s.absarc(x, z, r, 0, HALF_PI)
+    s.absarc(-x, z, r, HALF_PI, Math.PI)
+    s.absarc(-x, -z, r, Math.PI, Math.PI * 1.5)
+    s.absarc(x, -z, r, Math.PI * 1.5, TAU)
+    const g = new ExtrudeGeometry(s, {
+      depth: h - bevel * 2,
+      curveSegments: 8,
+      bevelEnabled: bevel > 0,
+      bevelThickness: bevel,
+      bevelSize: bevel,
+      bevelSegments: 3,
+    })
+    g.translate(0, 0, bevel)
+    g.rotateX(-HALF_PI)
+    return g
+  }
 
   // Enclosure assembly sits 20 mm below the water surface (55 mm into the soil)
   const BOX_DROP = -0.55
   yOff = BOX_DROP
 
-  // Enclosure: body, lid with slight overhang, seam groove
-  put('plastic', RB(1.8, 2.0, 1.1, 0.12), 0, 1.0, 0)
-  put('plastic', RB(1.84, 0.3, 1.14, 0.13), 0, 2.12, 0)
-  put('dark', RB(1.79, 0.035, 1.09, 0.1, 3), 0, 1.975, 0)
-  // Side latch lugs
+  // Enclosure: tall body, and a flat lid plate that overhangs it
+  const W = 1.5
+  const D = 1.25
+  const H = 2.3
+  const R = 0.08
+  const LID = 0.13
+  put('plastic', EXT(W, D, R, H))
+  put('plastic', EXT(W + 0.02, D + 0.02, R + 0.01, LID, 0.025), 0, H, 0)
+  // Cable notches in the top rim, under the lid
+  const NOTCH = 0.1
   for (const sx of [-1, 1])
-    for (const y of [1.86, 0.3])
-      put('plastic', RB(0.07, 0.16, 0.24, 0.025, 2), sx * 0.92, y, 0.12)
-  // Lid screws with slots
-  for (const sx of [-1, 1])
-    for (const sz of [-1, 1]) {
-      put('badge', CYL(0.055, 0.055, 0.022, 20), sx * 0.72, 2.278, sz * 0.42)
-      put(
-        'dark',
-        new BoxGeometry(0.075, 0.012, 0.014),
-        sx * 0.72,
-        2.289,
-        sz * 0.42,
-        0,
-        sx * sz * 0.6,
-        0,
-      )
-    }
+    put(
+      'dark',
+      new BoxGeometry(0.06, NOTCH, 0.2),
+      sx * (W / 2 - 0.027),
+      H - NOTCH / 2,
+      -0.1,
+    )
+  put(
+    'dark',
+    new BoxGeometry(0.2, NOTCH, 0.06),
+    0.25,
+    H - NOTCH / 2,
+    -(D / 2 - 0.027),
+  )
+  // Cable hole in the right side
+  put(
+    'dark',
+    CYL(0.13, 0.13, 0.04, 32),
+    W / 2 - 0.017,
+    H - 0.55,
+    0.25,
+    0,
+    0,
+    HALF_PI,
+  )
 
-  const BADGE_Y = 1.1
-  const FACE_Z = 0.55
+  const FACE_Z = D / 2
 
   // Antenna: washer, hex nut, SMA barrel, rubber knuckle, tapered whip
   const AX = 0.05
   const AZ = 0.15
-  const AY = 2.27
+  const AY = H + LID
   put('metal', CYL(0.12, 0.12, 0.012, 24), AX, AY + 0.006, AZ)
   put('metal', CYL(0.1, 0.1, 0.05, 6), AX, AY + 0.037, AZ)
   put('metal', CYL(0.066, 0.068, 0.24, 24), AX, AY + 0.182, AZ)
@@ -218,19 +247,20 @@ export function buildSensorModel() {
     root.add(new Mesh(merged, mats[k]))
   }
 
-  // Etched spiral logo: bump and roughness maps on a panel over the flat front face.
-  // The logo disc is recessed with a rougher finish; the spiral line stays at surface level.
+  // Raised spiral logo: bump and roughness maps on a panel over the flat front face.
+  // A thin outer ring and a spiral line stand up from the face, a little smoother than it.
   {
-    const PW = 1.56
-    const PH = 1.76
+    const PW = W - 2 * R - 0.04
+    const PH = H - 0.3
     const CW = 1024
-    const CH = 1152
+    const CH = Math.round((CW * PH) / PW)
     const px = CW / PW
-    const LOGO_R = 0.42
+    const RING_R = 0.4
+    const LOGO_DY = -0.15
     const cx = CW / 2
-    const cy = CH / 2 - (BADGE_Y - 1.0) * px
-    // Groove: 2 turns inside a solid black ring. It starts as a point at 1 o'clock,
-    // widens as it winds clockwise inwards, and ends in a round hook around the centre dot.
+    const cy = CH / 2 - LOGO_DY * px
+    // Spiral: 2 turns. It starts as a point at 1 o'clock, widens as it winds
+    // clockwise inwards, and ends in a round hook around the centre dot.
     const tMax = TAU * 2
     const r0 = 0.07
     const rz = Math.PI / 3 - tMax
@@ -260,7 +290,7 @@ export function buildSensorModel() {
       g.moveTo(ex + capR * px, ey)
       g.arc(ex, ey, capR * px, 0, TAU)
     }
-    const logoCanvas = (base: string, recess: string, line: string) => {
+    const logoCanvas = (base: string, line: string) => {
       const c = document.createElement('canvas')
       c.width = CW
       c.height = CH
@@ -274,13 +304,14 @@ export function buildSensorModel() {
       g.fillRect(0, 0, CW, CH)
       g.globalCompositeOperation = 'source-over'
       g.filter = 'blur(1.5px)'
-      g.fillStyle = recess
-      g.beginPath()
-      g.arc(cx, cy, LOGO_R * px, 0, TAU)
-      g.fill()
       g.fillStyle = line
       spiralPath(g)
       g.fill()
+      g.strokeStyle = line
+      g.lineWidth = 0.028 * px
+      g.beginPath()
+      g.arc(cx, cy, RING_R * px, -Math.PI / 3 + 0.35, -Math.PI / 3 - 0.35 + TAU)
+      g.stroke()
       g.filter = 'none'
       const t = new CanvasTexture(c)
       t.anisotropy = 4
@@ -292,12 +323,12 @@ export function buildSensorModel() {
         color: mats.plastic.color,
         roughness: 1,
         envMapIntensity: 0.9,
-        bumpMap: logoCanvas('#969696', '#5a5a5a', '#969696'),
-        bumpScale: 0.012,
-        roughnessMap: logoCanvas('#5e5e5e', '#a0a0a0', '#5e5e5e'),
+        bumpMap: logoCanvas('#808080', '#c8c8c8'),
+        bumpScale: 0.02,
+        roughnessMap: logoCanvas('#c7c7c7', '#a8a8a8'),
       }),
     )
-    face.position.set(0, 1.0 + BOX_DROP, FACE_Z + 0.0006)
+    face.position.set(0, H / 2 + BOX_DROP, FACE_Z + 0.0006)
     root.add(face)
   }
 

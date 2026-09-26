@@ -110,8 +110,8 @@ export default function SensorScene(props: Props) {
         />
         {/* Rim light from behind, so the dark case edges show on a dark background. */}
         <directionalLight
-          position={[4, 3, -9]}
-          intensity={1.2 * Math.PI}
+          position={[1, 4, -10]}
+          intensity={0.7 * Math.PI}
           color="#e3ecff"
         />
         <Device {...props} />
