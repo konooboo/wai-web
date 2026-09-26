@@ -29,29 +29,29 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    eyebrow: '01 · Sensors',
+    eyebrow: 'Sensors',
     title: 'Sensors in your water and soil.',
     problem: 'time',
   },
   {
-    eyebrow: '02 · Always on',
+    eyebrow: 'Always on',
     title: 'Wai AI listens to your pastures, all day, every day.',
     problem: 'fertiliser',
   },
   {
-    eyebrow: '03 · Problem',
+    eyebrow: 'Problem',
     title: `${ALERT_EXAMPLE.sensor} detects a change. Wai is already using our AI to work out why.`,
     body: 'Save the manual discovery and testing process. Our models will handle it.',
     visual: 'reading',
   },
   {
-    eyebrow: '04 · Alert',
+    eyebrow: 'Alert',
     title: 'You wake up to clear solutions, to focus on the real work.',
     body: 'Wai evaluates the root cause, next steps and downstream effects internally.',
     visual: 'alert',
   },
   {
-    eyebrow: '05 · Next step',
+    eyebrow: 'Next step',
     title:
       'Wai AI gives you clear, actionable steps, and what happens if you wait.',
     problem: 'compliance',
