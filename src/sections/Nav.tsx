@@ -40,34 +40,51 @@ export function Nav() {
   }, [open])
 
   return (
-    <header className="border-line bg-paper/80 sticky top-0 z-50 border-b backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" className="text-2xl font-medium tracking-tight">
-          Wai
+    <header className="border-line bg-paper/95 sticky top-0 z-50 border-b backdrop-blur">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:h-[76px]">
+        <a
+          href="#top"
+          aria-label="Wai home"
+          className="flex items-center gap-2 text-[28px] leading-none font-bold tracking-tight"
+        >
+          <svg
+            viewBox="0 0 30 20"
+            aria-hidden="true"
+            className="h-5 w-[30px]"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3.4"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
+          >
+            <path d="M1 10h4M4 2l5.5 16L15 6l5.5 12L26 2" />
+          </svg>
+          wai
         </a>
-        <ul className="hidden gap-8 text-sm md:flex">
+        <ul className="ml-auto hidden items-center gap-1 text-[15px] md:flex">
           {links.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
-                className={
-                  active === link.href
-                    ? 'text-ink'
-                    : 'text-muted hover:text-ink'
-                }
+                className={`text-ink block rounded-md px-4 py-2.5 transition-colors ${
+                  active === link.href ? 'bg-ink/[0.07]' : 'hover:bg-ink/5'
+                }`}
               >
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
-        <div className="hidden items-center gap-3 text-sm md:flex">
-          <button type="button" className="text-muted hover:text-ink px-3 py-2">
+        <div className="ml-4 hidden items-center gap-2 text-[15px] md:flex">
+          <button
+            type="button"
+            className="text-ink hover:bg-ink/5 rounded-md px-4 py-2.5 transition-colors"
+          >
             Sign in
           </button>
           <a
             href={BOOK_DEMO_HREF}
-            className="bg-ink text-paper hover:bg-ink/85 rounded-full px-4 py-2"
+            className="bg-ink text-paper hover:bg-ink/85 rounded-full px-5 py-2.5"
           >
             Book a demo
           </a>
