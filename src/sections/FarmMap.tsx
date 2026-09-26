@@ -6,7 +6,6 @@ import {
   useTransform,
 } from 'motion/react'
 import { useRef } from 'react'
-import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
 import { FarmCanvas } from '../farm/FarmCanvas'
@@ -59,10 +58,13 @@ export function FarmMap() {
   const paddock = useTransform(progress, [...STORY.paddock], [0, 1])
 
   return (
-    <Section id="farm-map" className="border-line border-b">
-      <div className="grid md:grid-cols-[1.15fr_1fr] md:gap-16">
+    <section
+      id="farm-map"
+      className="border-line scroll-mt-16 border-b py-24 md:py-32"
+    >
+      <div className="mx-auto grid max-w-[88rem] px-6 md:grid-cols-[1.5fr_1fr] md:gap-16">
         <div className="bg-paper sticky top-16 z-20 -mx-6 px-6 py-4 md:mx-0 md:flex md:h-[calc(100svh-4rem)] md:items-center md:self-start md:bg-transparent md:px-0 md:py-0">
-          <div className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-9rem)]">
+          <div className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-8rem)]">
             <div className="border-line absolute inset-0 overflow-hidden rounded-2xl border bg-white">
               <FarmCanvas progress={progress} />
               <svg
@@ -154,6 +156,6 @@ export function FarmMap() {
           <div className="md:h-[25svh]" />
         </div>
       </div>
-    </Section>
+    </section>
   )
 }

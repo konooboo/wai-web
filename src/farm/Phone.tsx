@@ -35,40 +35,40 @@ export function Phone({ progress }: { progress: MotionValue<number> }) {
         <StatusBar />
         <div className="bg-ink/90 absolute bottom-[2cqw] left-1/2 h-[1.3cqw] w-[34cqw] -translate-x-1/2 rounded-full" />
 
-        <div className="absolute inset-x-1.5 top-[15cqw] flex flex-col gap-1.5 md:inset-x-2 md:gap-2">
+        <div className="absolute inset-x-[4cqw] top-[15cqw] flex flex-col gap-[3cqw]">
           <motion.div
-            className="border-line rounded-lg border bg-white p-2 md:rounded-xl md:p-2.5"
+            className="border-line rounded-[max(0.5rem,5cqw)] border bg-white p-[max(0.5rem,5cqw)]"
             style={{ opacity: card, y: cardY }}
           >
-            <p className="text-muted flex justify-between gap-1 font-mono text-[7px] tracking-wider whitespace-nowrap uppercase md:text-[9px]">
+            <p className="text-muted flex justify-between gap-1 font-mono text-[max(7px,5cqw)] tracking-wider whitespace-nowrap uppercase">
               <span className="text-alert">● Alert</span>
               <span>{ALERT_EXAMPLE.time}</span>
             </p>
-            <p className="mt-1 text-[9px] leading-tight font-medium md:text-[11px]">
+            <p className="mt-1 text-[max(9px,6.8cqw)] leading-tight font-medium">
               {ALERT_EXAMPLE.sensor}
             </p>
-            <p className="text-alert mt-0.5 font-mono text-[9px] md:text-xs">
+            <p className="text-alert mt-0.5 font-mono text-[max(9px,7.2cqw)]">
               {ALERT_EXAMPLE.reading}
             </p>
-            <p className="text-muted font-mono text-[7px] md:text-[9px]">
+            <p className="text-muted font-mono text-[max(7px,5cqw)]">
               {ALERT_EXAMPLE.normal}
             </p>
           </motion.div>
 
           <motion.div
-            className="border-line rounded-lg border bg-white p-2 md:rounded-xl md:p-2.5"
+            className="border-line rounded-[max(0.5rem,5cqw)] border bg-white p-[max(0.5rem,5cqw)]"
             style={{ opacity: tip, y: tipY }}
           >
-            <p className="text-muted font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
+            <p className="text-muted font-mono text-[max(7px,5cqw)] tracking-wider uppercase">
               Likely cause
             </p>
-            <p className="mt-0.5 mb-1.5 text-[8px] leading-snug md:text-[10px]">
+            <p className="mt-0.5 mb-1.5 text-[max(8px,5.8cqw)] leading-snug">
               {ALERT_EXAMPLE.cause}
             </p>
-            <p className="text-muted font-mono text-[7px] tracking-wider uppercase md:text-[9px]">
+            <p className="text-muted font-mono text-[max(7px,5cqw)] tracking-wider uppercase">
               Next step
             </p>
-            <p className="mt-0.5 text-[8px] leading-snug font-medium md:text-[10px]">
+            <p className="mt-0.5 text-[max(8px,5.8cqw)] leading-snug font-medium">
               {ALERT_EXAMPLE.action}
             </p>
           </motion.div>
