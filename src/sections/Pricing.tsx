@@ -7,17 +7,18 @@ import { BOOK_DEMO_HREF } from '../content'
 
 // TODO(data): confirm bands, rates and minimum. Draft values from docs/pricing-research.md.
 // Each rate applies only to the hectares inside its band. NZD per ha per month.
+// The slider moves in fixed monthly price steps. Each step shows the hectares that price covers.
 const BANDS = [
   { upToHa: 150, ratePerHa: 3 },
   { upToHa: 400, ratePerHa: 2 },
   { upToHa: 1000, ratePerHa: 1 },
 ]
 const MIN_PER_MONTH = 150
+const PRICE_STEP = 120
 const HA_TO_AC = 2.471
 
-const MIN_HA = 10
 const MAX_HA = BANDS[BANDS.length - 1].upToHa
-const DEFAULT_HA = 160
+const DEFAULT_STEP = 3
 
 const INCLUDED = [
   'Water and soil sensors',
@@ -40,14 +41,23 @@ const rate = new Intl.NumberFormat('en-NZ', {
   minimumFractionDigits: 2,
 })
 
-function monthlyPrice(ha: number) {
+function hectaresCovered(price: number) {
   let prev = 0
-  let sum = 0
+  let left = price
   for (const { upToHa, ratePerHa } of BANDS) {
-    sum += Math.max(0, Math.min(ha, upToHa) - prev) * ratePerHa
+    const bandCost = (upToHa - prev) * ratePerHa
+    if (left <= bandCost) return Math.floor(prev + left / ratePerHa)
+    left -= bandCost
     prev = upToHa
   }
-  return Math.max(sum, MIN_PER_MONTH)
+  return MAX_HA
+}
+
+const STEPS: { price: number; ha: number }[] = []
+for (let price = MIN_PER_MONTH; ; price += PRICE_STEP) {
+  const ha = hectaresCovered(price)
+  STEPS.push({ price, ha })
+  if (ha >= MAX_HA) break
 }
 
 function TotalPerMonth({ value }: { value: number }) {
@@ -75,8 +85,8 @@ function TotalPerMonth({ value }: { value: number }) {
 }
 
 export function Pricing() {
-  const [hectares, setHectares] = useState(DEFAULT_HA)
-  const monthly = monthlyPrice(hectares)
+  const [step, setStep] = useState(DEFAULT_STEP)
+  const { price: monthly, ha: hectares } = STEPS[step]
   const acres = Math.round(hectares * HA_TO_AC)
 
   return (
@@ -92,22 +102,23 @@ export function Pricing() {
                 Farm size
               </label>
               <span className="font-mono text-sm">
-                {hectares} ha <span className="text-muted">· {acres} ac</span>
+                Up to {hectares} ha{' '}
+                <span className="text-muted">· {acres} ac</span>
               </span>
             </div>
             <input
               id="farm-size"
               type="range"
-              min={MIN_HA}
-              max={MAX_HA}
-              step={10}
-              value={hectares}
-              onChange={(e) => setHectares(Number(e.target.value))}
-              aria-valuetext={`${hectares} hectares, ${acres} acres`}
+              min={0}
+              max={STEPS.length - 1}
+              step={1}
+              value={step}
+              onChange={(e) => setStep(Number(e.target.value))}
+              aria-valuetext={`${currency.format(monthly)} per month, up to ${hectares} hectares`}
               className="bg-line accent-ink [&::-moz-range-thumb]:bg-ink [&::-webkit-slider-thumb]:bg-ink mt-4 h-1 w-full cursor-pointer appearance-none rounded-full [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
             />
             <div className="text-muted mt-2 flex justify-between font-mono text-xs">
-              <span>{MIN_HA} ha</span>
+              <span>{STEPS[0].ha} ha</span>
               <span>{MAX_HA.toLocaleString('en-NZ')} ha</span>
             </div>
 
