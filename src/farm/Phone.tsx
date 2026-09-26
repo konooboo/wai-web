@@ -1,18 +1,21 @@
-import { useId } from 'react'
+import { useId, useLayoutEffect, useRef } from 'react'
 import { motion, useTransform, type MotionValue } from 'motion/react'
-import { ALERT_EXAMPLE } from '../content'
+import { APP_HEIGHT, APP_WIDTH, PhoneApp } from './PhoneApp'
 import { STORY } from './story'
-
-// Path to the real app screenshot. Null shows the grey placeholder screen.
-export const APP_SCREENSHOT: string | null = null
 
 export function Phone({ progress }: { progress: MotionValue<number> }) {
   const phone = useTransform(progress, [...STORY.phone], [0, 1])
   const phoneY = useTransform(progress, [...STORY.phone], [32, 0])
-  const card = useTransform(progress, [...STORY.alertCard], [0, 1])
-  const cardY = useTransform(progress, [...STORY.alertCard], ['-120%', '0%'])
-  const tip = useTransform(progress, [...STORY.suggestion], [0, 1])
-  const tipY = useTransform(progress, [...STORY.suggestion], [16, 0])
+  const screen = useRef<HTMLDivElement>(null)
+  const app = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      app.current!.style.scale = String(entry.contentRect.width / APP_WIDTH)
+    })
+    observer.observe(screen.current!)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <motion.div
@@ -21,58 +24,20 @@ export function Phone({ progress }: { progress: MotionValue<number> }) {
       style={{ opacity: phone, y: phoneY }}
     >
       <Frame />
-      <div className="bg-line @container absolute top-[2.18%] left-[4.91%] h-[95.63%] w-[89.95%] overflow-hidden rounded-[14.31%/6.61%]">
-        {APP_SCREENSHOT ? (
-          <img src={APP_SCREENSHOT} alt="" className="size-full object-cover" />
-        ) : (
-          <div aria-hidden className="flex flex-col gap-2 p-3 pt-8">
-            <div className="h-2 w-1/2 rounded-full bg-white/70" />
-            <div className="h-16 rounded-lg bg-white/50" />
-            <div className="h-10 rounded-lg bg-white/50" />
-            <div className="h-10 rounded-lg bg-white/50" />
-          </div>
-        )}
+      <div
+        ref={screen}
+        className="@container absolute top-[2.18%] left-[4.91%] h-[95.63%] w-[89.95%] overflow-hidden rounded-[14.31%/6.61%] bg-white"
+      >
+        <div
+          ref={app}
+          aria-hidden
+          className="absolute top-0 left-0 origin-top-left"
+          style={{ width: APP_WIDTH, height: APP_HEIGHT }}
+        >
+          <PhoneApp progress={progress} />
+        </div>
         <StatusBar />
         <div className="bg-ink/90 absolute bottom-[2cqw] left-1/2 h-[1.3cqw] w-[34cqw] -translate-x-1/2 rounded-full" />
-
-        <div className="absolute inset-x-[4cqw] top-[15cqw] flex flex-col gap-[3cqw]">
-          <motion.div
-            className="border-line rounded-[max(0.5rem,5cqw)] border bg-white p-[max(0.5rem,5cqw)]"
-            style={{ opacity: card, y: cardY }}
-          >
-            <p className="text-muted flex justify-between gap-1 font-mono text-[max(7px,5cqw)] tracking-wider whitespace-nowrap uppercase">
-              <span className="text-alert">● Alert</span>
-              <span>{ALERT_EXAMPLE.time}</span>
-            </p>
-            <p className="mt-1 text-[max(9px,6.8cqw)] leading-tight font-medium">
-              {ALERT_EXAMPLE.sensor}
-            </p>
-            <p className="text-alert mt-0.5 font-mono text-[max(9px,7.2cqw)]">
-              {ALERT_EXAMPLE.reading}
-            </p>
-            <p className="text-muted font-mono text-[max(7px,5cqw)]">
-              {ALERT_EXAMPLE.normal}
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="border-line rounded-[max(0.5rem,5cqw)] border bg-white p-[max(0.5rem,5cqw)]"
-            style={{ opacity: tip, y: tipY }}
-          >
-            <p className="text-muted font-mono text-[max(7px,5cqw)] tracking-wider uppercase">
-              Likely cause
-            </p>
-            <p className="mt-0.5 mb-1.5 text-[max(8px,5.8cqw)] leading-snug">
-              {ALERT_EXAMPLE.cause}
-            </p>
-            <p className="text-muted font-mono text-[max(7px,5cqw)] tracking-wider uppercase">
-              Next step
-            </p>
-            <p className="mt-0.5 text-[max(8px,5.8cqw)] leading-snug font-medium">
-              {ALERT_EXAMPLE.action}
-            </p>
-          </motion.div>
-        </div>
       </div>
     </motion.div>
   )
