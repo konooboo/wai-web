@@ -189,13 +189,38 @@ const SHOTS = [
   [0.9, -0.45, 44, 3.6, 0.3, 0],
 ].map(([p, az, el, d, ...focus]) => [p, az, el, Math.log(d), ...focus])
 
+// Monotone cubic through the shots (Fritsch–Butland tangents), so the camera
+// keeps moving through each keyframe instead of easing to a stop at every one.
+const P = SHOTS.map((s) => s[0])
+const TANGENTS = SHOTS[0].slice(1).map((_, j) => {
+  const y = SHOTS.map((s) => s[j + 1])
+  const d = y.slice(1).map((v, i) => (v - y[i]) / (P[i + 1] - P[i]))
+  return y.map((_, i) => {
+    if (i === 0) return d[0]
+    if (i === d.length) return d[d.length - 1]
+    const [a, b] = [d[i - 1], d[i]]
+    return a * b <= 0 ? 0 : 2 / (1 / a + 1 / b)
+  })
+})
+
 function shotAt(p: number) {
   let i = 0
-  while (i < SHOTS.length - 2 && p > SHOTS[i + 1][0]) i++
-  const a = SHOTS[i]
-  const b = SHOTS[i + 1]
-  const t = MathUtils.smootherstep(p, a[0], b[0])
-  return a.slice(1).map((v, j) => v + (b[j + 1] - v) * t)
+  while (i < P.length - 2 && p > P[i + 1]) i++
+  const h = P[i + 1] - P[i]
+  const t = MathUtils.clamp((p - P[i]) / h, 0, 1)
+  const t2 = t * t
+  const t3 = t2 * t
+  const h00 = 2 * t3 - 3 * t2 + 1
+  const h10 = (t3 - 2 * t2 + t) * h
+  const h01 = -2 * t3 + 3 * t2
+  const h11 = (t3 - t2) * h
+  return TANGENTS.map(
+    (m, j) =>
+      h00 * SHOTS[i][j + 1] +
+      h10 * m[i] +
+      h01 * SHOTS[i + 1][j + 1] +
+      h11 * m[i + 1],
+  )
 }
 
 function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
