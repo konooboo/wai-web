@@ -162,15 +162,17 @@ export function FarmMap() {
                     <Title className="mt-4 text-3xl leading-tight font-medium tracking-tight">
                       {step.title}
                     </Title>
-                    {step.body && (
-                      <p className="text-muted mt-4 text-lg">{step.body}</p>
-                    )}
                   </div>
                   {step.problem && <ProblemCard id={step.problem} />}
                   {step.visual === 'reading' && (
                     <ReadingCard progress={progress} />
                   )}
                   {step.visual === 'alert' && <AlertNotification />}
+                  {step.body && (
+                    <p className="text-muted mt-4 max-w-xs text-sm leading-relaxed">
+                      {step.body}
+                    </p>
+                  )}
                 </div>
               )
             })}

@@ -43,9 +43,9 @@ const PROBLEMS = {
         <motion.path variants={draw} d="M12 7v5l3 2" />
       </>
     ),
-    figure: { value: 1, prefix: '', suffix: ' h/day' },
+    figure: { value: 1, prefix: 'Save ', suffix: ' h+ a day' },
     caption: 'on office work and data entry, for the average dairy farmer',
-    panel: 'bg-ink/5 text-ink',
+    panel: 'bg-mint text-healthy',
     body: 'Someone still drives to every trough, probe and pond to read the numbers.',
     source: {
       label: 'DairyNZ, 21/10/2025',
@@ -63,6 +63,7 @@ const PROBLEMS = {
     figure: { value: 43, prefix: '+', suffix: '%' },
     caption: 'nitrogen fertiliser cost for an average dairy farm this spring',
     panel: 'bg-ink/5 text-ink',
+    iconColour: 'text-alert',
     body: 'Without soil data, farms irrigate wet soil and fertilise before rain.',
     source: {
       label: 'Ravensdown via NZ Herald, 20/07/2026',
@@ -112,7 +113,7 @@ export function ProblemCard({ id }: { id: keyof typeof PROBLEMS }) {
             rel="noreferrer"
             aria-label={`Source: ${problem.source.label}`}
             title={`Source: ${problem.source.label}`}
-            className="-m-2 rounded-full p-2 transition-opacity hover:opacity-60"
+            className={`-m-2 rounded-full p-2 transition-opacity hover:opacity-60 ${'iconColour' in problem ? problem.iconColour : ''}`}
           >
             <motion.svg
               initial={reduceMotion ? 'shown' : 'hidden'}
