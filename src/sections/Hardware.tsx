@@ -1,70 +1,84 @@
-import { motion, useReducedMotion } from 'motion/react'
 import farmlandPhoto from '../assets/farmland-aerial.jpeg'
 import { Koru } from '../components/Koru'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { READING_INTERVAL_MIN } from '../content'
 
-const INTRO = `Each site gets one low-power unit. It reads every ${READING_INTERVAL_MIN}\u00a0min and sends the data to the Wai app over LoRa radio.`
+const INTRO = `Each site gets one low-power unit. It reads every ${READING_INTERVAL_MIN} min and sends the data over LoRa radio. Wai AI turns the readings into a cause, a fix and a deadline.`
 
-const SPECS: { label: string; value: string; detail: string }[] = [
+type Spec = { label: string; value: string; detail: string }
+
+const SENSOR_SPECS: Spec[] = [
   {
-    label: 'Water and soil',
-    value: 'Level and moisture',
+    label: 'Water level',
+    value: 'Median of 5 pings',
     detail:
-      'Tank and trough level as % full · soil moisture as wet\u00a0% · detects an empty trough',
+      'HC-SR04 ultrasonic · echo time in µs · distance in cm · echo success rate · level and % full from the tank depth',
   },
   {
-    label: 'Location and radio',
-    value: 'GPS and LoRa',
+    label: 'Soil and water',
+    value: 'Wet % from 0 to 100',
     detail:
-      'GPS shows if a unit moves · LoRa reaches across several hectares with no cell coverage',
+      'XC4604 probe · raw ADC and mV · calibrated 0 in air, 1500 in water · in a trough, shows if the fork is in water',
   },
   {
-    label: 'Power',
-    value: 'Solar powered',
-    detail: 'Runs on renewable, sustainable energy',
+    label: 'Location and power',
+    value: 'GPS, LoRa and solar',
+    detail:
+      'GPS shows if a unit moves · LoRa reaches across several hectares with no cell coverage · solar powered',
   },
 ]
 
-const AI_TITLE = 'Wai AI watches every reading.'
-const AI_COPY =
-  'When something needs attention, it tells you what is wrong, the likely cause, what to do now and the risk over the next 24–\u206048\u00a0h.'
-
-// Each alert with what Wai AI adds: the prediction, how it is worked out and the next step.
-// Example values, worded as the app shows them. TODO(data): confirm with the team.
-const ALERTS = [
+const AI_SPECS: Spec[] = [
   {
-    name: 'Water low',
-    value: 'Runs dry in 6 h',
-    detail: 'Level trend over the last 6 h · alert below 25\u00a0% full',
-    action: 'Check the ball valve and inlet',
+    label: 'Alert diagnosis',
+    value: 'Cause, fix and cost',
+    detail:
+      'Reads the current and usual values, the trend, the probe position and the last 48 h of rain at that spot · names the most likely cause and what rules out the other · flags an impossible reading as a sensor fault',
   },
   {
-    name: 'Soil too dry or too wet',
-    value: 'Wait for rain',
-    detail: 'Soil moisture plus the 48 h rain forecast',
-    action: 'Hold fertiliser until rain is due',
+    label: 'Today on the farm',
+    value: 'One job for today',
+    detail:
+      'Checks every probe at once · ranks stock water first, then a trough close to dry, then soil, then an offline probe · or says all is well and names the reading that would change that',
   },
   {
-    name: 'Unit moved',
-    value: '62 m from home',
-    detail: 'Three GPS fixes outside its 50 m boundary',
-    action: 'Open the map, then go and check it',
-  },
-  {
-    name: 'Unit offline',
-    value: 'Last heard 40 min ago',
-    detail: 'Usually reports every 5 min',
-    action: 'Check the bridge and the unit has power',
+    label: 'Fertiliser timing',
+    value: 'Apply now or wait',
+    detail:
+      'Average soil moisture plus the next 48 h rain forecast · Apply now, Wait for rain, or Too wet with leaching risk · gives the reason with the numbers',
   },
 ]
+
+const ALERT_KINDS = ['Level', 'Soil', 'Water quality', 'Moved', 'Offline']
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
-export function Hardware() {
-  const reduceMotion = useReducedMotion()
+function SpecCell({
+  spec,
+  ai,
+  delay,
+}: {
+  spec: Spec
+  ai?: boolean
+  delay: number
+}) {
+  return (
+    <Reveal delay={delay} className={cell}>
+      <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
+      <p
+        className={`flex items-center gap-2 font-mono text-xs tracking-wider uppercase ${ai ? 'text-mint' : 'text-paper/60'}`}
+      >
+        {ai && <Koru className="size-4" />}
+        {spec.label}
+      </p>
+      <p className="mt-6 text-3xl font-medium tracking-tight">{spec.value}</p>
+      <p className="text-paper/60 mt-4">{spec.detail}</p>
+    </Reveal>
+  )
+}
 
+export function Hardware() {
   return (
     <Section
       id="hardware"
@@ -94,62 +108,36 @@ export function Hardware() {
         </div>
 
         <div className="grid lg:grid-cols-3">
-          {SPECS.map((spec, i) => (
-            <Reveal key={spec.label} delay={i * 0.05} className={cell}>
-              <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
-              <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
-                {spec.label}
-              </p>
-              <p className="mt-6 text-3xl font-medium tracking-tight">
-                {spec.value}
-              </p>
-              <p className="text-paper/60 mt-4">{spec.detail}</p>
-            </Reveal>
+          {SENSOR_SPECS.map((spec, i) => (
+            <SpecCell key={spec.label} spec={spec} delay={i * 0.05} />
           ))}
         </div>
 
         <div className="bg-healthy/[0.06] grid lg:grid-cols-3">
-          <div className={`${cell} overflow-hidden`}>
-            <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
-            <motion.span
-              aria-hidden="true"
-              className="bg-healthy/30 absolute top-2 left-2 size-32 rounded-full blur-3xl"
-              animate={reduceMotion ? undefined : { opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            <div className="relative flex items-center gap-3">
-              <Koru className="text-mint size-7 drop-shadow-[0_0_10px_var(--color-healthy)]" />
-              <p className="text-mint font-mono text-xs tracking-wider uppercase">
-                Wai AI
-              </p>
-            </div>
-            <p className="relative mt-6 text-3xl font-medium tracking-tight md:text-4xl">
-              {AI_TITLE}
+          {AI_SPECS.map((spec, i) => (
+            <SpecCell key={spec.label} spec={spec} ai delay={i * 0.05} />
+          ))}
+        </div>
+
+        <div className="bg-paper/[0.03] grid lg:grid-cols-3">
+          <div className={cell}>
+            <p className="text-mint font-mono text-xs tracking-wider uppercase">
+              Alerts
             </p>
-            <p className="text-paper/70 relative mt-4">{AI_COPY}</p>
+            <p className="text-paper/60 mt-2">
+              Wai AI diagnoses all five kinds:
+            </p>
           </div>
-          <div className="grid grid-cols-2 lg:col-span-2">
-            {ALERTS.map((alert) => (
-              <div
-                key={alert.name}
-                className="border-paper/10 border-t border-l p-6 md:p-8"
+          <ul className="grid grid-cols-2 sm:grid-cols-5 lg:col-span-2">
+            {ALERT_KINDS.map((kind) => (
+              <li
+                key={kind}
+                className={`${cell} flex items-center font-medium max-sm:last:col-span-2`}
               >
-                <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
-                  {alert.name}
-                </p>
-                <p className="mt-4 text-2xl font-medium tracking-tight">
-                  {alert.value}
-                </p>
-                <p className="text-paper/60 mt-2 text-sm">{alert.detail}</p>
-                <p className="text-mint mt-4 text-sm drop-shadow-[0_0_8px_var(--color-healthy)]">
-                  <span className="font-mono text-xs tracking-wider uppercase">
-                    Next
-                  </span>{' '}
-                  {alert.action}
-                </p>
-              </div>
+                {kind}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </Section>
