@@ -1,11 +1,13 @@
 import { MAP_METRES, PADDOCK_7, type Heightmap, type Point } from './terrain'
 
-export const SCAN_RADIUS = 0.42
+export const SCAN_RADIUS = 0.54
 export const ALERT_RADIUS = 0.17
 
 // The map is WORLD units wide in the 3D scene. Heights are exaggerated.
 export const WORLD = 2
-const HEIGHT_SCALE = (WORLD / MAP_METRES) * 2.5
+const HEIGHT_SCALE = (WORLD / MAP_METRES) * 4
+// Normalised distance between rings, and between returns along a ring.
+const STEP = 0.0024
 // Metres between points in a vertical wall (tree belt, shed, bank).
 const WALL_STEP = 0.7
 const WALL_MIN = 1.4
@@ -50,12 +52,13 @@ export function buildPointCloud(
   const cell = (v: number) =>
     Math.min(map.size - 1, Math.max(0, Math.floor(v * map.size)))
   const index = (x: number, y: number) => cell(y) * map.size + cell(x)
-  let ground = Infinity
-  for (const h of map.heights) ground = Math.min(ground, h)
+  let floor = Infinity
+  for (const h of map.ground) floor = Math.min(floor, h)
   const heightAt = (x: number, y: number) => map.heights[index(x, y)]
+  const groundAt = (x: number, y: number) => map.ground[index(x, y)]
   const toWorld = (x: number, y: number, h: number): Vec3 => [
     (x - 0.5) * WORLD,
-    (h - ground) * HEIGHT_SCALE,
+    (h - floor) * HEIGHT_SCALE,
     (y - 0.5) * WORLD,
   ]
   const r3 = 3 / map.size
@@ -86,21 +89,22 @@ export function buildPointCloud(
   }
 
   sensors.forEach((s, si) => {
-    const h0 = heightAt(s.x, s.y)
-    let r = 0.01
+    const h0 = groundAt(s.x, s.y)
+    let r = 0.005
     while (r < SCAN_RADIUS) {
-      const step = 0.0026 / r
+      const step = STEP / r
       const start = rand() * step
       for (let a = start; a < Math.PI * 2; a += step) {
         if (rand() < 0.12) continue
         let x = s.x + Math.cos(a) * r
         let y = s.y + Math.sin(a) * r
         // Rings bend with the terrain, as in a real scan.
-        const bend = 1 - (heightAt(x, y) - h0) * 0.0012
+        const bend = 1 - (groundAt(x, y) - h0) * 0.0012
         x = s.x + Math.cos(a) * r * bend
         y = s.y + Math.sin(a) * r * bend
         if (x < 0 || x > 1 || y < 0 || y > 1) continue
-        if (map.water[index(x, y)]) continue
+        const k = index(x, y)
+        if (map.water[k]) continue
         const own = Math.hypot(x - s.x, y - s.y)
         let nearest = true
         for (let j = 0; j < sensors.length; j++) {
@@ -113,14 +117,22 @@ export function buildPointCloud(
           }
         }
         if (!nearest) continue
-        const h = heightAt(x, y)
+        const h = map.heights[k]
         push(x, y, h, r, si)
-        const low = lowest(x, y)
-        if (h - low > WALL_MIN)
-          for (let z = h - WALL_STEP; z > low; z -= WALL_STEP)
-            push(x, y, z, r, si)
+        if (map.cover[k] === 2) {
+          // Canopy: a few returns inside the crown, most near the top.
+          const base = map.canopyBase[k]
+          const hits = rand() < 0.5 ? 2 : 3
+          for (let i = 0; i < hits; i++)
+            push(x, y, base + (h - base) * (0.3 + 0.7 * rand()), r, si)
+        } else {
+          const low = lowest(x, y)
+          if (h - low > WALL_MIN)
+            for (let z = h - WALL_STEP; z > low; z -= WALL_STEP)
+              push(x, y, z, r, si)
+        }
       }
-      r += 0.0045 + 0.018 * r
+      r += STEP
     }
   })
 

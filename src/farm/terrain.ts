@@ -88,7 +88,41 @@ const BELTS: ['a' | 'b', number, number, number][] = [
   ['a', FENCE_A[1], 0.5, 0.96],
   ['b', FENCE_B[5], 0.68, 1.02],
   ['a', FENCE_A[5], 0.35, 0.66],
+  ['b', FENCE_B[4], 0.21, 0.37],
+  ['a', FENCE_A[2], 0.66, 0.82],
+  ['b', FENCE_B[2], 0.7, 0.83],
 ]
+
+// Tree clumps in paddocks: [x, y, crown radius m, height m].
+const CLUMPS: [number, number, number, number][] = [
+  [0.3, 0.55, 22, 12],
+  [0.72, 0.52, 18, 10],
+  [0.56, 0.33, 25, 14],
+  [0.8, 0.78, 20, 11],
+  [0.2, 0.42, 16, 9],
+  [0.4, 0.84, 18, 10],
+  [0.71, 0.64, 15, 9],
+  [0.3, 0.74, 14, 8],
+]
+
+// Farmhouse, hedge and garden trees. Offsets are metres in the grid frame.
+const HOUSE = { x: 0.78, y: 0.175, length: 16, width: 10 }
+const HEDGE = { length: 44, width: 32, height: 1.8, thick: 1.2 }
+const GARDEN_TREES: [number, number, number, number][] = [
+  [-16, -10, 4, 9],
+  [14, -11, 5, 11],
+  [-17, 8, 3.5, 7],
+  [16, 10, 4, 8],
+  [-6, 12, 3, 6],
+  [8, -13, 3, 7],
+  [19, 0, 3.5, 8],
+  [-19, -1, 3, 6],
+  [30, 18, 7, 14],
+  [-28, 15, 6, 12],
+]
+
+// Pine block on the hill above the upper stream, in grid coordinates.
+const PINES = { a0: 0.28, a1: 0.37, b0: 0.05, b1: 0.18 }
 
 // Paddock 7 is the grid cell up-slope of sensor S3 (see sensors.ts).
 const P7 = { a0: FENCE_A[3], a1: FENCE_A[4], b0: FENCE_B[2], b1: FENCE_B[3] }
@@ -166,6 +200,30 @@ function fbm(x: number, y: number, octaves: number) {
 const smoothstep = (e0: number, e1: number, v: number) => {
   const t = Math.min(1, Math.max(0, (v - e0) / (e1 - e0)))
   return t * t * (3 - 2 * t)
+}
+
+const hash01 = (cx: number, cy: number) => {
+  let h = (cx * 374761393 + cy * 668265263) | 0
+  h = Math.imul(h ^ (h >>> 13), 1274126177)
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296
+}
+
+// Calls fn for each cell whose centre lies in the normalised box.
+function forCells(
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  size: number,
+  fn: (k: number, x: number, y: number, cx: number, cy: number) => void,
+) {
+  const cx0 = Math.max(0, Math.floor(x0 * size))
+  const cx1 = Math.min(size - 1, Math.ceil(x1 * size))
+  const cy0 = Math.max(0, Math.floor(y0 * size))
+  const cy1 = Math.min(size - 1, Math.ceil(y1 * size))
+  for (let cy = cy0; cy <= cy1; cy++)
+    for (let cx = cx0; cx <= cx1; cx++)
+      fn(cy * size + cx, (cx + 0.5) / size, (cy + 0.5) / size, cx, cy)
 }
 
 // Rolling downs, higher to the north-west.
@@ -331,12 +389,17 @@ function beltHeight(a: number, b: number, x: number, y: number) {
 
 let cached: Heightmap | null = null
 
-export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
+// `keepClear` are points (the sensors) that trees must not cover.
+export function getHeightmap(
+  size = HEIGHTMAP_SIZE,
+  keepClear: Point[] = [],
+): Heightmap {
   if (cached && cached.size === size) return cached
 
   const n = size * size
   const heights = new Float32Array(n)
   const water = new Uint8Array(n)
+  const belt = new Float32Array(n)
   // The wide valley is cheap on a coarse grid; the channel needs the full one.
   const COARSE = 256
   const dValley = new Float32Array(COARSE * COARSE).fill(1)
@@ -414,7 +477,7 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
       const grid = toGrid(x, y)
       const fenceOk = ds > 27 * M && e > 1.45 && dy > YARD.r * 1.2 && dt > 4 * M
       if (fenceOk && fenceDistance(grid.a, grid.b) < 0.9 * M) h += 0.3
-      if (fenceOk) h += beltHeight(grid.a, grid.b, x, y)
+      if (fenceOk) belt[k] = beltHeight(grid.a, grid.b, x, y)
 
       heights[k] = h
     }
@@ -424,6 +487,108 @@ export function getHeightmap(size = HEIGHTMAP_SIZE): Heightmap {
   const cover = water.slice()
   const canopyBase = new Float32Array(n)
   const props = new Float32Array(0)
+
+  // ---------- trees ----------
+
+  const setCanopy = (k: number, crown: number, baseFrac: number) => {
+    if (water[k] || cover[k] === 3 || crown <= 0) return
+    const top = ground[k] + crown
+    if (top <= heights[k]) return
+    heights[k] = top
+    cover[k] = 2
+    canopyBase[k] = ground[k] + baseFrac * crown
+  }
+  // One tree: a dome crown of radius r metres and height h metres.
+  const tree = (x: number, y: number, r: number, h: number) => {
+    const rn = r * M
+    forCells(x - rn, y - rn, x + rn, y + rn, size, (k, px, py) => {
+      const d = Math.hypot(px - x, py - y) / rn
+      if (d >= 1) return
+      const crowns = 0.8 + 0.4 * fbm(px * 400, py * 400, 2)
+      setCanopy(k, h * Math.sqrt(1 - d * d) * crowns, 0.3)
+    })
+  }
+
+  for (let k = 0; k < n; k++) if (belt[k] > 0) setCanopy(k, belt[k], 0.25)
+
+  const pineCorners = [
+    fromGrid(PINES.a0, PINES.b0),
+    fromGrid(PINES.a1, PINES.b0),
+    fromGrid(PINES.a1, PINES.b1),
+    fromGrid(PINES.a0, PINES.b1),
+  ]
+  forCells(
+    Math.min(...pineCorners.map((c) => c.x)),
+    Math.min(...pineCorners.map((c) => c.y)),
+    Math.max(...pineCorners.map((c) => c.x)),
+    Math.max(...pineCorners.map((c) => c.y)),
+    size,
+    (k, x, y, cx, cy) => {
+      const g = toGrid(x, y)
+      const edge = Math.min(
+        g.a - PINES.a0,
+        PINES.a1 - g.a,
+        g.b - PINES.b0,
+        PINES.b1 - g.b,
+      )
+      if (edge <= 0 || dStream[k] < 0.03 || hash01(cx, cy) < 0.03) return
+      // Individual crowns about 8 m across.
+      const crown = 15 + 5 * fbm(x * 500, y * 500, 2)
+      setCanopy(k, crown * smoothstep(0, 6 * M, edge), 0.4)
+    },
+  )
+
+  // Riparian planting in clumps along the stream, clear of the sensors.
+  const nearKeepClear = (x: number, y: number, r: number) =>
+    keepClear.some((p) => Math.hypot(p.x - x, p.y - y) < r)
+  for (let cy = 0; cy < size; cy++)
+    for (let cx = 0; cx < size; cx++) {
+      const k = cy * size + cx
+      const ds = dStream[k]
+      if (ds < 5 * M || ds > 20 * M || water[k]) continue
+      const x = (cx + 0.5) / size
+      const y = (cy + 0.5) / size
+      if (fbm(x * 90, y * 90, 2) < 0.05 || nearKeepClear(x, y, 14 * M)) continue
+      setCanopy(k, 5 + 2 * fbm(x * 400, y * 400, 2), 0.15)
+    }
+
+  const scatter = mulberry32(3)
+  for (const [x, y, r, h] of CLUMPS) {
+    const count = 3 + Math.floor(scatter() * 3)
+    for (let i = 0; i < count; i++) {
+      const a = scatter() * Math.PI * 2
+      const d = scatter() * r * 0.5 * M
+      tree(
+        x + Math.cos(a) * d,
+        y + Math.sin(a) * d,
+        r * (0.45 + 0.3 * scatter()),
+        h * (0.8 + 0.3 * scatter()),
+      )
+    }
+  }
+
+  for (const [da, db, r, h] of GARDEN_TREES) {
+    const p = fromGrid(da * M, db * M)
+    tree(HOUSE.x + p.x, HOUSE.y + p.y, r, h)
+  }
+  {
+    const hl = (HEDGE.length / 2) * M
+    const hw = (HEDGE.width / 2) * M
+    const diag = Math.hypot(hl, hw)
+    forCells(
+      HOUSE.x - diag,
+      HOUSE.y - diag,
+      HOUSE.x + diag,
+      HOUSE.y + diag,
+      size,
+      (k, x, y) => {
+        const g = toGrid(x - HOUSE.x, y - HOUSE.y)
+        const inset = Math.min(hl - Math.abs(g.a), hw - Math.abs(g.b))
+        if (inset >= 0 && inset < HEDGE.thick * M)
+          setCanopy(k, HEDGE.height, 0.1)
+      },
+    )
+  }
 
   cached = {
     size,

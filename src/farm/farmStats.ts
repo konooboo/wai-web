@@ -5,7 +5,7 @@ import { ALERT_SENSOR_ID, FARM_SENSORS } from './sensors'
 import { getHeightmap, HEIGHTMAP_SIZE, MAP_METRES, PADDOCK_7 } from './terrain'
 
 let t = performance.now()
-const map = getHeightmap(HEIGHTMAP_SIZE)
+const map = getHeightmap(HEIGHTMAP_SIZE, FARM_SENSORS)
 const heightmapMs = performance.now() - t
 t = performance.now()
 const cloud = buildPointCloud(
