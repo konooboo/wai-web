@@ -11,11 +11,10 @@ import heroVideo from '../assets/hero-loop.mp4'
 import filmVideo from '../assets/wai-web.mp4'
 import { BOOK_DEMO_HREF } from '../content'
 
-// Demo only: ?hero=cursor shows the cursor variant. Remove once we pick one.
+// Demo only: ?hero=cursor or ?hero=corner picks a variant. Remove once we pick one.
+const HERO_PARAM = new URLSearchParams(window.location.search).get('hero')
 const VARIANT =
-  new URLSearchParams(window.location.search).get('hero') === 'cursor'
-    ? 'cursor'
-    : 'button'
+  HERO_PARAM === 'cursor' || HERO_PARAM === 'corner' ? HERO_PARAM : 'button'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -23,6 +22,20 @@ function PlayIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
       <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
+    </svg>
+  )
+}
+
+function RoundedPlayIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <path
+        d="M6 3.5v17l14-8.5z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -158,25 +171,48 @@ export function Hero() {
             </a>
           </div>
 
-          {/* Touch screens and keyboard users have no cursor, so both variants
-              need a real button. The cursor variant hides it on fine pointers
-              until it gets focus. */}
-          <button
-            type="button"
-            onClick={play}
-            className={`text-paper mt-8 inline-flex items-center gap-3 font-mono text-xs tracking-wider uppercase ${
-              VARIANT === 'cursor'
-                ? 'pointer-fine:sr-only pointer-fine:focus-visible:not-sr-only'
-                : 'md:hidden'
-            }`}
-          >
-            <span className="border-paper/40 grid size-11 place-items-center rounded-full border backdrop-blur-sm">
-              <PlayIcon className="ml-0.5 size-4" />
-            </span>
-            Watch the film
-          </button>
+          {/* Touch screens and keyboard users have no cursor, so the button
+              and cursor variants need a real button. The cursor variant hides
+              it on fine pointers until it gets focus. */}
+          {VARIANT !== 'corner' && (
+            <button
+              type="button"
+              onClick={play}
+              className={`text-paper mt-8 inline-flex items-center gap-3 font-mono text-xs tracking-wider uppercase ${
+                VARIANT === 'cursor'
+                  ? 'pointer-fine:sr-only pointer-fine:focus-visible:not-sr-only'
+                  : 'md:hidden'
+              }`}
+            >
+              <span className="border-paper/40 grid size-11 place-items-center rounded-full border backdrop-blur-sm">
+                <PlayIcon className="ml-0.5 size-4" />
+              </span>
+              Watch the film
+            </button>
+          )}
         </div>
       </motion.div>
+
+      {VARIANT === 'corner' && (
+        <motion.div
+          className="pointer-events-none absolute inset-x-0 bottom-0"
+          initial={false}
+          animate={{ opacity: playing ? 0 : 1 }}
+          transition={{ duration: 0.4, ease: EASE }}
+          inert={playing}
+        >
+          <div className="mx-auto max-w-6xl px-6 pb-8">
+            <button
+              type="button"
+              onClick={play}
+              aria-label="Watch the film"
+              className="text-paper pointer-events-auto -m-2 block p-2 opacity-90 transition hover:scale-110 hover:opacity-100"
+            >
+              <RoundedPlayIcon className="-ml-1.5 size-8" />
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {VARIANT === 'button' && (
         <motion.button
@@ -212,15 +248,7 @@ export function Hero() {
           transition={{ duration: 0.25, ease: EASE }}
           aria-hidden
         >
-          <svg viewBox="0 0 24 24" className="size-full">
-            <path
-              d="M6 3.5v17l14-8.5z"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth={3}
-              strokeLinejoin="round"
-            />
-          </svg>
+          <RoundedPlayIcon className="size-full" />
         </motion.div>
       )}
 
