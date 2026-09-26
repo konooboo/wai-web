@@ -1,7 +1,12 @@
 // Scroll progress windows (0..1 of the farm map section) for each story step.
 export const STORY = {
   // Camera zooms from the whole country to the farm (see FarmScene SHOTS).
-  zoom: [0.06, 0.1],
+  // Starts once the map panel has pinned and ends before the first step
+  // text scrolls out of view.
+  zoom: [0.04, 0.09],
+  // "Sense → Diagnose → Act" reveals one word at a time during the zoom. It
+  // ends early so the last word shows before the line scrolls under the nav.
+  howItWorks: [0.04, 0.075],
   sensors: [0.18, 0.26],
   scan: [0.2, 0.38],
   alert: [0.42, 0.55],

@@ -6,6 +6,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  type MotionValue,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
@@ -13,7 +14,6 @@ import { Phone } from '../farm/Phone'
 import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
-import { MAP_METRES } from '../farm/terrain'
 import { ProblemCard } from './Problem'
 
 const FarmScene = lazy(() => import('../farm/FarmScene'))
@@ -53,7 +53,34 @@ const STEPS: Step[] = [
   },
 ]
 
-const HECTARES = (MAP_METRES * MAP_METRES) / 10000
+const HOW_IT_WORKS = ['Sense', 'Diagnose', 'Act']
+
+// One word of "Sense → Diagnose → Act". The words come in one after another
+// while the camera zooms from the country to the farm.
+function HowItWorksWord({
+  word,
+  index,
+  progress,
+}: {
+  word: string
+  index: number
+  progress: MotionValue<number>
+}) {
+  const [from, to] = STORY.howItWorks
+  const span = (to - from) / HOW_IT_WORKS.length
+  const start = from + span * index
+  const reveal = useTransform(progress, [start, start + span], [0, 1])
+  const y = useTransform(reveal, [0, 1], [8, 0])
+  return (
+    <motion.span
+      className="inline-block whitespace-nowrap"
+      style={{ opacity: reveal, y }}
+    >
+      {index > 0 && '→ '}
+      {word}
+    </motion.span>
+  )
+}
 
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
@@ -77,11 +104,6 @@ export function FarmMap() {
   const progress = reduced ? finalState : smooth
   const paddock = useTransform(progress, [...STORY.paddock], [0, 1])
   const site = useTransform(progress, [...STORY.zoom], [1, 0])
-  const farmLabel = useTransform(
-    progress,
-    [STORY.zoom[1], STORY.zoom[1] + 0.02],
-    [0, 1],
-  )
 
   return (
     <section
@@ -104,17 +126,12 @@ export function FarmMap() {
                   />
                 </Suspense>
               )}
-              <p className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase">
-                <motion.span className="absolute" style={{ opacity: site }}>
-                  New Zealand
-                </motion.span>
-                <motion.span
-                  className="whitespace-nowrap"
-                  style={{ opacity: farmLabel }}
-                >
-                  Lidar · {HECTARES} ha
-                </motion.span>
-              </p>
+              <motion.p
+                className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase"
+                style={{ opacity: site }}
+              >
+                New Zealand
+              </motion.p>
             </div>
 
             <motion.p
@@ -166,8 +183,24 @@ export function FarmMap() {
                 >
                   <div className="max-w-md">
                     {i === 0 && (
-                      <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
-                        How it works: Sense → Diagnose → Act
+                      // On mobile the step text sits under the pinned map
+                      // during the zoom, so the words show at once there.
+                      <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase md:hidden">
+                        <span className="text-muted">How it works:</span>{' '}
+                        {HOW_IT_WORKS.join(' → ')}
+                      </p>
+                    )}
+                    {i === 0 && (
+                      <p className="text-healthy mb-8 hidden flex-wrap gap-x-[1ch] font-mono text-xs tracking-wider uppercase md:flex">
+                        <span className="text-muted">How it works:</span>
+                        {HOW_IT_WORKS.map((word, j) => (
+                          <HowItWorksWord
+                            key={word}
+                            word={word}
+                            index={j}
+                            progress={progress}
+                          />
+                        ))}
                       </p>
                     )}
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">

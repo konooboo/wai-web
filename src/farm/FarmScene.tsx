@@ -199,11 +199,13 @@ type Props = {
 // Camera stops over the story:
 // [progress, azimuth, elevation, distance, alert focus, country focus].
 // Focus 0 looks at the farm, 1 at the alert sensor or the middle of NZ.
-// The camera starts over the whole country and zooms in to the farm.
+// The camera holds over the whole country until the map panel pins, then
+// zooms in to the farm over STORY.zoom.
 const SHOTS = [
-  [0, 0, 80, 9000, 0, 1],
-  [0.07, 0, 72, 620, 0, 0],
-  [0.15, 0.3, 58, 4.3, 0, 0],
+  [0, 0, 80, 4200, 0, 1],
+  [STORY.zoom[0], 0, 80, 4200, 0, 1],
+  [0.06, 0, 72, 620, 0, 0],
+  [STORY.zoom[1], 0.3, 58, 4.3, 0, 0],
   [0.38, -0.05, 46, 3.8, 0, 0],
   [0.5, -0.3, 42, 3.3, 0.5, 0],
   [0.9, -0.45, 44, 3.6, 0.3, 0],
