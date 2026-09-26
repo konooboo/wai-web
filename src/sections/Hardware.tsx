@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
-import productPhoto from '../assets/product-photo.jpeg'
+import farmlandPhoto from '../assets/farmland-aerial.jpeg'
 import { Koru } from '../components/Koru'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
@@ -71,11 +71,11 @@ export function Hardware() {
       className="bg-ink text-paper relative overflow-hidden"
     >
       <img
-        src={productPhoto}
+        src={farmlandPhoto}
         alt=""
-        className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-15 blur-2xl"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30"
       />
-      <div className="border-paper/10 relative border-r border-b">
+      <div className="border-paper/10 bg-ink/60 relative border-r border-b">
         <div className="grid lg:grid-cols-3">
           <div className={`${cell} lg:col-span-2`}>
             <p className="text-paper/60 flex items-center gap-2 font-mono text-xs tracking-wider uppercase">
