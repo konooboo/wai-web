@@ -27,7 +27,7 @@ const AI_SPECS: Spec[] = [
   },
   {
     label: 'On the home screen',
-    value: 'Today on the farm',
+    value: 'Real-time health',
     detail:
       'Checks every sensor and picks the one job to do today, or tells you all is well',
   },
