@@ -68,7 +68,7 @@ export function Hardware() {
   return (
     <Section
       id="hardware"
-      className="bg-ink text-paper relative overflow-hidden"
+      className="bg-ink text-paper relative overflow-hidden pt-48 md:pt-64"
     >
       <img
         src={farmlandPhoto}

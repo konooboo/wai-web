@@ -7,7 +7,6 @@ import {
   useTransform,
 } from 'motion/react'
 import { lazy, Suspense, useRef } from 'react'
-import { LidarRings } from '../components/LidarRings'
 import { SectionHeading } from '../components/SectionHeading'
 import { ALERT_EXAMPLE, READING_INTERVAL_MIN } from '../content'
 import { Phone } from '../farm/Phone'
@@ -17,12 +16,6 @@ import { STORY } from '../farm/story'
 import { MAP_METRES } from '../farm/terrain'
 
 const FarmScene = lazy(() => import('../farm/FarmScene'))
-const SensorScene = lazy(() => import('../scene/SensorScene'))
-
-const INTRO = {
-  title: 'It starts with one sensor in the ground.',
-  body: `Each Wai unit has a whip antenna and two probe rods. The rods go into the soil or the water. The unit sends a reading every ${READING_INTERVAL_MIN} minutes.`,
-}
 
 const STEPS = [
   {
@@ -55,13 +48,7 @@ const STEPS = [
 const HECTARES = (MAP_METRES * MAP_METRES) / 10000
 
 export function FarmMap() {
-  const introRef = useRef<HTMLDivElement>(null)
-  const modelRef = useRef<HTMLDivElement>(null)
   const stepsRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress: introProgress } = useScroll({
-    target: introRef,
-    offset: ['start end', 'end start'],
-  })
   const overlayRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: stepsRef,
@@ -89,38 +76,8 @@ export function FarmMap() {
   return (
     <section
       id="farm-map"
-      className="border-line scroll-mt-16 border-b pb-24 md:pb-32"
+      className="border-line scroll-mt-16 border-b pt-24 pb-48 md:pt-32 md:pb-64"
     >
-      <div
-        ref={introRef}
-        className="border-line relative mb-24 overflow-hidden border-b md:mb-32"
-      >
-        <LidarRings centre={modelRef} />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-24 md:grid-cols-2 md:py-32">
-          <div>
-            <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
-              How it works: Sense → Diagnose → Act
-            </p>
-            <h2 className="text-4xl leading-tight font-medium tracking-tight md:text-5xl">
-              {INTRO.title}
-            </h2>
-            <p className="text-muted mt-6 max-w-md text-lg">{INTRO.body}</p>
-          </div>
-          <div
-            ref={modelRef}
-            className="relative aspect-[15/22] max-h-[max(calc(100svh-10rem),24rem)] w-full"
-            role="img"
-            aria-label="Wai sensor unit with a whip antenna and two probe rods"
-          >
-            <Suspense>
-              <SensorScene
-                scrollProgress={introProgress}
-                reducedMotion={reduced}
-              />
-            </Suspense>
-          </div>
-        </div>
-      </div>
       <div className="mx-auto grid max-w-[88rem] px-6 md:grid-cols-[1.5fr_1fr] md:gap-16">
         <div className="bg-paper sticky top-16 z-20 -mx-6 px-6 py-4 md:mx-0 md:flex md:h-[calc(100svh-4rem)] md:items-center md:self-start md:bg-transparent md:px-0 md:py-0">
           <div
@@ -194,9 +151,14 @@ export function FarmMap() {
                 className="flex min-h-[55svh] items-start pt-6 md:min-h-[80svh] md:items-center md:pt-0"
               >
                 {i === 0 ? (
-                  <SectionHeading eyebrow={step.eyebrow} title={step.title}>
-                    {step.body}
-                  </SectionHeading>
+                  <div>
+                    <p className="text-healthy mb-8 font-mono text-xs tracking-wider uppercase">
+                      How it works: Sense → Diagnose → Act
+                    </p>
+                    <SectionHeading eyebrow={step.eyebrow} title={step.title}>
+                      {step.body}
+                    </SectionHeading>
+                  </div>
                 ) : (
                   <div className="max-w-md">
                     <p className="text-muted font-mono text-xs tracking-wider uppercase">
