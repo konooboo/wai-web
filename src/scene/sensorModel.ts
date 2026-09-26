@@ -86,16 +86,16 @@ export function buildSensorModel() {
       roughness: 0.3,
     }),
     alloy: new MeshStandardMaterial({
-      color: 0xa4a6aa,
-      metalness: 0.8,
-      roughness: 0.5,
+      color: 0x2a2c30,
+      metalness: 0.6,
+      roughness: 0.55,
     }),
     rubber: new MeshStandardMaterial({
       color: 0x121314,
       roughness: 0.82,
       envMapIntensity: 0.7,
     }),
-    whip: new MeshStandardMaterial({ color: 0xecebe8, roughness: 0.55 }),
+    whip: new MeshStandardMaterial({ color: 0x0b0c0d, roughness: 0.55 }),
     pcb: new MeshStandardMaterial({ color: 0x0b2e5c, roughness: 0.45 }),
     gold: new MeshStandardMaterial({
       color: 0xc4a468,
@@ -253,7 +253,7 @@ export function buildSensorModel() {
   )
 
   // Antenna on the left side: dark recess, O-ring, threaded barrel,
-  // right-angle elbow and a white whip with a round tip.
+  // right-angle elbow and a black whip with a round tip.
   const SX = -W / 2
   const CY = H - 0.3
   const CZ = -0.3
@@ -268,10 +268,10 @@ export function buildSensorModel() {
     0,
     HALF_PI,
   )
-  put('metal', CYL(0.06, 0.06, 0.26, 24), SX - 0.13, CY, CZ, 0, 0, HALF_PI)
+  put('alloy', CYL(0.06, 0.06, 0.26, 24), SX - 0.13, CY, CZ, 0, 0, HALF_PI)
   for (let i = 0; i < 6; i++)
     put(
-      'metal',
+      'alloy',
       new TorusGeometry(0.06, 0.01, 6, 24),
       SX - 0.07 - i * 0.028,
       CY,
