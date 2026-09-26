@@ -35,7 +35,6 @@ export function Close() {
                 className="size-32"
               />
             </a>
-            <p className="text-muted font-mono text-xs">Scan to open the app</p>
           </div>
         </Reveal>
       </div>
