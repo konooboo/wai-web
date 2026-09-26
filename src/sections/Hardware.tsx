@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react'
 import productPhoto from '../assets/product-photo.jpeg'
+import { Koru } from '../components/Koru'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { READING_INTERVAL_MIN } from '../content'
@@ -54,17 +55,6 @@ const ALERTS = [
   { name: 'Unit moved', detail: 'Outside its GPS boundary' },
   { name: 'Unit offline', detail: 'No packet received' },
 ]
-
-function Sparkle({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 0C12.6 6.4 17.6 11.4 24 12C17.6 12.6 12.6 17.6 12 24C11.4 17.6 6.4 12.6 0 12C6.4 11.4 11.4 6.4 12 0Z"
-      />
-    </svg>
-  )
-}
 
 const cell = 'border-paper/10 relative border-t border-l p-6 md:p-8'
 
@@ -122,10 +112,7 @@ export function Hardware() {
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             />
             <div className="relative flex items-center gap-3">
-              <span className="relative size-7">
-                <Sparkle className="text-mint absolute inset-0 drop-shadow-[0_0_10px_var(--color-healthy)]" />
-                <Sparkle className="text-mint absolute -top-1.5 -right-2 size-2.5 drop-shadow-[0_0_6px_var(--color-healthy)]" />
-              </span>
+              <Koru className="text-mint size-7 drop-shadow-[0_0_10px_var(--color-healthy)]" />
               <p className="text-mint font-mono text-xs tracking-wider uppercase">
                 Wai AI
               </p>
