@@ -54,7 +54,7 @@ function Device({ scrollProgress, reducedMotion }: Props) {
     // -0.5 to 0.5 while the scene passes through the viewport.
     const scroll = scrollProgress.get() - 0.5
     // A fast scroll adds extra spin, which then decays.
-    spin.current += (scroll - (lastScroll.current ?? scroll)) * 8
+    spin.current += (scroll - (lastScroll.current ?? scroll)) * 3
     spin.current *= Math.exp(-2.5 * delta)
     lastScroll.current = scroll
     const k = 1 - Math.exp(-3 * delta)
@@ -62,7 +62,7 @@ function Device({ scrollProgress, reducedMotion }: Props) {
       BASE_YAW +
       Math.sin(t * 0.25) * 0.15 +
       pointer.current.x * 0.5 +
-      scroll * 2.2 +
+      scroll * 0.9 +
       spin.current
     const targetPitch = 0.08 + pointer.current.y * 0.25 + scroll * 0.3
     const targetRoll = -pointer.current.x * 0.08
