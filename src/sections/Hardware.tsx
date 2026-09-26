@@ -4,11 +4,11 @@ import farmlandPhoto from '../assets/farmland-aerial.jpeg'
 import { Koru } from '../components/Koru'
 import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
-import { READING_INTERVAL_MIN } from '../content'
 
 const TITLE = 'Hardware built for NZ.'
 
-const INTRO = `One unit per site. It checks your water and soil every ${READING_INTERVAL_MIN}\u00a0min, and Wai AI tells you what to do next.`
+const INTRO =
+  'Our units monitor your water and soil. Wai AI knows what to do next.'
 
 type Spec = { label: string; value: string; detail: string }
 
