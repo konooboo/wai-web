@@ -9,34 +9,16 @@ const INTRO = `One low-power unit per site. It takes a reading every ${READING_I
 
 const SPECS: { label: string; value: string; detail: string }[] = [
   {
-    label: 'Water level',
-    value: 'Level and % full',
+    label: 'Water and soil',
+    value: 'Level and moisture',
     detail:
-      'Ultrasonic distance, median of 5 pings per reading · % full from the tank depth',
+      'Tank and trough level as % full · soil wet\u00a0% · in a trough, it shows if the probe is in water',
   },
   {
-    label: 'Soil moisture',
-    value: 'Wet %',
+    label: 'Location and radio',
+    value: 'GPS and LoRa',
     detail:
-      'Calibrated from 0 % in air to 100 % in water · in a trough, it shows if the probe is in water',
-  },
-  {
-    label: 'Location',
-    value: 'GPS position',
-    detail:
-      'Latitude, longitude and altitude · UTC time on each reading · shows if a unit moves',
-  },
-  {
-    label: 'Radio',
-    value: 'LoRa',
-    detail:
-      'Covers several hectares, no cell coverage needed · signal strength (RSSI) and SNR on each packet',
-  },
-  {
-    label: 'Unit health',
-    value: 'Self-check',
-    detail:
-      'Uptime, chip temperature, free memory and firmware version on each reading',
+      'GPS position on each reading shows if a unit moves · LoRa covers several hectares with no cell coverage',
   },
   {
     label: 'Power',
@@ -87,9 +69,9 @@ export function Hardware() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid lg:grid-cols-3">
           {SPECS.map((spec, i) => (
-            <Reveal key={spec.label} delay={(i % 3) * 0.05} className={cell}>
+            <Reveal key={spec.label} delay={i * 0.05} className={cell}>
               <span className="bg-healthy absolute -top-px left-6 h-0.5 w-6 md:left-8" />
               <p className="text-paper/60 font-mono text-xs tracking-wider uppercase">
                 {spec.label}
