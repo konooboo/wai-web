@@ -51,12 +51,19 @@ export function FarmMap() {
   const overlayRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: stepsRef,
-    offset: ['start 0.7', 'end 0.7'],
+    // Progress starts when the map panel sticks, so the NZ zoom is in view.
+    offset: ['start 0.25', 'end 0.7'],
   })
   const reduced = useReducedMotion() ?? false
   const finalState = useMotionValue(1)
   const progress = reduced ? finalState : scrollYProgress
   const paddock = useTransform(progress, [...STORY.paddock], [0, 1])
+  const site = useTransform(progress, [...STORY.zoom], [1, 0])
+  const farmLabel = useTransform(
+    progress,
+    [STORY.zoom[1], STORY.zoom[1] + 0.02],
+    [0, 1],
+  )
 
   return (
     <section
@@ -78,9 +85,29 @@ export function FarmMap() {
                 />
               </Suspense>
               <p className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase">
-                Lidar · {HECTARES} ha
+                <motion.span className="absolute" style={{ opacity: site }}>
+                  New Zealand
+                </motion.span>
+                <motion.span
+                  className="whitespace-nowrap"
+                  style={{ opacity: farmLabel }}
+                >
+                  Lidar · {HECTARES} ha
+                </motion.span>
               </p>
             </div>
+
+            <motion.p
+              aria-hidden
+              data-anchor="site"
+              className="text-paper invisible absolute top-0 left-0 z-10 font-mono text-[10px] tracking-wider uppercase"
+              style={{ opacity: site }}
+            >
+              <span className="bg-alert ring-ink absolute -top-1 -left-1 size-2 rounded-full ring-2" />
+              <span className="bg-ink/80 absolute top-2 left-2 rounded px-1 py-0.5 whitespace-nowrap">
+                Canterbury, NZ
+              </span>
+            </motion.p>
 
             <motion.p
               aria-hidden

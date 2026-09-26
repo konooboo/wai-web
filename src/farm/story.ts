@@ -1,5 +1,7 @@
 // Scroll progress windows (0..1 of the farm map section) for each story step.
 export const STORY = {
+  // Camera zooms from the whole country to the farm (see FarmScene SHOTS).
+  zoom: [0.06, 0.1],
   sensors: [0.18, 0.26],
   scan: [0.2, 0.38],
   alert: [0.42, 0.55],

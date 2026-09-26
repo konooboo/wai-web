@@ -14,7 +14,13 @@ import {
   type LineBasicMaterial,
 } from 'three'
 import type { Line2 } from 'three-stdlib'
-import { ALERT_RADIUS, SCAN_RADIUS, type PointCloud } from './pointCloud'
+import type { NzDots } from './nzDots'
+import {
+  ALERT_RADIUS,
+  SCAN_RADIUS,
+  type PointCloud,
+  type Vec3,
+} from './pointCloud'
 import { ALERT_SENSOR_ID, FARM_SENSORS } from './sensors'
 import { STORY, stage } from './story'
 
@@ -22,11 +28,14 @@ const HEALTHY = new Color('#3a9d5d')
 const ALERT = new Color('#d9482b')
 const FOV = 30
 
-let cloudPromise: Promise<PointCloud> | null = null
+type Farm = { cloud: PointCloud; nz: NzDots }
 
-// Builds the point cloud in a worker once, then keeps it for the page lifetime.
-function loadCloud() {
-  cloudPromise ??= new Promise((resolve) => {
+let farmPromise: Promise<Farm> | null = null
+
+// Builds the point clouds in a worker once, then keeps them for the page
+// lifetime.
+function loadFarm() {
+  farmPromise ??= new Promise((resolve) => {
     const worker = new Worker(new URL('./farm.worker.ts', import.meta.url), {
       type: 'module',
     })
@@ -36,20 +45,10 @@ function loadCloud() {
     }
     worker.postMessage(null)
   })
-  return cloudPromise
+  return farmPromise
 }
 
-const vertexShader = /* glsl */ `
-  attribute vec4 data;
-  uniform float uTime;
-  uniform float uScan;
-  uniform float uAlert;
-  uniform float uPaddock;
-  uniform float uScale;
-  uniform float uPulse;
-  varying vec3 vColour;
-  varying float vAlpha;
-
+const TURBO = /* glsl */ `
   vec3 turbo(float t) {
     const vec4 kr = vec4(0.13572138, 4.61539260, -42.66032258, 132.13108234);
     const vec4 kg = vec4(0.09140261, 2.19418839, 4.84296658, -14.18503333);
@@ -66,7 +65,20 @@ const vertexShader = /* glsl */ `
       dot(v4, kb) + dot(v2, kb2)
     );
   }
+`
 
+const vertexShader = /* glsl */ `
+  attribute vec4 data;
+  uniform float uTime;
+  uniform float uScan;
+  uniform float uAlert;
+  uniform float uPaddock;
+  uniform float uScale;
+  uniform float uPulse;
+  varying vec3 vColour;
+  varying float vAlpha;
+
+  ${TURBO}
   // Bright band at distance w from the sensor.
   float band(float d, float w, float width) {
     float x = (d - w) / width;
@@ -103,7 +115,7 @@ const vertexShader = /* glsl */ `
     // Points the scan has not reached yet show as a faint grey cloud.
     float scanned = step(d, radius);
     colour = mix(vec3(0.55), colour, scanned);
-    alpha = mix(0.12, alpha, scanned);
+    alpha = mix(0.22, alpha, scanned);
 
     // Fade out at the edge of the farm.
     float edge = max(abs(position.x), abs(position.z));
@@ -114,6 +126,36 @@ const vertexShader = /* glsl */ `
     gl_PointSize = max(1.0, uScale * (0.0036 + 0.0016 * (pulse + alertPulse)) / -mv.z);
     vColour = colour;
     vAlpha = clamp(alpha, 0.0, 1.0);
+  }
+`
+
+// Dots on the land of New Zealand. A slow pulse spreads out from the farm.
+const landShader = /* glsl */ `
+  attribute vec2 data;
+  uniform float uTime;
+  uniform float uPulse;
+  uniform float uLand;
+  uniform float uFine;
+  uniform float uLocal;
+  uniform float uDpr;
+  varying vec3 vColour;
+  varying float vAlpha;
+  ${TURBO}
+
+  void main() {
+    float coast = step(0.5, data.y) * step(data.y, 1.5);
+    float fine = step(1.5, data.y) * step(data.y, 2.5);
+    float local = step(2.5, data.y);
+    float ld = log(data.x + 1.0) / log(1200.0);
+    float fade = 1.0 - smoothstep(20.0, 45.0, data.x);
+    float x = (ld - fract(uTime * 0.12) * 1.3) / 0.035;
+    float pulse = exp(-x * x) * uPulse * mix(1.0, fade, fine) * (1.0 - local);
+    vColour = mix(vec3(0.62), turbo(0.93 - ld * 0.8), pulse);
+    float alpha = mix(mix(0.26, 0.6, coast), 0.32 * uFine * fade, fine) * (1.0 - local);
+    alpha += local * 0.3 * uLocal * (1.0 - smoothstep(1.5, 5.0, data.x));
+    vAlpha = (alpha + 0.6 * pulse) * uLand;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = (1.4 + 0.4 * coast) * uDpr;
   }
 `
 
@@ -134,14 +176,18 @@ type Props = {
   overlay: RefObject<HTMLDivElement | null>
 }
 
-// Camera stops over the story: [progress, azimuth, elevation, distance, focus].
-// Focus 0 looks at the map centre, 1 at the alert sensor.
+// Camera stops over the story:
+// [progress, azimuth, elevation, distance, alert focus, country focus].
+// Focus 0 looks at the farm, 1 at the alert sensor or the middle of NZ.
+// The camera starts over the whole country and zooms in to the farm.
 const SHOTS = [
-  [0.1, 0.3, 58, 4.3, 0],
-  [0.38, -0.05, 46, 3.8, 0],
-  [0.5, -0.3, 42, 3.3, 0.5],
-  [0.9, -0.45, 44, 3.6, 0.3],
-] as const
+  [0, 0, 80, 9000, 0, 1],
+  [0.07, 0, 72, 620, 0, 0],
+  [0.15, 0.3, 58, 4.3, 0, 0],
+  [0.38, -0.05, 46, 3.8, 0, 0],
+  [0.5, -0.3, 42, 3.3, 0.5, 0],
+  [0.9, -0.45, 44, 3.6, 0.3, 0],
+].map(([p, az, el, d, ...focus]) => [p, az, el, Math.log(d), ...focus])
 
 function shotAt(p: number) {
   let i = 0
@@ -152,12 +198,7 @@ function shotAt(p: number) {
   return a.slice(1).map((v, j) => v + (b[j + 1] - v) * t)
 }
 
-function Cloud({
-  cloud,
-  progress,
-  reduced,
-  overlay,
-}: Props & { cloud: PointCloud }) {
+function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
   const geometry = useMemo(() => {
     const g = new BufferGeometry()
     g.setAttribute('position', new BufferAttribute(cloud.position, 3))
@@ -176,6 +217,24 @@ function Cloud({
     }),
     [reduced],
   )
+  const land = useRef<ShaderMaterial>(null)
+  const landGeometry = useMemo(() => {
+    const g = new BufferGeometry()
+    g.setAttribute('position', new BufferAttribute(nz.position, 3))
+    g.setAttribute('data', new BufferAttribute(nz.data, 2))
+    return g
+  }, [nz])
+  const landUniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uPulse: { value: reduced ? 0 : 1 },
+      uLand: { value: 1 },
+      uFine: { value: 0 },
+      uLocal: { value: 0 },
+      uDpr: { value: 1 },
+    }),
+    [reduced],
+  )
   const boxGeometry = useMemo(
     () => new EdgesGeometry(new BoxGeometry(0.045, 0.04, 0.045)),
     [],
@@ -185,6 +244,8 @@ function Cloud({
   const anchors = useRef<[HTMLElement, Vector3][]>([])
   const view = useRef<number[] | null>(null)
   const alertAnchor = cloud.anchors[ALERT_SENSOR_ID]
+  const anchorAt = (id: string): Vec3 =>
+    id === 'site' ? [0, 0, 0] : cloud.anchors[id]
 
   useFrame((state, delta) => {
     const { camera, size, viewport } = state
@@ -214,9 +275,10 @@ function Cloud({
     view.current ??= target
     const v = view.current.map((c, i) => c + (target[i] - c) * k)
     view.current = v
-    const [azimuth, elevation, distance, focus] = v
-    const fx = alertAnchor[0] * focus
-    const fz = alertAnchor[2] * focus
+    const [azimuth, elevation, logDistance, focus, country] = v
+    const distance = Math.exp(logDistance)
+    const fx = alertAnchor[0] * focus + nz.centre[0] * country
+    const fz = alertAnchor[2] * focus + nz.centre[2] * country
     const el = (elevation * Math.PI) / 180
     camera.position.set(
       fx + Math.sin(azimuth) * Math.cos(el) * distance,
@@ -224,12 +286,24 @@ function Cloud({
       fz + Math.cos(azimuth) * Math.cos(el) * distance,
     )
     camera.lookAt(fx, 0.12, fz)
+    camera.near = distance * 0.02
+    camera.far = distance * 10
+    camera.updateProjectionMatrix()
     camera.updateMatrixWorld()
+
+    const l = land.current?.uniforms
+    if (l) {
+      l.uTime.value = u.uTime.value
+      l.uLand.value = MathUtils.smoothstep(distance, 4.5, 14)
+      l.uLocal.value = 1 - MathUtils.smoothstep(distance, 60, 200)
+      l.uFine.value = 1 - MathUtils.smoothstep(distance, 900, 3000)
+      l.uDpr.value = viewport.dpr
+    }
 
     if (!anchors.current.length && overlay.current)
       anchors.current = [
         ...overlay.current.querySelectorAll<HTMLElement>('[data-anchor]'),
-      ].map((el) => [el, new Vector3(...cloud.anchors[el.dataset.anchor!])])
+      ].map((el) => [el, new Vector3(...anchorAt(el.dataset.anchor!))])
     const point = new Vector3()
     for (const [node, anchor] of anchors.current) {
       point.copy(anchor).project(camera)
@@ -240,6 +314,16 @@ function Cloud({
 
   return (
     <>
+      <points geometry={landGeometry}>
+        <shaderMaterial
+          ref={land}
+          vertexShader={landShader}
+          fragmentShader={fragmentShader}
+          uniforms={landUniforms}
+          transparent
+          depthWrite={false}
+        />
+      </points>
       <points geometry={geometry}>
         <shaderMaterial
           ref={material}
@@ -292,10 +376,10 @@ export default function FarmScene(props: Props) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const near = useInView(wrapRef, { margin: '100% 0px', once: true })
   const inView = useInView(wrapRef)
-  const [cloud, setCloud] = useState<PointCloud | null>(null)
+  const [farm, setFarm] = useState<Farm | null>(null)
 
   useEffect(() => {
-    if (near) loadCloud().then(setCloud)
+    if (near) loadFarm().then(setFarm)
   }, [near])
 
   return (
@@ -303,16 +387,16 @@ export default function FarmScene(props: Props) {
       ref={wrapRef}
       aria-hidden
       className="absolute inset-0 transition-opacity duration-700"
-      style={{ opacity: cloud ? 1 : 0 }}
+      style={{ opacity: farm ? 1 : 0 }}
     >
-      {cloud && (
+      {farm && (
         <Canvas
           dpr={[1, 2]}
           frameloop={inView ? 'always' : 'never'}
-          camera={{ fov: FOV, near: 0.05, far: 20 }}
+          camera={{ fov: FOV }}
           gl={{ antialias: false, alpha: true }}
         >
-          <Cloud cloud={cloud} {...props} />
+          <Cloud {...farm} {...props} />
         </Canvas>
       )}
     </div>

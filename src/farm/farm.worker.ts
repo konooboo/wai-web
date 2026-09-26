@@ -1,3 +1,4 @@
+import { buildNzDots } from './nzDots'
 import { buildPointCloud } from './pointCloud'
 import { ALERT_SENSOR_ID, FARM_SENSORS } from './sensors'
 import { getHeightmap } from './terrain'
@@ -8,11 +9,17 @@ self.onmessage = () => {
     FARM_SENSORS.findIndex((s) => s.id === ALERT_SENSOR_ID),
     getHeightmap(),
   )
-  self.postMessage(cloud, {
-    transfer: [
-      cloud.position.buffer,
-      cloud.data.buffer,
-      cloud.paddockLine.buffer,
-    ],
-  })
+  const nz = buildNzDots()
+  self.postMessage(
+    { cloud, nz },
+    {
+      transfer: [
+        cloud.position.buffer,
+        cloud.data.buffer,
+        cloud.paddockLine.buffer,
+        nz.position.buffer,
+        nz.data.buffer,
+      ],
+    },
+  )
 }
