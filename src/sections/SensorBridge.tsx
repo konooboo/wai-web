@@ -16,9 +16,8 @@ export function SensorBridge() {
     target: ref,
     offset: ['start end', 'end start'],
   })
-  // Load the 3D chunk, build the model and compile its shaders while the
-  // reader is still in the farm story, then animate only while visible.
-  const near = useInView(ref, { margin: '250% 0px', once: true })
+  // The 3D chunk loads with the page: the loading screen in index.html waits
+  // for wai:sensor-ready. It animates only while visible.
   const inView = useInView(modelRef)
   const [ready, setReady] = useState(false)
 
@@ -43,17 +42,18 @@ export function SensorBridge() {
             role="img"
             aria-label="Wai sensor unit with a whip antenna and two probe rods"
           >
-            {near && (
-              <Suspense>
-                <SensorScene
-                  scrollProgress={scrollYProgress}
-                  reducedMotion={reducedMotion}
-                  active={inView}
-                  tilt={TILT}
-                  onReady={() => setReady(true)}
-                />
-              </Suspense>
-            )}
+            <Suspense>
+              <SensorScene
+                scrollProgress={scrollYProgress}
+                reducedMotion={reducedMotion}
+                active={inView}
+                tilt={TILT}
+                onReady={() => {
+                  setReady(true)
+                  dispatchEvent(new Event('wai:sensor-ready'))
+                }}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

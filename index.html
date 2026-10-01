@@ -77,16 +77,18 @@
   <body>
     <div id="loader" role="status" aria-live="polite">Loading...</div>
     <script>
-      // Loading screen. Hides once the fonts are in and the farm map scene
-      // has built (wai:farm-ready from FarmScene), or after 10 s at most.
+      // Loading screen. Hides once the fonts are in and both 3D scenes have
+      // built (wai:farm-ready from FarmScene, wai:sensor-ready from
+      // SensorBridge), or after 10 s at most.
       ;(() => {
         const loader = document.getElementById('loader')
         if (document.documentElement.classList.contains('no-loader'))
           return loader.remove()
         const MAX_MS = 10000
-        const farmReady = new Promise((resolve) =>
-          addEventListener('wai:farm-ready', resolve, { once: true }),
-        )
+        const ready = (name) =>
+          new Promise((resolve) =>
+            addEventListener(name, resolve, { once: true }),
+          )
         let done = false
         const finish = () => {
           if (done) return
@@ -106,7 +108,8 @@
           document.fonts.load('16px Chivo'),
           document.fonts.load('11px "Chivo Mono"'),
           document.fonts.load('600 expanded 28px Archivo'),
-          farmReady,
+          ready('wai:farm-ready'),
+          ready('wai:sensor-ready'),
         ]).then(hide, hide)
         setTimeout(hide, MAX_MS)
       })()
