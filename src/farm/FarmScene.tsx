@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Line } from '@react-three/drei'
 import { useInView, type MotionValue } from 'motion/react'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
@@ -295,6 +295,11 @@ function Cloud({ cloud, nz, progress, reduced, overlay }: Props & Farm) {
   const anchorAt = (id: string): Vec3 =>
     id === 'site' ? [0, 0, 0] : cloud.anchors[id]
 
+  // Draw one frame as soon as the cloud mounts, so the map is already there
+  // when the section scrolls into view instead of popping in on first frame.
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => invalidate(), [invalidate])
+
   useFrame((state) => {
     const { camera, size, viewport } = state
     const p = progress.get()
@@ -434,7 +439,9 @@ export default function FarmScene(props: Props) {
       {farm && (
         <Canvas
           dpr={[1, 2]}
-          frameloop={inView ? 'always' : 'never'}
+          // Off screen: frames only on invalidate(), so the first frame
+          // still draws and the map is visible before it scrolls in.
+          frameloop={inView ? 'always' : 'demand'}
           camera={{ fov: FOV }}
           gl={{ antialias: false, alpha: true }}
           // The loading screen in index.html waits for this.
