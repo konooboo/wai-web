@@ -53,9 +53,12 @@
         place-items: center;
         background: #f6f5f1;
         color: rgb(20 20 18 / 0.55);
+        /* System font only, so the text does not swap when the web fonts arrive. */
         font:
-          11px/16px 'Chivo Mono',
-          ui-monospace,
+          11px/16px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
           monospace;
         letter-spacing: 0.08em;
         text-transform: uppercase;
