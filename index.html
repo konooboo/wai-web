@@ -48,6 +48,9 @@
       #loader {
         position: fixed;
         inset: 0;
+        /* Full viewport width, scrollbar or not, so the text does not shift
+           when the page renders and the scrollbar appears. */
+        width: 100vw;
         z-index: 100;
         display: grid;
         place-items: center;
