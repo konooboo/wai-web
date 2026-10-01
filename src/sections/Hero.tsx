@@ -78,7 +78,7 @@ export function Hero() {
       />
       <motion.video
         ref={filmRef}
-        className="bg-ink absolute inset-0 z-[60] size-full cursor-pointer object-contain md:object-cover"
+        className="bg-ink absolute inset-0 z-[60] size-full cursor-pointer object-cover"
         src={filmVideo}
         playsInline
         preload="none"
