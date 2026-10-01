@@ -106,8 +106,8 @@ export function Nav() {
           ))}
         </ul>
         <div className="ml-4 hidden items-center gap-2 text-sm md:flex">
-          <button
-            type="button"
+          <a
+            href="/login"
             className={`rounded-full border px-4 py-2 transition-colors ${
               clear
                 ? 'border-paper/15 hover:bg-paper/10'
@@ -115,7 +115,7 @@ export function Nav() {
             }`}
           >
             Sign in
-          </button>
+          </a>
           <a
             href={BOOK_DEMO_HREF}
             className={`rounded-full border border-transparent px-5 py-2 transition-colors ${
@@ -177,13 +177,13 @@ export function Nav() {
               ))}
             </ul>
             <div className="border-line flex flex-col gap-3 border-t px-6 py-4 text-sm">
-              <button
-                type="button"
+              <a
+                href="/login"
                 onClick={() => setOpen(false)}
                 className="text-muted hover:text-ink text-left"
               >
                 Sign in
-              </button>
+              </a>
               <a
                 href={BOOK_DEMO_HREF}
                 onClick={() => setOpen(false)}
