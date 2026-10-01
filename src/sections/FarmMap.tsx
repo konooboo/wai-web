@@ -1,6 +1,5 @@
 import {
   motion,
-  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -61,8 +60,8 @@ const STEPS: Step[] = [
 export function FarmMap() {
   const stepsRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
-  // Load the 3D chunk and build the point cloud one viewport early.
-  const near = useInView(overlayRef, { margin: '100% 0px', once: true })
+  // The 3D chunk and point cloud load with the page: the loading screen in
+  // index.html waits for the scene's wai:farm-ready event.
   const { scrollYProgress } = useScroll({
     target: stepsRef,
     // Progress starts when the map panel sticks, so the NZ zoom is in view.
@@ -95,15 +94,13 @@ export function FarmMap() {
             className="relative mx-auto aspect-square w-full max-w-[min(100%,50svh)] md:max-w-[calc(100svh-8rem)]"
           >
             <div className="bg-ink absolute inset-0 overflow-hidden rounded-2xl">
-              {near && (
-                <Suspense>
-                  <FarmScene
-                    progress={progress}
-                    reduced={reduced}
-                    overlay={overlayRef}
-                  />
-                </Suspense>
-              )}
+              <Suspense>
+                <FarmScene
+                  progress={progress}
+                  reduced={reduced}
+                  overlay={overlayRef}
+                />
+              </Suspense>
               <motion.p
                 className="text-paper/60 absolute top-3 left-3 font-mono text-[10px] tracking-wider uppercase"
                 style={{ opacity: site }}
