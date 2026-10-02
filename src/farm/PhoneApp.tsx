@@ -1,8 +1,13 @@
 import { motion, useTransform, type MotionValue } from 'motion/react'
 import type { ReactNode } from 'react'
 import { Koru } from '../components/Koru'
-import { ALERT_EXAMPLE, SENSORS } from '../content'
-import { FARM_SENSORS, type FarmSensor } from './sensors'
+import { ALERT_EXAMPLE, TURBIDITY_LIMIT_NTU } from '../content'
+import {
+  ALERT_SENSOR,
+  FARM_SENSORS,
+  sensorInfo,
+  type FarmSensor,
+} from './sensors'
 import { STORY } from './story'
 import { MAP_METRES } from './terrain'
 
@@ -12,10 +17,8 @@ export const APP_WIDTH = 320
 export const APP_HEIGHT = 693
 
 const FARM = `${(MAP_METRES * MAP_METRES) / 10000} ha farm`
-const ALERT_TITLE = 'Turbidity high'
-const S3 = FARM_SENSORS.find((s) => s.alertValue != null)!
+const S3 = ALERT_SENSOR
 const GLANCE = FARM_SENSORS.slice(0, 4)
-const S3_LIMIT = 10 // NTU, the app's turbidity limit
 
 // Example app state for the story. TODO(data): confirm with the team.
 const HEALTH = {
@@ -88,7 +91,7 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
   const detail = useTransform(progress, [...STORY.suggestion], [0, 1])
   const homeX = useTransform(detail, [0, 1], ['0%', '-30%'])
   const detailX = useTransform(detail, [0, 1], ['100%', '0%'])
-  const s3 = sensorInfo(S3)
+  const s3 = sensorInfo(S3.kind)
 
   return (
     <div className="text-ink bg-paper relative size-full overflow-hidden font-sans">
@@ -123,7 +126,7 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
               </Label>
               <div className="mt-1 font-medium">{ALERT_EXAMPLE.sensor}</div>
               <div className="text-alert font-mono text-[13px]">
-                {ALERT_TITLE} · {S3.alertValue} {s3.unit}
+                {ALERT_EXAMPLE.title} · {S3.alertValue} {s3.unit}
               </div>
             </div>
             <Chevron />
@@ -196,7 +199,7 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
             {ALERT_EXAMPLE.time}
           </Label>
           <div className="mt-1 text-[28px] leading-tight font-medium tracking-tight">
-            {ALERT_TITLE}
+            {ALERT_EXAMPLE.title}
           </div>
         </div>
 
@@ -221,7 +224,9 @@ export function PhoneApp({ progress }: { progress: MotionValue<number> }) {
               <td className="py-2.5 text-right">
                 {S3.value.toFixed(S3.decimals)}
               </td>
-              <td className="text-muted py-2.5 text-right">≤ {S3_LIMIT}</td>
+              <td className="text-muted py-2.5 text-right">
+                ≤ {TURBIDITY_LIMIT_NTU}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -307,8 +312,6 @@ const STROKE = {
   strokeLinejoin: 'round',
   'aria-hidden': true,
 } as const
-
-const sensorInfo = (s: FarmSensor) => SENSORS.find((x) => x.id === s.kind)!
 
 function Label({
   children,
@@ -481,7 +484,7 @@ function SensorTile({
   alert?: boolean
   opacity?: MotionValue<number>
 }) {
-  const info = sensorInfo(sensor)
+  const info = sensorInfo(sensor.kind)
   const value = alert ? sensor.alertValue! : sensor.value
   return (
     <motion.div
@@ -504,7 +507,7 @@ function SensorTile({
       <div
         className={`mt-2 font-mono text-[14px] ${alert ? 'text-alert' : ''}`}
       >
-        {alert ? ALERT_TITLE : info.label}
+        {alert ? ALERT_EXAMPLE.title : info.label}
       </div>
       <div className="text-muted font-mono text-xs">
         {alert ? 'Out of limits' : 'Normal'} · live

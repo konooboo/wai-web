@@ -10,10 +10,13 @@ export const SENSORS = [
   { id: 'soil-temp', label: 'Soil temperature', unit: '°C', where: 'soil' },
 ] as const // TODO(data): confirm the measurements the hardware takes
 
+export const TURBIDITY_LIMIT_NTU = 10
+
 export const ALERT_EXAMPLE = {
   sensor: 'Stream sensor S3',
+  title: 'Turbidity high',
   reading: 'Turbidity 48 NTU',
-  normal: 'Normal: below 10 NTU',
+  normal: `Normal: below ${TURBIDITY_LIMIT_NTU} NTU`,
   cause:
     'Turbidity rose 5× after 22 mm of rain. Likely run-off from Paddock 7.',
   action: 'Hold fertiliser for 48 h.\nCheck the riparian fence on Paddock 7.',

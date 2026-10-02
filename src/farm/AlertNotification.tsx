@@ -26,7 +26,7 @@ export function AlertNotification() {
         <span className="text-muted ml-auto font-mono text-xs">{SENT}</span>
       </div>
       <p className="mt-2 text-sm font-medium">
-        Turbidity high at {ALERT_SENSOR_ID}
+        {ALERT_EXAMPLE.title} at {ALERT_SENSOR_ID}
       </p>
       <p className="text-ink/70 mt-0.5 text-sm">{ALERT_EXAMPLE.cause}</p>
     </motion.div>

@@ -1,5 +1,6 @@
 import { motion, useTransform, type MotionValue } from 'motion/react'
 import { useState } from 'react'
+import { TURBIDITY_LIMIT_NTU } from '../content'
 import { ALERT_SENSOR_ID, sensorInfo, type FarmSensor } from './sensors'
 import { STORY } from './story'
 
@@ -34,7 +35,9 @@ export function SensorMarker({ sensor, index, progress }: Props) {
     [sensor.value, sensor.alertValue ?? sensor.value],
   )
   const reading = useTransform(value, (v) =>
-    v >= 10 && isAlert ? v.toFixed(0) : v.toFixed(sensor.decimals),
+    v >= TURBIDITY_LIMIT_NTU && isAlert
+      ? v.toFixed(0)
+      : v.toFixed(sensor.decimals),
   )
   const autoCard = useTransform(
     progress,

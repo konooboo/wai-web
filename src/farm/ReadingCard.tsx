@@ -1,10 +1,10 @@
 import { motion, useTransform, type MotionValue } from 'motion/react'
-import { ALERT_SENSOR_ID, FARM_SENSORS, sensorInfo } from './sensors'
+import { TURBIDITY_LIMIT_NTU } from '../content'
+import { ALERT_SENSOR, sensorInfo } from './sensors'
 import { STORY } from './story'
 
-const S3 = FARM_SENSORS.find((s) => s.id === ALERT_SENSOR_ID)!
+const S3 = ALERT_SENSOR
 const INFO = sensorInfo(S3.kind)
-const LIMIT = 10 // NTU, same limit as the map popup and the app
 const PEAK = S3.alertValue ?? S3.value
 
 // Last 12 readings: 7 flat at the normal value, then 5 steps up after rain.
@@ -32,9 +32,13 @@ export function ReadingCard({ progress }: { progress: MotionValue<number> }) {
   const draw = useTransform(progress, [...STORY.alert], [0, 1])
   const value = useTransform(draw, [0, 1], [S3.value, PEAK])
   const reading = useTransform(value, (v) =>
-    v >= LIMIT ? v.toFixed(0) : v.toFixed(S3.decimals),
+    v >= TURBIDITY_LIMIT_NTU ? v.toFixed(0) : v.toFixed(S3.decimals),
   )
-  const red = useTransform(value, [LIMIT - 1, LIMIT + 1], [0, 1])
+  const red = useTransform(
+    value,
+    [TURBIDITY_LIMIT_NTU - 1, TURBIDITY_LIMIT_NTU + 1],
+    [0, 1],
+  )
 
   return (
     <article className="border-line mt-8 w-full max-w-xs rounded-2xl border bg-white p-6">
@@ -56,8 +60,8 @@ export function ReadingCard({ progress }: { progress: MotionValue<number> }) {
         <line
           x1="0"
           x2={W}
-          y1={y(LIMIT)}
-          y2={y(LIMIT)}
+          y1={y(TURBIDITY_LIMIT_NTU)}
+          y2={y(TURBIDITY_LIMIT_NTU)}
           className="stroke-muted"
           strokeWidth="1"
           strokeDasharray="3 3"

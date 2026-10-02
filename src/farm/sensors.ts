@@ -69,6 +69,7 @@ export const FARM_SENSORS: FarmSensor[] = [
 ]
 
 export const ALERT_SENSOR_ID = 'S3'
+export const ALERT_SENSOR = FARM_SENSORS.find((s) => s.id === ALERT_SENSOR_ID)!
 
 export const sensorInfo = (kind: SensorKind) =>
   SENSORS.find((s) => s.id === kind)!
