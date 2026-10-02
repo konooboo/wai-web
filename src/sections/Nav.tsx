@@ -180,7 +180,7 @@ export function Nav() {
               <a
                 href="/login"
                 onClick={() => setOpen(false)}
-                className="text-muted hover:text-ink text-left"
+                className="text-muted hover:text-ink"
               >
                 Sign in
               </a>

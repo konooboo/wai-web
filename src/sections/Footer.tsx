@@ -19,17 +19,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <div className="mt-4 flex gap-6">
-          <a href="#" className="hover:text-ink">
-            Legal
-          </a>
-          <a href="#" className="hover:text-ink">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:text-ink">
-            Cookie Settings
-          </a>
-        </div>
+        {/* TODO(data): add Legal, Privacy Policy and Cookie Settings links when those pages exist. */}
       </div>
       <div
         aria-hidden
