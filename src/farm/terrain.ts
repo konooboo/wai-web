@@ -330,7 +330,7 @@ function withMeanders(points: Point[], amount: number): Point[] {
   })
 }
 
-export const STREAM = withMeanders(catmullRom(STREAM_CONTROL, 40), 0.035)
+const STREAM = withMeanders(catmullRom(STREAM_CONTROL, 40), 0.035)
 const TRACK = catmullRom(TRACK_CONTROL, 24)
 
 // Point on the stream at arc-length fraction t (0 = upstream, 1 = downstream).

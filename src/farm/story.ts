@@ -13,7 +13,7 @@ export const STORY = {
   paddock: [0.78, 0.85],
 } as const
 
-export const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 export const stage = (p: number, [from, to]: readonly [number, number]) =>
   clamp01((p - from) / (to - from))

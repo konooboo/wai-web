@@ -1,7 +1,7 @@
 // New Zealand coastline, simplified from Natural Earth 1:10m admin 0
 // countries (public domain, naturalearthdata.com). Rings of x, y in 0.1 km
-// from the farm site. x east, y south. Islands under 60 km² are left out.
-export const SITE = { lat: -43.32, lon: 172.62 }
+// from the farm site (43.32°S, 172.62°E). x east, y south. Islands under
+// 60 km² are left out.
 
 export const NZ_COAST: number[][] = [
   [
