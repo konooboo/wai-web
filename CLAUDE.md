@@ -13,9 +13,9 @@ Bun, Vite 8, React 19.3, TypeScript 6, Tailwind v4, Motion (`motion/react`), Rea
 
 ## Files
 
-- Sections: `src/sections/` (Nav, Hero, Problem, SensorBridge, FarmMap, Hardware, Pricing, About, Faq, Close, Footer).
+- Sections: `src/sections/` (Nav, Hero, FarmMap, SensorBridge, Hardware, Pricing, Faq, Close, Footer).
 - Shared components: `src/components/` (Section, SectionHeading, Reveal, Koru, LidarRings).
-- 3D: `src/scene/` (sensor model), `src/farm/` (farm map scene, phone app mock-up, web worker).
+- 3D: `src/scene/` (sensor model), `src/farm/` (farm map scene, phone app mock-up, problem cards, web worker).
 - Edit only the files your task names. Never edit `index.html`, `App.tsx`, `src/components/*`, `src/content.ts`, `src/index.css`, `package.json`, `bun.lock` or another agent's section. If you need a change there, report it.
 - You may create new files inside a folder that your task names, for example `src/farm/`.
 

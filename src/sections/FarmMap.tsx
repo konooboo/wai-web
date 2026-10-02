@@ -10,11 +10,11 @@ import { lazy, Suspense, useRef } from 'react'
 import { ALERT_EXAMPLE } from '../content'
 import { AlertNotification } from '../farm/AlertNotification'
 import { Phone } from '../farm/Phone'
+import { ProblemCard } from '../farm/ProblemCard'
 import { ReadingCard } from '../farm/ReadingCard'
 import { SensorMarker } from '../farm/SensorMarker'
 import { FARM_SENSORS } from '../farm/sensors'
 import { STORY } from '../farm/story'
-import { ProblemCard } from './Problem'
 
 const FarmScene = lazy(() => import('../farm/FarmScene'))
 
