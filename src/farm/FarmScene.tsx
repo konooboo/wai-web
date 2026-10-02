@@ -451,7 +451,7 @@ export default function FarmScene(props: Props) {
           gl={{ antialias: false, alpha: true }}
           // The loading screen in index.html waits for this.
           onCreated={() => dispatchEvent(new Event('wai:farm-ready'))}
->
+        >
           <Cloud {...farm} {...props} />
         </Canvas>
       )}
