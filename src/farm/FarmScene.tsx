@@ -37,13 +37,18 @@ let farmPromise: Promise<Farm> | null = null
 // Builds the point clouds in a worker once, then keeps them for the page
 // lifetime.
 function loadFarm() {
-  farmPromise ??= new Promise((resolve) => {
+  farmPromise ??= new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./farm.worker.ts', import.meta.url), {
       type: 'module',
     })
     worker.onmessage = (event) => {
       resolve(event.data)
       worker.terminate()
+    }
+    worker.onerror = (event) => {
+      reject(event.error ?? new Error(event.message))
+      worker.terminate()
+      farmPromise = null
     }
     worker.postMessage(null)
   })
