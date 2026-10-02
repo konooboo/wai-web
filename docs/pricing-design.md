@@ -36,8 +36,16 @@ type Band = { upToHa: number; ratePerHa: number | null }
 // TODO(data) confirm band edges and rates. Research suggestions:
 // intensive 3.00 / 2.00 / 1.00, extensive 0.80 / 0.40 / 0.15
 const RATE_CARDS = {
-  intensive: [{ upToHa: 150, ratePerHa: null }, { upToHa: 400, ratePerHa: null }, { upToHa: 1000, ratePerHa: null }],
-  extensive: [{ upToHa: 300, ratePerHa: null }, { upToHa: 1000, ratePerHa: null }, { upToHa: 3000, ratePerHa: null }],
+  intensive: [
+    { upToHa: 150, ratePerHa: null },
+    { upToHa: 400, ratePerHa: null },
+    { upToHa: 1000, ratePerHa: null },
+  ],
+  extensive: [
+    { upToHa: 300, ratePerHa: null },
+    { upToHa: 1000, ratePerHa: null },
+    { upToHa: 3000, ratePerHa: null },
+  ],
 } satisfies Record<FarmType, Band[]>
 const MIN_PER_MONTH: number | null = null // TODO(data) suggested 150
 const ANNUAL_DISCOUNT: number | null = null // TODO(data) suggested 0.15

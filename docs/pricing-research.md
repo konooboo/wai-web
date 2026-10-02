@@ -62,11 +62,11 @@ Result for Wai: keep a visible price or a "from" price next to "Book a demo". A 
 
 Three models exist in the market:
 
-| Model | Examples | Effect |
-|---|---|---|
-| Upfront hardware + subscription | Waterwatch ($897 + $11.50/sensor/month), Halo ($2,490 soil kit + $300/year), CropX (AUD 2,398 incl. first year, then AUD 399/year), Farmbot (AUD 1,290 + AUD 342/year) | High entry cost. Low vendor risk. A Substack essay argues ownership increases use. https://agstartupengine.substack.com/p/the-hidden-economics-of-hardware |
-| Hardware bundled in the subscription, with a term | Samsara (3-year term, hardware included, 30-day free trial with hardware), Halter (collars included and replaced; towers bought separately) | Low entry cost. Vendor carries hardware cost until the subscription pays it back. Needs a minimum term. https://kb.samsara.com/hc/en-us/articles/360051430351-Samsara-for-Small-Business-FAQ |
-| Lease | CropX offers leases for large volumes (PIRSA) | Middle option. https://www.pir.sa.gov.au/research/agtech/find_solutions/products/cropx |
+| Model                                             | Examples                                                                                                                                                               | Effect                                                                                                                                                                                       |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Upfront hardware + subscription                   | Waterwatch ($897 + $11.50/sensor/month), Halo ($2,490 soil kit + $300/year), CropX (AUD 2,398 incl. first year, then AUD 399/year), Farmbot (AUD 1,290 + AUD 342/year) | High entry cost. Low vendor risk. A Substack essay argues ownership increases use. https://agstartupengine.substack.com/p/the-hidden-economics-of-hardware                                   |
+| Hardware bundled in the subscription, with a term | Samsara (3-year term, hardware included, 30-day free trial with hardware), Halter (collars included and replaced; towers bought separately)                            | Low entry cost. Vendor carries hardware cost until the subscription pays it back. Needs a minimum term. https://kb.samsara.com/hc/en-us/articles/360051430351-Samsara-for-Small-Business-FAQ |
+| Lease                                             | CropX offers leases for large volumes (PIRSA)                                                                                                                          | Middle option. https://www.pir.sa.gov.au/research/agtech/find_solutions/products/cropx                                                                                                       |
 
 Monetizely calls the key number the "hardware subsidy recovery period": the months of subscription needed to pay back the hardware. https://www.getmonetizely.com/articles/maximizing-value-through-iot-device-pricing-the-art-of-hardware-software-bundling
 
@@ -107,20 +107,21 @@ Monetizely calls the key number the "hardware subsidy recovery period": the mont
 Source: Stats NZ, Agricultural production statistics: Year to June 2022 (final), farm counts by farm size and farm type. https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2022-final/ (Excel file "farm counts by farm size, region, territorial authority and farm type").
 
 Notes:
+
 - Coverage: GST-registered farms with more than $60,000 turnover. Figures are randomly rounded.
 - Area is total land, not effective (grazed or cropped) area.
 - Median and quartiles are my linear interpolation inside the Stats NZ size bands.
 
-| Farm type (ANZSIC06 code) | Farms | Lower quartile ha | Median ha | Upper quartile ha | Share ≥ 1,000 ha |
-|---|---|---|---|---|---|
-| Dairy cattle (A0160) | 9,852 | ~100 | ~175 | ~310 | 1 % |
-| Sheep-beef cattle mixed (A0144) | 4,878 | ~45 | ~300 | ~750 | 18 % |
-| Sheep specialised (A0141) | 5,211 | ~15 | ~125 | ~480 | 12 % |
-| Beef cattle specialised (A0142) | 11,508 | ~10 | ~35 | ~115 | 1 % |
-| All sheep and beef (A0141, A0142, A0144, A0145) | 22,002 | ~15 | ~65 | ~315 | 8 % |
-| Horticulture (A011–A013) | 6,972 | ~3 | ~7 | ~18 | 0 % |
-| Arable (A0145 grain-sheep/beef + A0149 other grain) | 876 | ~85 | ~190 | ~375 | 2 % |
-| All farm types | 47,244 | ~12 | ~65 | ~230 | 5 % |
+| Farm type (ANZSIC06 code)                           | Farms  | Lower quartile ha | Median ha | Upper quartile ha | Share ≥ 1,000 ha |
+| --------------------------------------------------- | ------ | ----------------- | --------- | ----------------- | ---------------- |
+| Dairy cattle (A0160)                                | 9,852  | ~100              | ~175      | ~310              | 1 %              |
+| Sheep-beef cattle mixed (A0144)                     | 4,878  | ~45               | ~300      | ~750              | 18 %             |
+| Sheep specialised (A0141)                           | 5,211  | ~15               | ~125      | ~480              | 12 %             |
+| Beef cattle specialised (A0142)                     | 11,508 | ~10               | ~35       | ~115              | 1 %              |
+| All sheep and beef (A0141, A0142, A0144, A0145)     | 22,002 | ~15               | ~65       | ~315              | 8 %              |
+| Horticulture (A011–A013)                            | 6,972  | ~3                | ~7        | ~18               | 0 %              |
+| Arable (A0145 grain-sheep/beef + A0149 other grain) | 876    | ~85               | ~190      | ~375              | 2 %              |
+| All farm types                                      | 47,244 | ~12               | ~65       | ~230              | 5 %              |
 
 Totals (Stats NZ indicator): 47,250 farms in 2022 (70,336 in 2002); 13.2 million ha (15.6 million ha in 2002); average about 279 ha. https://www.miragenews.com/farm-numbers-and-farm-size-data-to-2022-1376430/ (re-publication of https://www.stats.govt.nz/indicators/farm-numbers-and-farm-size-data-to-2022/)
 
@@ -130,34 +131,34 @@ The "all sheep and beef" median is low because Stats NZ includes many small beef
 
 Source: https://www.dairynz.co.nz/media/oglesqfm/nz-dairy-statistics-24-25.pdf (published late 2025).
 
-| Measure (2024/25 season) | Value |
-|---|---|
-| Herds | 10,370 (115 fewer than 2023/24) |
-| Average herd size | 451 cows |
-| Median herd size | ~375 cows (my estimate: 45 % of herds < 350 cows, 54 % < 400 cows) |
-| Most common herd size band | 200–249 cows (11.3 % of herds) |
-| Herds < 200 cows / ≥ 700 / ≥ 1,000 | 14 % / 16 % / 6 % |
-| Average effective area | 164 ha (151 ha in 2017/18) |
-| Median effective area | ~135 ha (my estimate: median herd ÷ stocking rate) |
-| Total effective area | 1.70 million ha (milking platform, support land excluded) |
-| Cows | 4.68 million |
-| Stocking rate | ~2.75 cows/ha (4.68 million ÷ 1.70 million ha) |
-| North Island average | 138 ha, 368 cows, 2.66 cows/ha |
-| South Island average | 224 ha, 644 cows, 2.87 cows/ha |
-| Milksolids per cow | 414 kg MS |
+| Measure (2024/25 season)           | Value                                                              |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| Herds                              | 10,370 (115 fewer than 2023/24)                                    |
+| Average herd size                  | 451 cows                                                           |
+| Median herd size                   | ~375 cows (my estimate: 45 % of herds < 350 cows, 54 % < 400 cows) |
+| Most common herd size band         | 200–249 cows (11.3 % of herds)                                     |
+| Herds < 200 cows / ≥ 700 / ≥ 1,000 | 14 % / 16 % / 6 %                                                  |
+| Average effective area             | 164 ha (151 ha in 2017/18)                                         |
+| Median effective area              | ~135 ha (my estimate: median herd ÷ stocking rate)                 |
+| Total effective area               | 1.70 million ha (milking platform, support land excluded)          |
+| Cows                               | 4.68 million                                                       |
+| Stocking rate                      | ~2.75 cows/ha (4.68 million ÷ 1.70 million ha)                     |
+| North Island average               | 138 ha, 368 cows, 2.66 cows/ha                                     |
+| South Island average               | 224 ha, 644 cows, 2.87 cows/ha                                     |
+| Milksolids per cow                 | 414 kg MS                                                          |
 
 Profit (for price-to-value checks): DairyNZ Economic Survey 2023/24: operating profit $2,845/ha for owner-operators. The 2024/25 update (03/06/2026) reports dairy operating profit of $2,154/ha; the two surveys use different measures, so do not compare them directly. https://www.dairynz.co.nz/resources/resource-list/dairynz-economic-survey-2023-24/ and https://business.scoop.co.nz/2026/06/03/dairynz-economic-update-higher-milk-price-but-costs-adding-pressure/
 
 ### 2.3 Sheep and beef (Beef + Lamb New Zealand)
 
-| Measure | Value | Year | Source |
-|---|---|---|---|
-| Commercial sheep and beef farms | 9,165 (classes 1–8) | 2019/20 | https://beeflambnz.com/industry-data/farm-data-and-industry-production/farm-classes |
-| By class | SI high country 200; SI hill 620; NI hard hill 920; NI hill 3,055; NI finishing 1,045; SI finishing-breeding 1,820; SI finishing 1,040; SI mixed finishing 465 | 2019/20 | same |
-| Average grazing area, all classes | 700 ha | baseline at 01/07/2023 | https://beeflambnz.com/knowledge-hub/PDF/new-season-outlook-2023-24.pdf |
-| Range by land type | ~200 ha (intensive) to > 1,500 ha (SI hill country) | 2021 | https://www.tupu.nz/en/fact-sheets/sheep-and-beef/ |
-| Farm profit before tax per farm | $106,500 (March 2025 forecast); $146,515 (later reported actual) | 2024/25 | https://beeflambnz.com/knowledge-hub/PDF/mid-season-update-2024-2025.pdf and https://www.farmersweekly.co.nz/markets/nz-sheep-and-beef-profits-forecast-to-hit-50-year-high/ |
-| Profit forecast | $287,600 per farm | 2025/26 | same Farmers Weekly article |
+| Measure                           | Value                                                                                                                                                          | Year                   | Source                                                                                                                                                                       |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Commercial sheep and beef farms   | 9,165 (classes 1–8)                                                                                                                                            | 2019/20                | https://beeflambnz.com/industry-data/farm-data-and-industry-production/farm-classes                                                                                          |
+| By class                          | SI high country 200; SI hill 620; NI hard hill 920; NI hill 3,055; NI finishing 1,045; SI finishing-breeding 1,820; SI finishing 1,040; SI mixed finishing 465 | 2019/20                | same                                                                                                                                                                         |
+| Average grazing area, all classes | 700 ha                                                                                                                                                         | baseline at 01/07/2023 | https://beeflambnz.com/knowledge-hub/PDF/new-season-outlook-2023-24.pdf                                                                                                      |
+| Range by land type                | ~200 ha (intensive) to > 1,500 ha (SI hill country)                                                                                                            | 2021                   | https://www.tupu.nz/en/fact-sheets/sheep-and-beef/                                                                                                                           |
+| Farm profit before tax per farm   | $106,500 (March 2025 forecast); $146,515 (later reported actual)                                                                                               | 2024/25                | https://beeflambnz.com/knowledge-hub/PDF/mid-season-update-2024-2025.pdf and https://www.farmersweekly.co.nz/markets/nz-sheep-and-beef-profits-forecast-to-hit-50-year-high/ |
+| Profit forecast                   | $287,600 per farm                                                                                                                                              | 2025/26                | same Farmers Weekly article                                                                                                                                                  |
 
 Profit per hectare is about $150–210/ha/year for an average 700 ha farm in 2024/25 (my calculation). Dairy operating profit is about 10–15 times higher per hectare. This difference controls the price design in section 4.
 
@@ -178,36 +179,37 @@ No official source publishes paddock or trough counts per farm. DairyNZ, LIC and
 
 ## 3. Competitor and analog pricing
 
-| Company | Product | Model | Public price (NZD unless stated) | Page pattern | Source |
-|---|---|---|---|---|---|
-| Halter (NZ) | Cow collars, virtual fencing | Per cow per month, 3 tiers (Core, Pro, Unlimited); towers extra | From $9.90/cow/month (cut 37 % on 23/04/2024). Towers about $7,800 each. Collar and tower replacement included. Bank finance for NZ dairy. | "From" price in FAQ, feature table, CTA "Chat to your local rep" | https://www.halterhq.com/en-au/dairy/pricing, https://www.odt.co.nz/rural-life/dairy/halter-package-price-cut-37, https://www.forbes.com/sites/catzxwang/2025/12/11/smart-collars-for-cows-how-this-31-year-old-entrepreneur-is-transforming-cattle-farming/ |
-| Farmote (now Gallagher + Barenbrug JV) | Pasture sensors (Motes) | Per device + per ha per month | 2019: $750 per Mote + $5/ha/month; about 10 Motes per 100 ha. Current price not public. | — | https://www.ruralnewsgroup.co.nz/dairy-news/dairy-machinery-products/taking-the-guesswork-out-of-pasture-monitoring, https://www.ruralnewsgroup.co.nz/rural-news/rural-agribusiness/gallagher-barenbrug-snap-pasture-monitoring-company |
-| Pasture.io (AU/NZ) | Satellite pasture cover | Fixed annual fee + per ha per year | AUD 1,099/year + AUD 3.99/ha (Essential) or AUD 9.48/ha (Ultimate). 162 ha on Ultimate: ~AUD 2,635/year (~AUD 1.36/ha/month). Annual contract. | Public calculator-style examples | https://pasture.io/plans, https://help.pasture.io/what-is-the-price-or-what-is-the-cost |
-| LIC SPACE | Satellite pasture | Annual, by farm ha | Price not published. Service closed 31/05/2025. | — | https://www.lic.co.nz/products-and-services/space/ |
-| Waterwatch (NZ) | Tank level sensor | Hardware + per sensor per month | $897 per monitor + $11.50/sensor/month (unlimited users and app alerts, 10 SMS/month) | CTA "Buy now" | https://waterwatch.io/pages/farm-water-tank |
-| Halo Systems (NZ) | Soil, rain, tank, flow, effluent telemetry | Hardware + annual per input | Soil kit from $2,490; soil + rain from $3,400; tank from $2,555; subscription $300/year first input + $120/year per extra input; effluent $1,200/year | Price list, CTA "Enquire now" | https://www.halosystems.co.nz/pricing |
-| CropX (incl. former NZ Regen) | Soil moisture/EC/temperature probe | Hardware + annual per sensor | AUD 2,398 + GST incl. first year; then AUD 399 + GST/year per sensor. Leases for large volumes. | Reseller pricing only | https://www.instrumentchoice.com.au/products/cropx-vertex-all-in-one-vertex-soil-sensor-sv4 |
-| Gallagher | Tank level and satellite liquid monitoring | Hardware + app/annual subscription | Satellite unit: first year included, then ~AUD 90/year ex GST (AU reseller). NZ app subscription price not public. | Retail product pages | https://4tags.com.au/shop/gallagher-satellite-water-liquid-monitoring-system/, https://shop.am.gallagher.com/nz/en_NZ/animal-management/wireless-water-monitoring/tank-level-systems/tank-level-starter-kit-/p/G99131 |
-| Farmbot (AU) | Tank level monitor | Hardware + annual per device | AUD 1,290 per cellular monitor; AUD 342/year cellular, AUD 456/year satellite | — | https://sadroughthub.com.au/wp-content/uploads/2024/02/FINAL-Case-Study-Farmbot-Tank-Level-Monitor-Fargher.pdf |
-| FarmIQ (NZ) | Farm management software | Per farm per month, 4 packs | Lite $42, Essentials $84, Performance+ $190 ("Most popular"), Pro $249, all ex GST, month to month. 25 % off farms 2–3, 50 % off farm 4+. | Highlighted middle tier, CTA "Try for free" | https://www.farmiq.co.nz/compare-packs/ |
-| Figured (NZ) | Farm finance software | Per farm per month | Farm Manager USD 90/month; page currently shows USD. No free trial; demo farm available. | 7-question FAQ, CTA "Book a Demo" | https://www.figured.com/pricing |
-| Hectre (NZ) | Orchard software | Annual subscription, unlimited users | Not public (quote via demo) | Demo-only | https://hectre.com/ |
-| MetWatch / HortPlus (NZ) | Weather and disease models | Subscription; free through some grower bodies | Not public | — | https://www.hortplus.com/metwatch |
-| Agrigate (Fonterra/LIC) | Farm dashboard | Was free from 2019 | Wound up (2023); features move to LIC MINDA | — | https://agrigate.co.nz/ |
-| Tracksy, MyFarm, Loc8tor | — | — | I found no public pricing for Tracksy. I did not research MyFarm (farm investment and advisory) or Loc8tor (tracking tags) in depth; neither is a close analog. | — | — |
+| Company                                | Product                                    | Model                                                           | Public price (NZD unless stated)                                                                                                                                | Page pattern                                                     | Source                                                                                                                                                                                                                                                       |
+| -------------------------------------- | ------------------------------------------ | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Halter (NZ)                            | Cow collars, virtual fencing               | Per cow per month, 3 tiers (Core, Pro, Unlimited); towers extra | From $9.90/cow/month (cut 37 % on 23/04/2024). Towers about $7,800 each. Collar and tower replacement included. Bank finance for NZ dairy.                      | "From" price in FAQ, feature table, CTA "Chat to your local rep" | https://www.halterhq.com/en-au/dairy/pricing, https://www.odt.co.nz/rural-life/dairy/halter-package-price-cut-37, https://www.forbes.com/sites/catzxwang/2025/12/11/smart-collars-for-cows-how-this-31-year-old-entrepreneur-is-transforming-cattle-farming/ |
+| Farmote (now Gallagher + Barenbrug JV) | Pasture sensors (Motes)                    | Per device + per ha per month                                   | 2019: $750 per Mote + $5/ha/month; about 10 Motes per 100 ha. Current price not public.                                                                         | —                                                                | https://www.ruralnewsgroup.co.nz/dairy-news/dairy-machinery-products/taking-the-guesswork-out-of-pasture-monitoring, https://www.ruralnewsgroup.co.nz/rural-news/rural-agribusiness/gallagher-barenbrug-snap-pasture-monitoring-company                      |
+| Pasture.io (AU/NZ)                     | Satellite pasture cover                    | Fixed annual fee + per ha per year                              | AUD 1,099/year + AUD 3.99/ha (Essential) or AUD 9.48/ha (Ultimate). 162 ha on Ultimate: ~AUD 2,635/year (~AUD 1.36/ha/month). Annual contract.                  | Public calculator-style examples                                 | https://pasture.io/plans, https://help.pasture.io/what-is-the-price-or-what-is-the-cost                                                                                                                                                                      |
+| LIC SPACE                              | Satellite pasture                          | Annual, by farm ha                                              | Price not published. Service closed 31/05/2025.                                                                                                                 | —                                                                | https://www.lic.co.nz/products-and-services/space/                                                                                                                                                                                                           |
+| Waterwatch (NZ)                        | Tank level sensor                          | Hardware + per sensor per month                                 | $897 per monitor + $11.50/sensor/month (unlimited users and app alerts, 10 SMS/month)                                                                           | CTA "Buy now"                                                    | https://waterwatch.io/pages/farm-water-tank                                                                                                                                                                                                                  |
+| Halo Systems (NZ)                      | Soil, rain, tank, flow, effluent telemetry | Hardware + annual per input                                     | Soil kit from $2,490; soil + rain from $3,400; tank from $2,555; subscription $300/year first input + $120/year per extra input; effluent $1,200/year           | Price list, CTA "Enquire now"                                    | https://www.halosystems.co.nz/pricing                                                                                                                                                                                                                        |
+| CropX (incl. former NZ Regen)          | Soil moisture/EC/temperature probe         | Hardware + annual per sensor                                    | AUD 2,398 + GST incl. first year; then AUD 399 + GST/year per sensor. Leases for large volumes.                                                                 | Reseller pricing only                                            | https://www.instrumentchoice.com.au/products/cropx-vertex-all-in-one-vertex-soil-sensor-sv4                                                                                                                                                                  |
+| Gallagher                              | Tank level and satellite liquid monitoring | Hardware + app/annual subscription                              | Satellite unit: first year included, then ~AUD 90/year ex GST (AU reseller). NZ app subscription price not public.                                              | Retail product pages                                             | https://4tags.com.au/shop/gallagher-satellite-water-liquid-monitoring-system/, https://shop.am.gallagher.com/nz/en_NZ/animal-management/wireless-water-monitoring/tank-level-systems/tank-level-starter-kit-/p/G99131                                        |
+| Farmbot (AU)                           | Tank level monitor                         | Hardware + annual per device                                    | AUD 1,290 per cellular monitor; AUD 342/year cellular, AUD 456/year satellite                                                                                   | —                                                                | https://sadroughthub.com.au/wp-content/uploads/2024/02/FINAL-Case-Study-Farmbot-Tank-Level-Monitor-Fargher.pdf                                                                                                                                               |
+| FarmIQ (NZ)                            | Farm management software                   | Per farm per month, 4 packs                                     | Lite $42, Essentials $84, Performance+ $190 ("Most popular"), Pro $249, all ex GST, month to month. 25 % off farms 2–3, 50 % off farm 4+.                       | Highlighted middle tier, CTA "Try for free"                      | https://www.farmiq.co.nz/compare-packs/                                                                                                                                                                                                                      |
+| Figured (NZ)                           | Farm finance software                      | Per farm per month                                              | Farm Manager USD 90/month; page currently shows USD. No free trial; demo farm available.                                                                        | 7-question FAQ, CTA "Book a Demo"                                | https://www.figured.com/pricing                                                                                                                                                                                                                              |
+| Hectre (NZ)                            | Orchard software                           | Annual subscription, unlimited users                            | Not public (quote via demo)                                                                                                                                     | Demo-only                                                        | https://hectre.com/                                                                                                                                                                                                                                          |
+| MetWatch / HortPlus (NZ)               | Weather and disease models                 | Subscription; free through some grower bodies                   | Not public                                                                                                                                                      | —                                                                | https://www.hortplus.com/metwatch                                                                                                                                                                                                                            |
+| Agrigate (Fonterra/LIC)                | Farm dashboard                             | Was free from 2019                                              | Wound up (2023); features move to LIC MINDA                                                                                                                     | —                                                                | https://agrigate.co.nz/                                                                                                                                                                                                                                      |
+| Tracksy, MyFarm, Loc8tor               | —                                          | —                                                               | I found no public pricing for Tracksy. I did not research MyFarm (farm investment and advisory) or Loc8tor (tracking tags) in depth; neither is a close analog. | —                                                                | —                                                                                                                                                                                                                                                            |
 
 Per-hectare equivalents (my calculations, for comparison only):
 
-| Product | Approx. $/ha/month |
-|---|---|
-| Halter at $9.90/cow and 2.75 cows/ha | ~$27 (plus towers) |
-| Farmote 2019 | $5 (plus $750 per Mote) |
-| Pasture.io Ultimate, 162 ha | ~AUD 1.36 |
-| Waterwatch, 7 sensors on 164 ha (subscription only) | ~$0.49 (plus $6,279 hardware) |
-| Halo, 7 inputs on 164 ha (subscription only) | ~$0.52 (plus ~$17,000 hardware) |
-| Wai draft on site | $2.50, hardware included |
+| Product                                             | Approx. $/ha/month              |
+| --------------------------------------------------- | ------------------------------- |
+| Halter at $9.90/cow and 2.75 cows/ha                | ~$27 (plus towers)              |
+| Farmote 2019                                        | $5 (plus $750 per Mote)         |
+| Pasture.io Ultimate, 162 ha                         | ~AUD 1.36                       |
+| Waterwatch, 7 sensors on 164 ha (subscription only) | ~$0.49 (plus $6,279 hardware)   |
+| Halo, 7 inputs on 164 ha (subscription only)        | ~$0.52 (plus ~$17,000 hardware) |
+| Wai draft on site                                   | $2.50, hardware included        |
 
 Findings:
+
 - Every NZ sensor competitor charges for hardware upfront. Wai's "hardware included" is a real difference. Put it in the price line, not only in the heading.
 - Area pricing exists in this market (Farmote, Pasture.io, LIC SPACE). Farmers understand it.
 - A fixed platform fee plus a per-ha rate (Pasture.io) keeps small farms viable for the vendor.
@@ -219,6 +221,7 @@ Findings:
 ### 4.1 Problem with one flat rate
 
 At the draft $2.50/ha/month:
+
 - 164 ha dairy farm: $410/month, $4,920/year. That is about 1.4 % of dairy operating profit ($2,154/ha).
 - 700 ha sheep and beef farm: $1,750/month, $21,000/year. That is about 14–20 % of 2024/25 profit before tax ($106,500–146,515).
 - 7 ha orchard: $17.50/month. This does not pay for one installed sensor.
@@ -231,27 +234,28 @@ One plan (same features for everyone), priced per **effective hectare** (grazed 
 
 **Intensive: dairy, arable, horticulture, irrigated land**
 
-| Effective hectares | Rate | Per acre |
-|---|---|---|
-| First 150 ha (371 ac) | $[3.00]/ha/month | $1.21/ac |
-| 151–400 ha (372–988 ac) | $[2.00]/ha/month | $0.81/ac |
+| Effective hectares          | Rate             | Per acre |
+| --------------------------- | ---------------- | -------- |
+| First 150 ha (371 ac)       | $[3.00]/ha/month | $1.21/ac |
+| 151–400 ha (372–988 ac)     | $[2.00]/ha/month | $0.81/ac |
 | 401–1,000 ha (989–2,471 ac) | $[1.00]/ha/month | $0.40/ac |
-| More than 1,000 ha | Quote | — |
+| More than 1,000 ha          | Quote            | —        |
 
 **Extensive: sheep and beef, deer, dryland grazing**
 
-| Effective hectares | Rate | Per acre |
-|---|---|---|
-| First 300 ha (741 ac) | $[0.80]/ha/month | $0.32/ac |
-| 301–1,000 ha (742–2,471 ac) | $[0.40]/ha/month | $0.16/ac |
+| Effective hectares              | Rate             | Per acre |
+| ------------------------------- | ---------------- | -------- |
+| First 300 ha (741 ac)           | $[0.80]/ha/month | $0.32/ac |
+| 301–1,000 ha (742–2,471 ac)     | $[0.40]/ha/month | $0.16/ac |
 | 1,001–3,000 ha (2,472–7,413 ac) | $[0.15]/ha/month | $0.06/ac |
-| More than 3,000 ha | Quote | — |
+| More than 3,000 ha              | Quote            | —        |
 
 **Minimum:** $[150]/month per farm. This equals 50 ha intensive or 187 ha extensive. It covers sensor, install and support cost on small blocks and orchards.
 
 **Annual prepay:** [15] % discount. This is inside the ProfitWell 15–20 % range. Show the monthly price first and the annual total on a second line.
 
 **Hardware:** included in the subscription.
+
 - State a sensor allowance, for example "[N] water and [N] soil sensors per [X] ha" `// TODO(data)`. Extra sensors: $[X]/sensor/month. This keeps hardware cost bounded per hectare.
 - Minimum term: [24] months, because Wai carries the hardware cost. If the farmer exits early, charge the remaining hardware value, or let the farmer buy the sensors. The founders must check the term against real sensor cost (hardware subsidy recovery period); I do not have Wai's sensor cost.
 - Include replacement of damaged sensors (Halter does this).
@@ -264,13 +268,13 @@ One plan (same features for everyone), priced per **effective hectare** (grazed 
 
 Monthly-billing prices. Annual price = 12 × monthly × 0.85.
 
-| Farm | Area | Monthly | Annual (monthly billing) | Annual (prepay, −15 %) | Check |
-|---|---|---|---|---|---|
-| Average dairy (DairyNZ 2024/25) | 164 ha, 451 cows | $478 | $5,736 | $4,876 | $1.06/cow/month (Halter: $9.90); $0.031/kg MS; ~1.6 % of operating profit |
-| Median dairy (estimate) | ~135 ha, ~375 cows | $405 | $4,860 | $4,131 | $1.08/cow/month |
-| Median sheep-beef mixed farm (Stats NZ 2022) | 300 ha | $240 | $2,880 | $2,448 | ~2–3 % of average S&B profit before tax |
-| Average commercial sheep and beef (B+LNZ) | 700 ha | $400 | $4,800 | $4,080 | $0.57/ha/month; ~3–4.5 % of 2024/25 profit before tax |
-| Median orchard (Stats NZ 2022) | 7 ha | $150 (minimum) | $1,800 | $1,530 | Minimum applies |
+| Farm                                         | Area               | Monthly        | Annual (monthly billing) | Annual (prepay, −15 %) | Check                                                                     |
+| -------------------------------------------- | ------------------ | -------------- | ------------------------ | ---------------------- | ------------------------------------------------------------------------- |
+| Average dairy (DairyNZ 2024/25)              | 164 ha, 451 cows   | $478           | $5,736                   | $4,876                 | $1.06/cow/month (Halter: $9.90); $0.031/kg MS; ~1.6 % of operating profit |
+| Median dairy (estimate)                      | ~135 ha, ~375 cows | $405           | $4,860                   | $4,131                 | $1.08/cow/month                                                           |
+| Median sheep-beef mixed farm (Stats NZ 2022) | 300 ha             | $240           | $2,880                   | $2,448                 | ~2–3 % of average S&B profit before tax                                   |
+| Average commercial sheep and beef (B+LNZ)    | 700 ha             | $400           | $4,800                   | $4,080                 | $0.57/ha/month; ~3–4.5 % of 2024/25 profit before tax                     |
+| Median orchard (Stats NZ 2022)               | 7 ha               | $150 (minimum) | $1,800                   | $1,530                 | Minimum applies                                                           |
 
 The sheep and beef price is still a larger share of profit than the dairy price. If the founders target sheep and beef, test $0.50/ha on the first band.
 
